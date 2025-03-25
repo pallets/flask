@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Deploy to Production &#8212; Flask Documentation (3.1.x)</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../_static/flask.css?v=b87c8d14" />
+    <script src="../../_static/documentation_options.js?v=d71c4578"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.1.x" src="../../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Keep Developing!" href="../next/" />
+    <link rel="prev" title="Test Coverage" href="../tests/" />
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../next/" title="Keep Developing!"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../tests/" title="Test Coverage"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../">Flask Documentation (3.1.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../" accesskey="U">Tutorial</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Deploy to Production</a></li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="deploy-to-production">
+<h1>Deploy to Production<a class="headerlink" href="#deploy-to-production" title="Link to this heading">¶</a></h1>
+<p>This part of the tutorial assumes you have a server that you want to
+deploy your application to. It gives an overview of how to create the
+distribution file and install it, but won’t go into specifics about
+what server or software to use. You can set up a new environment on your
+development computer to try out the instructions below, but probably
+shouldn’t use it for hosting a real public application. See
+<a class="reference internal" href="../../deploying/"><span class="doc">Deploying to Production</span></a> for a list of many different ways to host your
+application.</p>
+<section id="build-and-install">
+<h2>Build and Install<a class="headerlink" href="#build-and-install" title="Link to this heading">¶</a></h2>
+<p>When you want to deploy your application elsewhere, you build a <em>wheel</em>
+(<code class="docutils literal notranslate"><span class="pre">.whl</span></code>) file. Install and use the <code class="docutils literal notranslate"><span class="pre">build</span></code> tool to do this.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ pip install build
+$ python -m build --wheel
+</pre></div>
+</div>
+<p>You can find the file in <code class="docutils literal notranslate"><span class="pre">dist/flaskr-1.0.0-py3-none-any.whl</span></code>. The
+file name is in the format of {project name}-{version}-{python tag}
+-{abi tag}-{platform tag}.</p>
+<p>Copy this file to another machine,
+<a class="reference internal" href="../../installation/#install-create-env"><span class="std std-ref">set up a new virtualenv</span></a>, then install the
+file with <code class="docutils literal notranslate"><span class="pre">pip</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ pip install flaskr-1.0.0-py3-none-any.whl
+</pre></div>
+</div>
+<p>Pip will install your project along with its dependencies.</p>
+<p>Since this is a different machine, you need to run <code class="docutils literal notranslate"><span class="pre">init-db</span></code> again to
+create the database in the instance folder.</p>
+<blockquote>
+<div><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ flask --app flaskr init-db
+</pre></div>
+</div>
+</div></blockquote>
+<p>When Flask detects that it’s installed (not in editable mode), it uses
+a different directory for the instance folder. You can find it at
+<code class="docutils literal notranslate"><span class="pre">.venv/var/flaskr-instance</span></code> instead.</p>
+</section>
+<section id="configure-the-secret-key">
+<h2>Configure the Secret Key<a class="headerlink" href="#configure-the-secret-key" title="Link to this heading">¶</a></h2>
+<p>In the beginning of the tutorial that you gave a default value for
+<a class="reference internal" href="../../config/#SECRET_KEY" title="SECRET_KEY"><code class="xref py py-data docutils literal notranslate"><span class="pre">SECRET_KEY</span></code></a>. This should be changed to some random bytes in
+production. Otherwise, attackers could use the public <code class="docutils literal notranslate"><span class="pre">'dev'</span></code> key to
+modify the session cookie, or anything else that uses the secret key.</p>
+<p>You can use the following command to output a random secret key:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ python -c &#39;import secrets; print(secrets.token_hex())&#39;
+
+&#39;192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf&#39;
+</pre></div>
+</div>
+<p>Create the <code class="docutils literal notranslate"><span class="pre">config.py</span></code> file in the instance folder, which the factory
+will read from if it exists. Copy the generated value into it.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">.venv/var/flaskr-instance/config.py</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="s1">&#39;192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf&#39;</span>
+</pre></div>
+</div>
+</div>
+<p>You can also set any other necessary configuration here, although
+<code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code> is the only one needed for Flaskr.</p>
+</section>
+<section id="run-with-a-production-server">
+<h2>Run with a Production Server<a class="headerlink" href="#run-with-a-production-server" title="Link to this heading">¶</a></h2>
+<p>When running publicly rather than in development, you should not use the
+built-in development server (<code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code>). The development server is
+provided by Werkzeug for convenience, but is not designed to be
+particularly efficient, stable, or secure.</p>
+<p>Instead, use a production WSGI server. For example, to use <a class="reference external" href="https://docs.pylonsproject.org/projects/waitress/en/stable/">Waitress</a>,
+first install it in the virtual environment:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ pip install waitress
+</pre></div>
+</div>
+<p>You need to tell Waitress about your application, but it doesn’t use
+<code class="docutils literal notranslate"><span class="pre">--app</span></code> like <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> does. You need to tell it to import and
+call the application factory to get an application object.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ waitress-serve --call &#39;flaskr:create_app&#39;
+
+Serving on http://0.0.0.0:8080
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../../deploying/"><span class="doc">Deploying to Production</span></a> for a list of many different ways to host
+your application. Waitress is just an example, chosen for the tutorial
+because it supports both Windows and Linux. There are many more WSGI
+servers and deployment options that you may choose for your project.</p>
+<p>Continue to <a class="reference internal" href="../next/"><span class="doc">Keep Developing!</span></a>.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+
+
+            <p class="logo"><a href="../../">
+              <img class="logo" src="../../_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Deploy to Production</a><ul>
+<li><a class="reference internal" href="#build-and-install">Build and Install</a></li>
+<li><a class="reference internal" href="#configure-the-secret-key">Configure the Secret Key</a></li>
+<li><a class="reference internal" href="#run-with-a-production-server">Run with a Production Server</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="../../">Overview</a>
+    <ul>
+      <li><a href="../">Tutorial</a>
+        <ul>
+          <li>Previous: <a href="../tests/" title="previous chapter">Test Coverage</a>
+          <li>Next: <a href="../next/" title="next chapter">Keep Developing!</a></ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,515 @@
+@import url("basic.css");
+
+/* -- page layout --------------------------------------------------- */
+
+html {
+  scroll-padding-top: calc(30px + 1em);
+  /* see .version-warning selector for banner positioning */
+}
+
+body {
+  font-family: 'Garamond', 'Georgia', serif;
+  font-size: 17px;
+  background-color: #fff;
+  color: #3e4349;
+  margin: 0;
+  padding: 0;
+}
+
+div.related {
+  max-width: 1140px;
+  margin: 10px auto;
+
+  /* displayed on mobile */
+  display: none;
+}
+
+div.document {
+  max-width: 1140px;
+  margin: 10px auto;
+}
+
+div.documentwrapper {
+  float: left;
+  width: 100%;
+}
+
+div.bodywrapper {
+  margin: 0 0 0 220px;
+}
+
+div.body {
+  min-width: initial;
+  max-width: initial;
+  padding: 0 30px;
+}
+
+div.sphinxsidebarwrapper {
+  padding: 10px;
+}
+
+div.sphinxsidebar {
+  width: 220px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #444;
+}
+
+div.sphinxsidebar li {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+div.sphinxsidebar li:hover {
+  overflow: visible;
+}
+
+div.sphinxsidebar a,
+div.sphinxsidebar a code {
+  color: #444;
+  border-color: #444;
+}
+
+div.sphinxsidebar a:hover {
+  background-color:#fff;
+}
+
+div.sphinxsidebar p.logo {
+  margin: 0;
+  text-align: center;
+}
+
+div.sphinxsidebar h3,
+div.sphinxsidebar h4 {
+  font-size: 24px;
+  color: #444;
+}
+
+div.sphinxsidebar p.logo a,
+div.sphinxsidebar h3 a,
+div.sphinxsidebar p.logo a:hover,
+div.sphinxsidebar h3 a:hover {
+  border: none;
+}
+
+div.sphinxsidebar p,
+div.sphinxsidebar h3,
+div.sphinxsidebar h4 {
+  margin: 10px 0;
+}
+
+div.sphinxsidebar ul {
+  margin: 10px 0;
+  padding: 0;
+}
+
+div.sphinxsidebar input {
+  border: 1px solid #999;
+  font-size: 1em;
+}
+
+div.footer {
+  max-width: 1140px;
+  margin: 20px auto;
+  font-size: 14px;
+  text-align: right;
+  color: #888;
+}
+
+div.footer a {
+  color: #888;
+  border-color: #888;
+}
+
+/* -- quick search -------------------------------------------------- */
+
+div.sphinxsidebar #searchbox form {
+  display: flex;
+}
+
+div.sphinxsidebar #searchbox form > div {
+  display: flex;
+  flex: 1 1 auto;
+}
+
+div.sphinxsidebar #searchbox input[type=text] {
+  flex: 1 1 auto;
+  width: 1% !important;
+}
+
+div.sphinxsidebar #searchbox input[type=submit] {
+  border-left-width: 0;
+}
+
+/* -- version warning ----------------------------------------------- */
+
+/* see html selector for scroll offset */
+
+p.version-warning {
+  top: 10px;
+  position: sticky;
+
+  margin: 10px 0;
+  padding: 5px 10px;
+  border-radius: 4px;
+
+  letter-spacing: 1px;
+  color: #fff;
+  text-shadow: 0 0 2px #000;
+  text-align: center;
+
+  background: #d40 repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 56px,
+    rgba(255, 255, 255, 0.2) 56px,
+    rgba(255, 255, 255, 0.2) 112px
+  );
+}
+
+p.version-warning a {
+  color: #fff;
+  border-color: #fff;
+}
+
+/* -- body styles --------------------------------------------------- */
+
+a {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: #000;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  text-decoration-style: solid;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+  margin: 30px 0 10px;
+  padding: 0;
+  color: black;
+}
+
+div.body h1 {
+  font-size: 240%;
+}
+
+div.body h2 {
+  font-size: 180%;
+}
+
+div.body h3 {
+  font-size: 150%;
+}
+
+div.body h4 {
+  font-size: 130%;
+}
+
+div.body h5 {
+  font-size: 100%;
+}
+
+div.body h6 {
+  font-size: 100%;
+}
+
+div.body h1:first-of-type {
+  margin-top: 0;
+}
+
+a.headerlink {
+  color: #ddd;
+  margin: 0 0.2em;
+  padding: 0 0.2em;
+  border: none;
+}
+
+a.headerlink:hover {
+  color: #444;
+}
+
+div.body p,
+div.body dd,
+div.body li {
+  line-height: 1.4;
+}
+
+img.screenshot {
+  box-shadow: 2px 2px 4px #eee;
+}
+
+hr {
+  border: 1px solid #999;
+}
+
+blockquote {
+  margin: 0 0 0 30px;
+  padding: 0;
+}
+
+ul, ol {
+  margin: 10px 0 10px 30px;
+  padding: 0;
+}
+
+a.footnote-reference {
+  font-size: 0.7em;
+  vertical-align: top;
+}
+
+/* -- admonitions --------------------------------------------------- */
+
+div.admonition,
+div.topic {
+  background-color: #fafafa;
+  margin: 10px -10px;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  border-right: none;
+  border-bottom: 1px solid #ccc;
+  border-left: none;
+}
+
+div.admonition p.admonition-title,
+div.topic p.topic-title {
+  font-weight: normal;
+  font-size: 24px;
+  margin: 0 0 10px 0;
+  padding: 0;
+  line-height: 1;
+  display: inline;
+}
+
+p.admonition-title::after {
+  content: ":";
+}
+
+div.admonition p.last,
+div.topic p:last-child {
+  margin-bottom: 0;
+}
+
+div.danger, div.error {
+  background-color: #fff0f0;
+  border-color: #ffb0b0;
+}
+
+div.seealso {
+  background-color: #fffff0;
+  border-color: #f0f0a8;
+}
+
+/* -- changelog ----------------------------------------------------- */
+
+details.changelog summary {
+  cursor: pointer;
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+/* -- search highlight ---------------------------------------------- */
+
+dt:target,
+.footnote:target,
+span.highlighted {
+  background-color: #ffdf80;
+}
+
+rect.highlighted {
+  fill: #ffdf80;
+}
+
+/* -- code displays ------------------------------------------------- */
+
+pre, code {
+  font-family: 'Consolas', 'Menlo', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+  font-size: 0.9em;
+}
+
+pre {
+  margin: 0;
+  padding: 0;
+  line-height: 1.3;
+}
+
+div.literal-block-wrapper {
+  padding: 10px 0 0;
+}
+
+div.code-block-caption {
+  padding: 0;
+}
+
+div.highlight, div.literal-block-wrapper div.highlight {
+  margin: 10px -10px;
+  padding: 10px;
+}
+
+code {
+  color: #222;
+  background: #e8eff0;
+}
+
+/* -- tables -------------------------------------------------------- */
+
+table.docutils {
+  border: 1px solid #888;
+  box-shadow: 2px 2px 4px #eee;
+}
+
+table.docutils td,
+table.docutils th {
+  border: 1px solid #888;
+  padding: 0.25em 0.7em;
+}
+
+table.field-list,
+table.footnote {
+  border: none;
+  box-shadow: none;
+}
+
+table.footnote {
+  margin: 15px 0;
+  width: 100%;
+  border: 1px solid #eee;
+  background-color: #fafafa;
+  font-size: 0.9em;
+}
+
+table.footnote + table.footnote {
+  margin-top: -15px;
+  border-top: none;
+}
+
+table.field-list th {
+  padding: 0 0.8em 0 0;
+}
+
+table.field-list td {
+  padding: 0;
+}
+
+table.footnote td.label {
+  width: 0;
+  padding: 0.3em 0 0.3em 0.5em;
+}
+
+table.footnote td {
+  padding: 0.3em 0.5em;
+}
+
+/* -- responsive screen --------------------------------------------- */
+
+@media screen and (max-width: 1139px) {
+  p.version-warning {
+    margin: 10px;
+  }
+
+  div.footer {
+    margin: 20px 10px;
+  }
+}
+
+/* -- small screen -------------------------------------------------- */
+
+@media screen and (max-width: 767px) {
+  body {
+    padding: 0 20px;
+  }
+
+  div.related {
+    display: block;
+  }
+
+  p.version-warning {
+    margin: 10px 0;
+  }
+
+  div.documentwrapper {
+    float: none;
+  }
+
+  div.bodywrapper {
+    margin: 0;
+  }
+
+  div.body {
+    min-height: 0;
+    padding: 0;
+  }
+
+  div.sphinxsidebar {
+    float: none;
+    width: 100%;
+    margin: 0 -20px -10px;
+    padding: 0 20px;
+    background-color: #333;
+    color: #ccc;
+  }
+
+  div.sphinxsidebar a,
+  div.sphinxsidebar a code,
+  div.sphinxsidebar h3,
+  div.sphinxsidebar h4,
+  div.footer a {
+    color: #ccc;
+    border-color: #ccc;
+  }
+
+  div.sphinxsidebar p.logo {
+    display: none;
+  }
+
+  div.footer {
+    text-align: left;
+    margin: 0 -20px;
+    padding: 20px;
+    background-color: #333;
+    color: #ccc;
+  }
+}
+
+/* https://github.com/twbs/bootstrap/blob
+   /0e8831505ac845f3102fa2c5996a7141c9ab01ee
+   /scss/mixins/_screen-reader.scss */
+.hide-header > h1:first-child {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* -- sphinx-tabs -------------------------------------------------- */
+
+.sphinx-tabs {
+  margin-bottom: 0;
+}
+
+.sphinx-tabs .ui.menu {
+  font-family: 'Garamond', 'Georgia', serif !important;
+}
+
+.sphinx-tabs .ui.attached.menu {
+  border-bottom: none
+}
+
+.sphinx-tabs .ui.tabular.menu .item {
+  border-bottom: 2px solid transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  padding: .3em 0.6em;
+}
+
+.sphinx-tabs .ui.attached.segment, .ui.segment {
+  border: 0;
+  padding: 0;
+}

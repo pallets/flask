@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Waitress &#8212; Flask Documentation (3.1.x)</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../_static/flask.css?v=b87c8d14" />
+    <script src="../../_static/documentation_options.js?v=d71c4578"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.1.x" src="../../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="mod_wsgi" href="../mod_wsgi/" />
+    <link rel="prev" title="Gunicorn" href="../gunicorn/" />
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../mod_wsgi/" title="mod_wsgi"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../gunicorn/" title="Gunicorn"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../">Flask Documentation (3.1.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../" accesskey="U">Deploying to Production</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Waitress</a></li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="waitress">
+<h1>Waitress<a class="headerlink" href="#waitress" title="Link to this heading">¶</a></h1>
+<p><a class="reference external" href="https://docs.pylonsproject.org/projects/waitress/">Waitress</a> is a pure Python WSGI server.</p>
+<ul class="simple">
+<li><p>It is easy to configure.</p></li>
+<li><p>It supports Windows directly.</p></li>
+<li><p>It is easy to install as it does not require additional dependencies
+or compilation.</p></li>
+<li><p>It does not support streaming requests, full request data is always
+buffered.</p></li>
+<li><p>It uses a single process with multiple thread workers.</p></li>
+</ul>
+<p>This page outlines the basics of running Waitress. Be sure to read its
+documentation and <code class="docutils literal notranslate"><span class="pre">waitress-serve</span> <span class="pre">--help</span></code> to understand what features
+are available.</p>
+<section id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Link to this heading">¶</a></h2>
+<p>Create a virtualenv, install your application, then install
+<code class="docutils literal notranslate"><span class="pre">waitress</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cd hello-app
+$ python -m venv .venv
+$ . .venv/bin/activate
+$ pip install .  # install your application
+$ pip install waitress
+</pre></div>
+</div>
+</section>
+<section id="running">
+<h2>Running<a class="headerlink" href="#running" title="Link to this heading">¶</a></h2>
+<p>The only required argument to <code class="docutils literal notranslate"><span class="pre">waitress-serve</span></code> tells it how to load
+your Flask application. The syntax is <code class="docutils literal notranslate"><span class="pre">{module}:{app}</span></code>. <code class="docutils literal notranslate"><span class="pre">module</span></code> is
+the dotted import name to the module with your application. <code class="docutils literal notranslate"><span class="pre">app</span></code> is
+the variable with the application. If you’re using the app factory
+pattern, use <code class="docutils literal notranslate"><span class="pre">--call</span> <span class="pre">{module}:{factory}</span></code> instead.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># equivalent to &#39;from hello import app&#39;
+$ waitress-serve --host 127.0.0.1 hello:app
+
+# equivalent to &#39;from hello import create_app; create_app()&#39;
+$ waitress-serve --host 127.0.0.1 --call hello:create_app
+
+Serving on http://127.0.0.1:8080
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--host</span></code> option binds the server to local <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> only.</p>
+<p>Logs for each request aren’t shown, only errors are shown. Logging can
+be configured through the Python interface instead of the command line.</p>
+</section>
+<section id="binding-externally">
+<h2>Binding Externally<a class="headerlink" href="#binding-externally" title="Link to this heading">¶</a></h2>
+<p>Waitress should not be run as root because it would cause your
+application code to run as root, which is not secure. However, this
+means it will not be possible to bind to port 80 or 443. Instead, a
+reverse proxy such as <a class="reference internal" href="../nginx/"><span class="doc">nginx</span></a> or <a class="reference internal" href="../apache-httpd/"><span class="doc">Apache httpd</span></a> should be used
+in front of Waitress.</p>
+<p>You can bind to all external IPs on a non-privileged port by not
+specifying the <code class="docutils literal notranslate"><span class="pre">--host</span></code> option. Don’t do this when using a reverse
+proxy setup, otherwise it will be possible to bypass the proxy.</p>
+<p><code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code> is not a valid address to navigate to, you’d use a specific
+IP address in your browser.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+
+
+            <p class="logo"><a href="../../">
+              <img class="logo" src="../../_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Waitress</a><ul>
+<li><a class="reference internal" href="#installing">Installing</a></li>
+<li><a class="reference internal" href="#running">Running</a></li>
+<li><a class="reference internal" href="#binding-externally">Binding Externally</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="../../">Overview</a>
+    <ul>
+      <li><a href="../">Deploying to Production</a>
+        <ul>
+          <li>Previous: <a href="../gunicorn/" title="previous chapter">Gunicorn</a>
+          <li>Next: <a href="../mod_wsgi/" title="next chapter">mod_wsgi</a></ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Extensions &#8212; Flask Documentation (3.1.x)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
+    <script src="../_static/documentation_options.js?v=d71c4578"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.1.x" src="../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Command Line Interface" href="../cli/" />
+    <link rel="prev" title="Modular Applications with Blueprints" href="../blueprints/" />
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../cli/" title="Command Line Interface"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../blueprints/" title="Modular Applications with Blueprints"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Flask Documentation (3.1.x)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Extensions</a></li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="extensions">
+<h1>Extensions<a class="headerlink" href="#extensions" title="Link to this heading">¶</a></h1>
+<p>Extensions are extra packages that add functionality to a Flask
+application. For example, an extension might add support for sending
+email or connecting to a database. Some extensions add entire new
+frameworks to help build certain types of applications, like a REST API.</p>
+<section id="finding-extensions">
+<h2>Finding Extensions<a class="headerlink" href="#finding-extensions" title="Link to this heading">¶</a></h2>
+<p>Flask extensions are usually named “Flask-Foo” or “Foo-Flask”. You can
+search PyPI for packages tagged with <a class="reference external" href="https://pypi.org/search/?c=Framework+%3A%3A+Flask">Framework :: Flask</a>.</p>
+</section>
+<section id="using-extensions">
+<h2>Using Extensions<a class="headerlink" href="#using-extensions" title="Link to this heading">¶</a></h2>
+<p>Consult each extension’s documentation for installation, configuration,
+and usage instructions. Generally, extensions pull their own
+configuration from <a class="reference internal" href="../api/#flask.Flask.config" title="flask.Flask.config"><code class="xref py py-attr docutils literal notranslate"><span class="pre">app.config</span></code></a> and are
+passed an application instance during initialization. For example,
+an extension called “Flask-Foo” might be used like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask_foo</span> <span class="kn">import</span> <span class="n">Foo</span>
+
+<span class="n">foo</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="n">FOO_BAR</span><span class="o">=</span><span class="s1">&#39;baz&#39;</span><span class="p">,</span>
+    <span class="n">FOO_SPAM</span><span class="o">=</span><span class="s1">&#39;eggs&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">foo</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="building-extensions">
+<h2>Building Extensions<a class="headerlink" href="#building-extensions" title="Link to this heading">¶</a></h2>
+<p>While <a class="reference external" href="https://pypi.org/search/?c=Framework+%3A%3A+Flask">PyPI</a> contains many Flask extensions, you may not find
+an extension that fits your need. If this is the case, you can create
+your own, and publish it for others to use as well. Read
+<a class="reference internal" href="../extensiondev/"><span class="doc">Flask Extension Development</span></a> to develop your own Flask extension.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+
+
+            <p class="logo"><a href="../">
+              <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Extensions</a><ul>
+<li><a class="reference internal" href="#finding-extensions">Finding Extensions</a></li>
+<li><a class="reference internal" href="#using-extensions">Using Extensions</a></li>
+<li><a class="reference internal" href="#building-extensions">Building Extensions</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="../">Overview</a>
+    <ul>
+          <li>Previous: <a href="../blueprints/" title="previous chapter">Modular Applications with Blueprints</a>
+          <li>Next: <a href="../cli/" title="next chapter">Command Line Interface</a>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Caching &#8212; Flask Documentation (3.1.x)</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../_static/flask.css?v=b87c8d14" />
+    <script src="../../_static/documentation_options.js?v=d71c4578"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.1.x" src="../../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="View Decorators" href="../viewdecorators/" />
+    <link rel="prev" title="Uploading Files" href="../fileuploads/" />
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../viewdecorators/" title="View Decorators"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../fileuploads/" title="Uploading Files"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../">Flask Documentation (3.1.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../" accesskey="U">Patterns for Flask</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Caching</a></li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="caching">
+<h1>Caching<a class="headerlink" href="#caching" title="Link to this heading">¶</a></h1>
+<p>When your application runs slow, throw some caches in.  Well, at least
+it’s the easiest way to speed up things.  What does a cache do?  Say you
+have a function that takes some time to complete but the results would
+still be good enough if they were 5 minutes old.  So then the idea is that
+you actually put the result of that calculation into a cache for some
+time.</p>
+<p>Flask itself does not provide caching for you, but <a class="reference external" href="https://flask-caching.readthedocs.io/en/latest/">Flask-Caching</a>, an
+extension for Flask does. Flask-Caching supports various backends, and it is
+even possible to develop your own caching backend.</p>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+
+
+            <p class="logo"><a href="../../">
+              <img class="logo" src="../../_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+
+<h3>Navigation</h3>
+<ul>
+  <li><a href="../../">Overview</a>
+    <ul>
+      <li><a href="../">Patterns for Flask</a>
+        <ul>
+          <li>Previous: <a href="../fileuploads/" title="previous chapter">Uploading Files</a>
+          <li>Next: <a href="../viewdecorators/" title="next chapter">View Decorators</a></ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

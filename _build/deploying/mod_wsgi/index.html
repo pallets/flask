@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mod_wsgi &#8212; Flask Documentation (3.1.x)</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../_static/flask.css?v=b87c8d14" />
+    <script src="../../_static/documentation_options.js?v=d71c4578"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.1.x" src="../../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="uWSGI" href="../uwsgi/" />
+    <link rel="prev" title="Waitress" href="../waitress/" />
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../uwsgi/" title="uWSGI"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../waitress/" title="Waitress"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../">Flask Documentation (3.1.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../" accesskey="U">Deploying to Production</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mod_wsgi</a></li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="mod-wsgi">
+<h1>mod_wsgi<a class="headerlink" href="#mod-wsgi" title="Link to this heading">¶</a></h1>
+<p><a class="reference external" href="https://modwsgi.readthedocs.io/">mod_wsgi</a> is a WSGI server integrated with the <a class="reference external" href="https://httpd.apache.org/">Apache httpd</a> server.
+The modern <a class="reference external" href="https://pypi.org/project/mod-wsgi/">mod_wsgi-express</a> command makes it easy to configure and
+start the server without needing to write Apache httpd configuration.</p>
+<ul class="simple">
+<li><p>Tightly integrated with Apache httpd.</p></li>
+<li><p>Supports Windows directly.</p></li>
+<li><p>Requires a compiler and the Apache development headers to install.</p></li>
+<li><p>Does not require a reverse proxy setup.</p></li>
+</ul>
+<p>This page outlines the basics of running mod_wsgi-express, not the more
+complex installation and configuration with httpd. Be sure to read the
+<a class="reference external" href="https://pypi.org/project/mod-wsgi/">mod_wsgi-express</a>, <a class="reference external" href="https://modwsgi.readthedocs.io/">mod_wsgi</a>, and <a class="reference external" href="https://httpd.apache.org/">Apache httpd</a> documentation to
+understand what features are available.</p>
+<section id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Link to this heading">¶</a></h2>
+<p>Installing mod_wsgi requires a compiler and the Apache server and
+development headers installed. You will get an error if they are not.
+How to install them depends on the OS and package manager that you use.</p>
+<p>Create a virtualenv, install your application, then install
+<code class="docutils literal notranslate"><span class="pre">mod_wsgi</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cd hello-app
+$ python -m venv .venv
+$ . .venv/bin/activate
+$ pip install .  # install your application
+$ pip install mod_wsgi
+</pre></div>
+</div>
+</section>
+<section id="running">
+<h2>Running<a class="headerlink" href="#running" title="Link to this heading">¶</a></h2>
+<p>The only argument to <code class="docutils literal notranslate"><span class="pre">mod_wsgi-express</span></code> specifies a script containing
+your Flask application, which must be called <code class="docutils literal notranslate"><span class="pre">application</span></code>. You can
+write a small script to import your app with this name, or to create it
+if using the app factory pattern.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">wsgi.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">hello</span> <span class="kn">import</span> <span class="n">app</span>
+
+<span class="n">application</span> <span class="o">=</span> <span class="n">app</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">wsgi.py</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">hello</span> <span class="kn">import</span> <span class="n">create_app</span>
+
+<span class="n">application</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Now run the <code class="docutils literal notranslate"><span class="pre">mod_wsgi-express</span> <span class="pre">start-server</span></code> command.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ mod_wsgi-express start-server wsgi.py --processes 4
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--processes</span></code> option specifies the number of worker processes to
+run; a starting value could be <code class="docutils literal notranslate"><span class="pre">CPU</span> <span class="pre">*</span> <span class="pre">2</span></code>.</p>
+<p>Logs for each request aren’t show in the terminal. If an error occurs,
+its information is written to the error log file shown when starting the
+server.</p>
+</section>
+<section id="binding-externally">
+<h2>Binding Externally<a class="headerlink" href="#binding-externally" title="Link to this heading">¶</a></h2>
+<p>Unlike the other WSGI servers in these docs, mod_wsgi can be run as
+root to bind to privileged ports like 80 and 443. However, it must be
+configured to drop permissions to a different user and group for the
+worker processes.</p>
+<p>For example, if you created a <code class="docutils literal notranslate"><span class="pre">hello</span></code> user and group, you should
+install your virtualenv and application as that user, then tell
+mod_wsgi to drop to that user after starting.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sudo /home/hello/.venv/bin/mod_wsgi-express start-server \
+    /home/hello/wsgi.py \
+    --user hello --group hello --port 80 --processes 4
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+
+
+            <p class="logo"><a href="../../">
+              <img class="logo" src="../../_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">mod_wsgi</a><ul>
+<li><a class="reference internal" href="#installing">Installing</a></li>
+<li><a class="reference internal" href="#running">Running</a></li>
+<li><a class="reference internal" href="#binding-externally">Binding Externally</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="../../">Overview</a>
+    <ul>
+      <li><a href="../">Deploying to Production</a>
+        <ul>
+          <li>Previous: <a href="../waitress/" title="previous chapter">Waitress</a>
+          <li>Next: <a href="../uwsgi/" title="next chapter">uWSGI</a></ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

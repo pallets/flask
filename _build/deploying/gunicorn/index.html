@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gunicorn &#8212; Flask Documentation (3.1.x)</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../_static/flask.css?v=b87c8d14" />
+    <script src="../../_static/documentation_options.js?v=d71c4578"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.1.x" src="../../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Waitress" href="../waitress/" />
+    <link rel="prev" title="Deploying to Production" href="../" />
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex/" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../waitress/" title="Waitress"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../" title="Deploying to Production"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../">Flask Documentation (3.1.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../" accesskey="U">Deploying to Production</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Gunicorn</a></li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="gunicorn">
+<h1>Gunicorn<a class="headerlink" href="#gunicorn" title="Link to this heading">¶</a></h1>
+<p><a class="reference external" href="https://gunicorn.org/">Gunicorn</a> is a pure Python WSGI server with simple configuration and
+multiple worker implementations for performance tuning.</p>
+<ul class="simple">
+<li><p>It tends to integrate easily with hosting platforms.</p></li>
+<li><p>It does not support Windows (but does run on WSL).</p></li>
+<li><p>It is easy to install as it does not require additional dependencies
+or compilation.</p></li>
+<li><p>It has built-in async worker support using gevent or eventlet.</p></li>
+</ul>
+<p>This page outlines the basics of running Gunicorn. Be sure to read its
+<a class="reference external" href="https://docs.gunicorn.org/">documentation</a> and use <code class="docutils literal notranslate"><span class="pre">gunicorn</span> <span class="pre">--help</span></code> to understand what features
+are available.</p>
+<section id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Link to this heading">¶</a></h2>
+<p>Gunicorn is easy to install, as it does not require external
+dependencies or compilation. It runs on Windows only under WSL.</p>
+<p>Create a virtualenv, install your application, then install
+<code class="docutils literal notranslate"><span class="pre">gunicorn</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cd hello-app
+$ python -m venv .venv
+$ . .venv/bin/activate
+$ pip install .  # install your application
+$ pip install gunicorn
+</pre></div>
+</div>
+</section>
+<section id="running">
+<h2>Running<a class="headerlink" href="#running" title="Link to this heading">¶</a></h2>
+<p>The only required argument to Gunicorn tells it how to load your Flask
+application. The syntax is <code class="docutils literal notranslate"><span class="pre">{module_import}:{app_variable}</span></code>.
+<code class="docutils literal notranslate"><span class="pre">module_import</span></code> is the dotted import name to the module with your
+application. <code class="docutils literal notranslate"><span class="pre">app_variable</span></code> is the variable with the application. It
+can also be a function call (with any arguments) if you’re using the
+app factory pattern.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># equivalent to &#39;from hello import app&#39;
+$ gunicorn -w 4 &#39;hello:app&#39;
+
+# equivalent to &#39;from hello import create_app; create_app()&#39;
+$ gunicorn -w 4 &#39;hello:create_app()&#39;
+
+Starting gunicorn 20.1.0
+Listening at: http://127.0.0.1:8000 (x)
+Using worker: sync
+Booting worker with pid: x
+Booting worker with pid: x
+Booting worker with pid: x
+Booting worker with pid: x
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">-w</span></code> option specifies the number of processes to run; a starting
+value could be <code class="docutils literal notranslate"><span class="pre">CPU</span> <span class="pre">*</span> <span class="pre">2</span></code>. The default is only 1 worker, which is
+probably not what you want for the default worker type.</p>
+<p>Logs for each request aren’t shown by default, only worker info and
+errors are shown. To show access logs on stdout, use the
+<code class="docutils literal notranslate"><span class="pre">--access-logfile=-</span></code> option.</p>
+</section>
+<section id="binding-externally">
+<h2>Binding Externally<a class="headerlink" href="#binding-externally" title="Link to this heading">¶</a></h2>
+<p>Gunicorn should not be run as root because it would cause your
+application code to run as root, which is not secure. However, this
+means it will not be possible to bind to port 80 or 443. Instead, a
+reverse proxy such as <a class="reference internal" href="../nginx/"><span class="doc">nginx</span></a> or <a class="reference internal" href="../apache-httpd/"><span class="doc">Apache httpd</span></a> should be used
+in front of Gunicorn.</p>
+<p>You can bind to all external IPs on a non-privileged port using the
+<code class="docutils literal notranslate"><span class="pre">-b</span> <span class="pre">0.0.0.0</span></code> option. Don’t do this when using a reverse proxy setup,
+otherwise it will be possible to bypass the proxy.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ gunicorn -w 4 -b 0.0.0.0 &#39;hello:create_app()&#39;
+Listening at: http://0.0.0.0:8000 (x)
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code> is not a valid address to navigate to, you’d use a specific
+IP address in your browser.</p>
+</section>
+<section id="async-with-gevent-or-eventlet">
+<h2>Async with gevent or eventlet<a class="headerlink" href="#async-with-gevent-or-eventlet" title="Link to this heading">¶</a></h2>
+<p>The default sync worker is appropriate for many use cases. If you need
+asynchronous support, Gunicorn provides workers using either <a class="reference external" href="https://www.gevent.org/">gevent</a>
+or <a class="reference external" href="https://eventlet.net/">eventlet</a>. This is not the same as Python’s <code class="docutils literal notranslate"><span class="pre">async/await</span></code>, or the
+ASGI server spec. You must actually use gevent/eventlet in your own code
+to see any benefit to using the workers.</p>
+<p>When using either gevent or eventlet, greenlet&gt;=1.0 is required,
+otherwise context locals such as <code class="docutils literal notranslate"><span class="pre">request</span></code> will not work as expected.
+When using PyPy, PyPy&gt;=7.3.7 is required.</p>
+<p>To use gevent:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ gunicorn -k gevent &#39;hello:create_app()&#39;
+Starting gunicorn 20.1.0
+Listening at: http://127.0.0.1:8000 (x)
+Using worker: gevent
+Booting worker with pid: x
+</pre></div>
+</div>
+<p>To use eventlet:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ gunicorn -k eventlet &#39;hello:create_app()&#39;
+Starting gunicorn 20.1.0
+Listening at: http://127.0.0.1:8000 (x)
+Using worker: eventlet
+Booting worker with pid: x
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+
+
+            <p class="logo"><a href="../../">
+              <img class="logo" src="../../_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Gunicorn</a><ul>
+<li><a class="reference internal" href="#installing">Installing</a></li>
+<li><a class="reference internal" href="#running">Running</a></li>
+<li><a class="reference internal" href="#binding-externally">Binding Externally</a></li>
+<li><a class="reference internal" href="#async-with-gevent-or-eventlet">Async with gevent or eventlet</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="../../">Overview</a>
+    <ul>
+      <li><a href="../">Deploying to Production</a>
+        <ul>
+          <li>Previous: <a href="../" title="previous chapter">Deploying to Production</a>
+          <li>Next: <a href="../waitress/" title="next chapter">Waitress</a></ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>
