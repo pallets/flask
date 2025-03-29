@@ -99,9 +99,9 @@ to the factory like this:
 
 .. code-block:: text
 
-    $ flask --app hello:create_app(local_auth=True) run
+    $ flask --app 'hello:create_app(local_auth=True)' run
 
-Then the ``create_app`` factory in ``myapp`` is called with the keyword
+Then the ``create_app`` factory in ``hello`` is called with the keyword
 argument ``local_auth=True``. See :doc:`/cli` for more detail.
 
 Factory Improvements
