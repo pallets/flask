@@ -42,19 +42,20 @@ from .templating import stream_template_string as stream_template_string
 from .wrappers import Request as Request
 from .wrappers import Response as Response
 
+if not t.TYPE_CHECKING:
 
-def __getattr__(name: str) -> t.Any:
-    if name == "__version__":
-        import importlib.metadata
-        import warnings
+    def __getattr__(name: str) -> t.Any:
+        if name == "__version__":
+            import importlib.metadata
+            import warnings
 
-        warnings.warn(
-            "The '__version__' attribute is deprecated and will be removed in"
-            " Flask 3.2. Use feature detection or"
-            " 'importlib.metadata.version(\"flask\")' instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return importlib.metadata.version("flask")
+            warnings.warn(
+                "The '__version__' attribute is deprecated and will be removed in"
+                " Flask 3.2. Use feature detection or"
+                " 'importlib.metadata.version(\"flask\")' instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return importlib.metadata.version("flask")
 
-    raise AttributeError(name)
+        raise AttributeError(name)
