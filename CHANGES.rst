@@ -107,6 +107,7 @@ Released 2023-05-01
 
 -   Set ``Vary: Cookie`` header when the session is accessed, modified, or refreshed.
 -   Update Werkzeug requirement to >=2.3.3 to apply recent bug fixes.
+    :ghsa:`m2qf-hxjv-5gpq`
 
 
 Version 2.3.1
