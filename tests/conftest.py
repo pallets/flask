@@ -1,5 +1,4 @@
 import os
-import pkgutil
 import sys
 
 import pytest
@@ -94,37 +93,6 @@ def leak_detector():
         request_ctx.pop()
 
     assert leaks == []
-
-
-@pytest.fixture(params=(True, False))
-def limit_loader(request, monkeypatch):
-    """Patch pkgutil.get_loader to give loader without get_filename or archive.
-
-    This provides for tests where a system has custom loaders, e.g. Google App
-    Engine's HardenedModulesHook, which have neither the `get_filename` method
-    nor the `archive` attribute.
-
-    This fixture will run the testcase twice, once with and once without the
-    limitation/mock.
-    """
-    if not request.param:
-        return
-
-    class LimitedLoader:
-        def __init__(self, loader):
-            self.loader = loader
-
-        def __getattr__(self, name):
-            if name in {"archive", "get_filename"}:
-                raise AttributeError(f"Mocking a loader which does not have {name!r}.")
-            return getattr(self.loader, name)
-
-    old_get_loader = pkgutil.get_loader
-
-    def get_loader(*args, **kwargs):
-        return LimitedLoader(old_get_loader(*args, **kwargs))
-
-    monkeypatch.setattr(pkgutil, "get_loader", get_loader)
 
 
 @pytest.fixture

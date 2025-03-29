@@ -63,7 +63,7 @@ def test_uninstalled_namespace_paths(tmp_path, monkeypatch, purge_module):
 
 
 def test_installed_module_paths(
-    modules_tmp_path, modules_tmp_path_prefix, purge_module, site_packages, limit_loader
+    modules_tmp_path, modules_tmp_path_prefix, purge_module, site_packages
 ):
     (site_packages / "site_app.py").write_text(
         "import flask\napp = flask.Flask(__name__)\n"
@@ -78,7 +78,7 @@ def test_installed_module_paths(
 
 
 def test_installed_package_paths(
-    limit_loader, modules_tmp_path, modules_tmp_path_prefix, purge_module, monkeypatch
+    modules_tmp_path, modules_tmp_path_prefix, purge_module, monkeypatch
 ):
     installed_path = modules_tmp_path / "path"
     installed_path.mkdir()
@@ -97,7 +97,7 @@ def test_installed_package_paths(
 
 
 def test_prefix_package_paths(
-    limit_loader, modules_tmp_path, modules_tmp_path_prefix, purge_module, site_packages
+    modules_tmp_path, modules_tmp_path_prefix, purge_module, site_packages
 ):
     app = site_packages / "site_package"
     app.mkdir()
