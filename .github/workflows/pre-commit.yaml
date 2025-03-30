@@ -1,16 +1,27 @@
 name: pre-commit
+
 on:
-  pull_request:
   push:
     branches: [main, stable]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
 jobs:
-  main:
+  run-pre-commit:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-    - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
-      with:
-        python-version: 3.x
-    - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
-    - uses: pre-commit-ci/lite-action@5d6cc0eb514c891a40562a58a8e71576c5c7fb43 # v1.1.0
-      if: ${{ !cancelled() }}
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      - name: Run pre-commit hooks
+        uses: pre-commit/action@v3.0.1
+
+      - name: Apply lite-action (auto-fix PR if needed)
+        uses: pre-commit-ci/lite-action@v1.1.0
+        if: ${{ !cancelled() }}
