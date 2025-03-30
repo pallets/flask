@@ -506,35 +506,18 @@ class Scaffold:
 
     @setupmethod
     def teardown_request(self, f: T_teardown) -> T_teardown:
-        """Register a function to be called when the request context is
-        popped. Typically this happens at the end of each request, but
-        contexts may be pushed manually as well during testing.
-
-        .. code-block:: python
-
-            with app.test_request_context():
-                ...
-
-        When the ``with`` block exits (or ``ctx.pop()`` is called), the
-        teardown functions are called just before the request context is
-        made inactive.
-
-        When a teardown function was called because of an unhandled
-        exception it will be passed an error object. If an
-        :meth:`errorhandler` is registered, it will handle the exception
-        and the teardown will not receive it.
-
-        Teardown functions must avoid raising exceptions. If they
-        execute code that might fail they must surround that code with a
-        ``try``/``except`` block and log any errors.
-
-        The return values of teardown functions are ignored.
-
-        This is available on both app and blueprint objects. When used on an app, this
-        executes after every request. When used on a blueprint, this executes after
-        every request that the blueprint handles. To register with a blueprint and
-        execute after every request, use :meth:`.Blueprint.teardown_app_request`.
         """
+        Register a function to be called after each request, regardless of whether an exception occurred, unless exception propagation is enabled (e.g., in debug mode).
+
+        This is useful for cleaning up resources after a request, such as closing database connections
+        or releasing locks.
+
+        The teardown function is passed the exception (if any), or None.
+
+        This function is called after the request context is torn down.
+        """
+
+
         self.teardown_request_funcs.setdefault(None, []).append(f)
         return f
 
