@@ -20,11 +20,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements/dev.txt
+          pip install flask
           pip install pytest
+          pip install -r requirements/dev.txt || true  # якщо є
 
       - name: Run tests
         run: |
           python -m pytest tests
+
 
 
