@@ -28,10 +28,8 @@ from werkzeug.wsgi import get_host
 
 from . import cli
 from . import typing as ft
-from .ctx import AppContext
-from .ctx import RequestContext
-from .globals import _cv_app
-from .globals import _cv_request
+from .ctx import ExecutionContext
+from .globals import _cv_execution
 from .globals import current_app
 from .globals import g
 from .globals import request
@@ -1057,7 +1055,7 @@ class Flask(App):
         .. versionadded:: 2.2
             Moved from ``flask.url_for``, which calls this method.
         """
-        req_ctx = _cv_request.get(None)
+        req_ctx = _cv_execution.get(None)
 
         if req_ctx is not None:
             url_adapter = req_ctx.url_adapter
@@ -1076,7 +1074,7 @@ class Flask(App):
             if _external is None:
                 _external = _scheme is not None
         else:
-            app_ctx = _cv_app.get(None)
+            app_ctx = _cv_execution.get(None)
 
             # If called by helpers.url_for, an app context is active,
             # use its url_adapter. Otherwise, app.url_for was called
@@ -1371,7 +1369,7 @@ class Flask(App):
         :data:`appcontext_tearing_down` signal is sent.
 
         This is called by
-        :meth:`AppContext.pop() <flask.ctx.AppContext.pop>`.
+        :meth:`ExecutionContext.pop() <flask.ctx.ExecutionContext.pop>`.
 
         .. versionadded:: 0.9
         """
@@ -1383,98 +1381,50 @@ class Flask(App):
 
         appcontext_tearing_down.send(self, _async_wrapper=self.ensure_sync, exc=exc)
 
-    def app_context(self) -> AppContext:
-        """Create an :class:`~flask.ctx.AppContext`. Use as a ``with``
-        block to push the context, which will make :data:`current_app`
-        point at this application.
+    def app_context(self) -> ExecutionContext:
+        """Create an :class:`~flask.ctx.ExecutionContext`. This is typically
+        used with the :keyword:`with` statement to set up a context, but
+        the functions that do this can also be used directly.
 
-        An application context is automatically pushed by
-        :meth:`RequestContext.push() <flask.ctx.RequestContext.push>`
-        when handling a request, and when running a CLI command. Use
-        this to manually create a context outside of these situations.
-
-        ::
-
-            with app.app_context():
-                init_db()
-
-        See :doc:`/appcontext`.
-
-        .. versionadded:: 0.9
+        .. versionchanged:: 3.0
+            The context is now created using the new unified execution context.
         """
-        return AppContext(self)
+        return ExecutionContext(self)
 
-    def request_context(self, environ: WSGIEnvironment) -> RequestContext:
-        """Create a :class:`~flask.ctx.RequestContext` representing a
-        WSGI environment. Use a ``with`` block to push the context,
-        which will make :data:`request` point at this request.
+    def request_context(self, environ: WSGIEnvironment) -> ExecutionContext:
+        """Create a :class:`~flask.ctx.ExecutionContext` for a WSGI
+        environment. Use a :class:`~werkzeug.test.EnvironBuilder` to create
+        such an environment. See the :doc:`/testing` guide for more
+        information.
 
-        See :doc:`/reqcontext`.
-
-        Typically you should not call this from your own code. A request
-        context is automatically pushed by the :meth:`wsgi_app` when
-        handling a request. Use :meth:`test_request_context` to create
-        an environment and context instead of this method.
-
-        :param environ: a WSGI environment
+        The request and app contexts are now combined into a single execution context.
         """
-        return RequestContext(self, environ)
+        return ExecutionContext(self, environ=environ)
 
-    def test_request_context(self, *args: t.Any, **kwargs: t.Any) -> RequestContext:
-        """Create a :class:`~flask.ctx.RequestContext` for a WSGI
-        environment created from the given values. This is mostly useful
-        during testing, where you may want to run a function that uses
-        request data without dispatching a full request.
+    def test_request_context(self, *args: t.Any, **kwargs: t.Any) -> ExecutionContext:
+        """Create a :class:`~flask.ctx.ExecutionContext` for a test request.
+        Use a :class:`~werkzeug.test.EnvironBuilder` to create such an
+        environment. See the :doc:`/testing` guide for more information.
 
-        See :doc:`/reqcontext`.
-
-        Use a ``with`` block to push the context, which will make
-        :data:`request` point at the request for the created
-        environment. ::
-
-            with app.test_request_context(...):
-                generate_report()
-
-        When using the shell, it may be easier to push and pop the
-        context manually to avoid indentation. ::
-
-            ctx = app.test_request_context(...)
-            ctx.push()
-            ...
-            ctx.pop()
-
-        Takes the same arguments as Werkzeug's
-        :class:`~werkzeug.test.EnvironBuilder`, with some defaults from
-        the application. See the linked Werkzeug docs for most of the
-        available arguments. Flask-specific behavior is listed here.
-
-        :param path: URL path being requested.
-        :param base_url: Base URL where the app is being served, which
-            ``path`` is relative to. If not given, built from
-            :data:`PREFERRED_URL_SCHEME`, ``subdomain``,
-            :data:`SERVER_NAME`, and :data:`APPLICATION_ROOT`.
-        :param subdomain: Subdomain name to append to
-            :data:`SERVER_NAME`.
-        :param url_scheme: Scheme to use instead of
-            :data:`PREFERRED_URL_SCHEME`.
-        :param data: The request body, either as a string or a dict of
-            form keys and values.
-        :param json: If given, this is serialized as JSON and passed as
-            ``data``. Also defaults ``content_type`` to
-            ``application/json``.
-        :param args: other positional arguments passed to
-            :class:`~werkzeug.test.EnvironBuilder`.
-        :param kwargs: other keyword arguments passed to
-            :class:`~werkzeug.test.EnvironBuilder`.
+        The request and app contexts are now combined into a single execution context.
         """
-        from .testing import EnvironBuilder
-
-        builder = EnvironBuilder(self, *args, **kwargs)
-
-        try:
-            return self.request_context(builder.get_environ())
-        finally:
-            builder.close()
+        environ = {
+            "HTTP_HOST": "localhost",
+            "PATH_INFO": "/",
+            "REQUEST_METHOD": "GET",
+            "SERVER_NAME": "localhost",
+            "SERVER_PORT": "80",
+            "SERVER_PROTOCOL": "HTTP/1.1",
+            "wsgi.errors": sys.stderr,
+            "wsgi.input": sys.stdin,
+            "wsgi.multiprocess": False,
+            "wsgi.multithread": False,
+            "wsgi.run_once": False,
+            "wsgi.url_scheme": "http",
+            "wsgi.version": (1, 0),
+        }
+        environ.update(*args, **kwargs)
+        return self.request_context(environ)
 
     def wsgi_app(
         self, environ: WSGIEnvironment, start_response: StartResponse
@@ -1518,8 +1468,7 @@ class Flask(App):
             return response(environ, start_response)
         finally:
             if "werkzeug.debug.preserve_context" in environ:
-                environ["werkzeug.debug.preserve_context"](_cv_app.get())
-                environ["werkzeug.debug.preserve_context"](_cv_request.get())
+                environ["werkzeug.debug.preserve_context"](_cv_execution.get())
 
             if error is not None and self.should_ignore_error(error):
                 error = None
