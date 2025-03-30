@@ -269,19 +269,6 @@ values (or any values that need secure signatures).
 .. _samesite_support: https://caniuse.com/#feat=same-site-cookie-attribute
 
 
-HTTP Public Key Pinning (HPKP)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This tells the browser to authenticate with the server using only the specific
-certificate key to prevent MITM attacks.
-
-.. warning::
-   Be careful when enabling this, as it is very difficult to undo if you set up
-   or upgrade your key incorrectly.
-
-- https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning
-
-
 Copy/Paste to Terminal
 ----------------------
 

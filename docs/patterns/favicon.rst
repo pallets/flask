@@ -24,8 +24,11 @@ the root path of the domain you either need to configure the web server to
 serve the icon at the root or if you can't do that you're out of luck. If
 however your application is the root you can simply route a redirect::
 
-    app.add_url_rule('/favicon.ico',
-                     redirect_to=url_for('static', filename='favicon.ico'))
+    app.add_url_rule(
+        "/favicon.ico",
+        endpoint="favicon",
+        redirect_to=url_for("static", filename="favicon.ico"),
+    )
 
 If you want to save the extra redirect request you can also write a view
 using :func:`~flask.send_from_directory`::
