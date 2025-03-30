@@ -6,6 +6,9 @@ Unreleased
 -   Fix type hint for `cli_runner.invoke`. :issue:`5645`
 -   ``flask --help`` loads the app and plugins first to make sure all commands
     are shown. :issue:5673`
+-   Mark sans-io base class as being able to handle views that return
+    ``AsyncIterable``. This is not accurate for Flask, but makes typing easier
+    for Quart. :pr:`5659`
 
 
 Version 3.1.0
