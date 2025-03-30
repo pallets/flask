@@ -3,12 +3,11 @@ from __future__ import annotations
 import contextvars
 import sys
 import typing as t
+import warnings
 from functools import update_wrapper
 from types import TracebackType
-import warnings
-from typing import Optional, Union, cast
-
-from werkzeug.exceptions import HTTPException
+from typing import cast
+from typing import Optional
 
 from . import typing as ft
 from .globals import _cv_app
@@ -29,7 +28,9 @@ if t.TYPE_CHECKING:  # pragma: no cover
 _sentinel = object()
 
 # Context variable for the new unified context
-_cv_execution = contextvars.ContextVar[Optional["ExecutionContext"]]("flask.execution_ctx")
+_cv_execution = contextvars.ContextVar[Optional["ExecutionContext"]](
+    "flask.execution_ctx"
+)
 
 
 class _AppCtxGlobals:
@@ -279,7 +280,7 @@ class ExecutionContext:
         if self._is_request_context and self.request is not None:
             # Run request teardown functions
             for func in reversed(self._after_request_functions):
-                if hasattr(self.request, 'response'):
+                if hasattr(self.request, "response"):
                     self.app.ensure_sync(func)(self.request.response)
             request_tearing_down.send(self.app, exc=exc)
 
