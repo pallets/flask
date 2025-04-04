@@ -1525,6 +1525,7 @@ class Flask(App):
                 error = None
 
             ctx.pop(error)
+            del error
 
     def __call__(
         self, environ: WSGIEnvironment, start_response: StartResponse
