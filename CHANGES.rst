@@ -4,6 +4,7 @@ Version 3.2.0
 Unreleased
 
 -   Remove previously deprecated code: ``__version__``. :pr:`5648`
+-   Fix reference cycle in exception handling: :issue:`5709`
 
 
 Version 3.1.1
