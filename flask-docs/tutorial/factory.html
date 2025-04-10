@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Application Setup &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
+    <script src="../_static/documentation_options.js?v=56528222"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Define and Access the Database" href="database.html" />
+    <link rel="prev" title="Project Layout" href="layout.html" />
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="database.html" title="Define and Access the Database"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="layout.html" title="Project Layout"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Tutorial</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Application Setup</a></li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="application-setup">
+<h1>Application Setup<a class="headerlink" href="#application-setup" title="Link to this heading">¶</a></h1>
+<p>A Flask application is an instance of the <a class="reference internal" href="../api.html#flask.Flask" title="flask.Flask"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flask</span></code></a> class.
+Everything about the application, such as configuration and URLs, will
+be registered with this class.</p>
+<p>The most straightforward way to create a Flask application is to create
+a global <a class="reference internal" href="../api.html#flask.Flask" title="flask.Flask"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flask</span></code></a> instance directly at the top of your code, like
+how the “Hello, World!” example did on the previous page. While this is
+simple and useful in some cases, it can cause some tricky issues as the
+project grows.</p>
+<p>Instead of creating a <a class="reference internal" href="../api.html#flask.Flask" title="flask.Flask"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flask</span></code></a> instance globally, you will create
+it inside a function. This function is known as the <em>application
+factory</em>. Any configuration, registration, and other setup the
+application needs will happen inside the function, then the application
+will be returned.</p>
+<section id="the-application-factory">
+<h2>The Application Factory<a class="headerlink" href="#the-application-factory" title="Link to this heading">¶</a></h2>
+<p>It’s time to start coding! Create the <code class="docutils literal notranslate"><span class="pre">flaskr</span></code> directory and add the
+<code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file. The <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> serves double duty: it will
+contain the application factory, and it tells Python that the <code class="docutils literal notranslate"><span class="pre">flaskr</span></code>
+directory should be treated as a package.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ mkdir flaskr
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/__init__.py</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">test_config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># create and configure the app</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">instance_relative_config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_mapping</span><span class="p">(</span>
+        <span class="n">SECRET_KEY</span><span class="o">=</span><span class="s1">&#39;dev&#39;</span><span class="p">,</span>
+        <span class="n">DATABASE</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">instance_path</span><span class="p">,</span> <span class="s1">&#39;flaskr.sqlite&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">test_config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># load the instance config, if it exists, when not testing</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_pyfile</span><span class="p">(</span><span class="s1">&#39;config.py&#39;</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># load the test config if passed in</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_mapping</span><span class="p">(</span><span class="n">test_config</span><span class="p">)</span>
+
+    <span class="c1"># ensure the instance folder exists</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">instance_path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># a simple page that says hello</span>
+    <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">():</span>
+        <span class="k">return</span> <span class="s1">&#39;Hello, World!&#39;</span>
+
+    <span class="k">return</span> <span class="n">app</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">create_app</span></code> is the application factory function. You’ll add to it
+later in the tutorial, but it already does a lot.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">app</span> <span class="pre">=</span> <span class="pre">Flask(__name__,</span> <span class="pre">instance_relative_config=True)</span></code> creates the
+<a class="reference internal" href="../api.html#flask.Flask" title="flask.Flask"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flask</span></code></a> instance.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">__name__</span></code> is the name of the current Python module. The app
+needs to know where it’s located to set up some paths, and
+<code class="docutils literal notranslate"><span class="pre">__name__</span></code> is a convenient way to tell it that.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">instance_relative_config=True</span></code> tells the app that
+configuration files are relative to the
+<a class="reference internal" href="../config.html#instance-folders"><span class="std std-ref">instance folder</span></a>. The instance folder
+is located outside the <code class="docutils literal notranslate"><span class="pre">flaskr</span></code> package and can hold local
+data that shouldn’t be committed to version control, such as
+configuration secrets and the database file.</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="../api.html#flask.Config.from_mapping" title="flask.Config.from_mapping"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.config.from_mapping()</span></code></a> sets
+some default configuration that the app will use:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../config.html#SECRET_KEY" title="SECRET_KEY"><code class="xref py py-data docutils literal notranslate"><span class="pre">SECRET_KEY</span></code></a> is used by Flask and extensions to keep data
+safe. It’s set to <code class="docutils literal notranslate"><span class="pre">'dev'</span></code> to provide a convenient value
+during development, but it should be overridden with a random
+value when deploying.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DATABASE</span></code> is the path where the SQLite database file will be
+saved. It’s under
+<a class="reference internal" href="../api.html#flask.Flask.instance_path" title="flask.Flask.instance_path"><code class="xref py py-attr docutils literal notranslate"><span class="pre">app.instance_path</span></code></a>, which is the
+path that Flask has chosen for the instance folder. You’ll learn
+more about the database in the next section.</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="../api.html#flask.Config.from_pyfile" title="flask.Config.from_pyfile"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.config.from_pyfile()</span></code></a> overrides
+the default configuration with values taken from the <code class="docutils literal notranslate"><span class="pre">config.py</span></code>
+file in the instance folder if it exists. For example, when
+deploying, this can be used to set a real <code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test_config</span></code> can also be passed to the factory, and will be
+used instead of the instance configuration. This is so the tests
+you’ll write later in the tutorial can be configured
+independently of any development values you have configured.</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/os.html#os.makedirs" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.makedirs()</span></code></a> ensures that
+<a class="reference internal" href="../api.html#flask.Flask.instance_path" title="flask.Flask.instance_path"><code class="xref py py-attr docutils literal notranslate"><span class="pre">app.instance_path</span></code></a> exists. Flask
+doesn’t create the instance folder automatically, but it needs to be
+created because your project will create the SQLite database file
+there.</p></li>
+<li><p><a class="reference internal" href="../api.html#flask.Flask.route" title="flask.Flask.route"><code class="xref py py-meth docutils literal notranslate"><span class="pre">&#64;app.route()</span></code></a> creates a simple route so you can
+see the application working before getting into the rest of the
+tutorial. It creates a connection between the URL <code class="docutils literal notranslate"><span class="pre">/hello</span></code> and a
+function that returns a response, the string <code class="docutils literal notranslate"><span class="pre">'Hello,</span> <span class="pre">World!'</span></code> in
+this case.</p></li>
+</ol>
+</section>
+<section id="run-the-application">
+<h2>Run The Application<a class="headerlink" href="#run-the-application" title="Link to this heading">¶</a></h2>
+<p>Now you can run your application using the <code class="docutils literal notranslate"><span class="pre">flask</span></code> command. From the
+terminal, tell Flask where to find your application, then run it in
+debug mode. Remember, you should still be in the top-level
+<code class="docutils literal notranslate"><span class="pre">flask-tutorial</span></code> directory, not the <code class="docutils literal notranslate"><span class="pre">flaskr</span></code> package.</p>
+<p>Debug mode shows an interactive debugger whenever a page raises an
+exception, and restarts the server whenever you make changes to the
+code. You can leave it running and just reload the browser page as you
+follow the tutorial.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ flask --app flaskr run --debug
+</pre></div>
+</div>
+<p>You’ll see output similar to this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>* Serving Flask app &quot;flaskr&quot;
+* Debug mode: on
+* Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+* Restarting with stat
+* Debugger is active!
+* Debugger PIN: nnn-nnn-nnn
+</pre></div>
+</div>
+<p>Visit <a class="reference external" href="http://127.0.0.1:5000/hello">http://127.0.0.1:5000/hello</a> in a browser and you should see the
+“Hello, World!” message. Congratulations, you’re now running your Flask
+web application!</p>
+<p>If another program is already using port 5000, you’ll see
+<code class="docutils literal notranslate"><span class="pre">OSError:</span> <span class="pre">[Errno</span> <span class="pre">98]</span></code> or <code class="docutils literal notranslate"><span class="pre">OSError:</span> <span class="pre">[WinError</span> <span class="pre">10013]</span></code> when the
+server tries to start. See <a class="reference internal" href="../server.html#address-already-in-use"><span class="std std-ref">Address already in use</span></a> for how to
+handle that.</p>
+<p>Continue to <a class="reference internal" href="database.html"><span class="doc">Define and Access the Database</span></a>.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+
+
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Application Setup</a><ul>
+<li><a class="reference internal" href="#the-application-factory">The Application Factory</a></li>
+<li><a class="reference internal" href="#run-the-application">Run The Application</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="../index.html">Overview</a>
+    <ul>
+      <li><a href="index.html">Tutorial</a>
+        <ul>
+          <li>Previous: <a href="layout.html" title="previous chapter">Project Layout</a>
+          <li>Next: <a href="database.html" title="next chapter">Define and Access the Database</a></ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

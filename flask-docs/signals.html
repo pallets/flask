@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Signals &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
+    <script src="_static/documentation_options.js?v=56528222"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Class-based Views" href="views.html" />
+    <link rel="prev" title="Configuration Handling" href="config.html" />
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="views.html" title="Class-based Views"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="config.html" title="Configuration Handling"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Signals</a></li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="signals">
+<h1>Signals<a class="headerlink" href="#signals" title="Link to this heading">¶</a></h1>
+<p>Signals are a lightweight way to notify subscribers of certain events during the
+lifecycle of the application and each request. When an event occurs, it emits the
+signal, which calls each subscriber.</p>
+<p>Signals are implemented by the <a class="reference external" href="https://pypi.org/project/blinker/">Blinker</a> library. See its documentation for detailed
+information. Flask provides some built-in signals. Extensions may provide their own.</p>
+<p>Many signals mirror Flask’s decorator-based callbacks with similar names. For example,
+the <a class="reference internal" href="api.html#flask.request_started" title="flask.request_started"><code class="xref py py-data docutils literal notranslate"><span class="pre">request_started</span></code></a> signal is similar to the <a class="reference internal" href="api.html#flask.Flask.before_request" title="flask.Flask.before_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">before_request()</span></code></a>
+decorator. The advantage of signals over handlers is that they can be subscribed to
+temporarily, and can’t directly affect the application. This is useful for testing,
+metrics, auditing, and more. For example, if you want to know what templates were
+rendered at what parts of what requests, there is a signal that will notify you of that
+information.</p>
+<section id="core-signals">
+<h2>Core Signals<a class="headerlink" href="#core-signals" title="Link to this heading">¶</a></h2>
+<p>See <a class="reference internal" href="api.html#core-signals-list"><span class="std std-ref">Signals</span></a> for a list of all built-in signals. The <a class="reference internal" href="lifecycle.html"><span class="doc">Application Structure and Lifecycle</span></a>
+page also describes the order that signals and decorators execute.</p>
+</section>
+<section id="subscribing-to-signals">
+<h2>Subscribing to Signals<a class="headerlink" href="#subscribing-to-signals" title="Link to this heading">¶</a></h2>
+<p>To subscribe to a signal, you can use the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">connect()</span></code> method of a signal.  The first
+argument is the function that should be called when the signal is emitted,
+the optional second argument specifies a sender.  To unsubscribe from a
+signal, you can use the <code class="xref py py-meth docutils literal notranslate"><span class="pre">disconnect()</span></code> method.</p>
+<p>For all core Flask signals, the sender is the application that issued the
+signal.  When you subscribe to a signal, be sure to also provide a sender
+unless you really want to listen for signals from all applications.  This is
+especially true if you are developing an extension.</p>
+<p>For example, here is a helper context manager that can be used in a unit test
+to determine which templates were rendered and what variables were passed
+to the template:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">template_rendered</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">captured_templates</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="n">recorded</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">record</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+        <span class="n">recorded</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">))</span>
+    <span class="n">template_rendered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">recorded</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">template_rendered</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This can now easily be paired with a test client:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">captured_templates</span><span class="p">(</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">templates</span><span class="p">:</span>
+    <span class="n">rv</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">test_client</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">rv</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">templates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="n">template</span><span class="p">,</span> <span class="n">context</span> <span class="o">=</span> <span class="n">templates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">template</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;index.html&#39;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">10</span>
+</pre></div>
+</div>
+<p>Make sure to subscribe with an extra <code class="docutils literal notranslate"><span class="pre">**extra</span></code> argument so that your
+calls don’t fail if Flask introduces new arguments to the signals.</p>
+<p>All the template rendering in the code issued by the application <code class="code docutils literal notranslate"><span class="pre">app</span></code>
+in the body of the <code class="docutils literal notranslate"><span class="pre">with</span></code> block will now be recorded in the <code class="code docutils literal notranslate"><span class="pre">templates</span></code>
+variable.  Whenever a template is rendered, the template object as well as
+context are appended to it.</p>
+<p>Additionally there is a convenient helper method
+(<code class="xref py py-meth docutils literal notranslate"><span class="pre">connected_to()</span></code>)  that allows you to
+temporarily subscribe a function to a signal with a context manager on
+its own.  Because the return value of the context manager cannot be
+specified that way, you have to pass the list in as an argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">template_rendered</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">captured_templates</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">recorded</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">record</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">recorded</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">template_rendered</span><span class="o">.</span><span class="n">connected_to</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The example above would then look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">templates</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">with</span> <span class="n">captured_templates</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">templates</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">template</span><span class="p">,</span> <span class="n">context</span> <span class="o">=</span> <span class="n">templates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-signals">
+<h2>Creating Signals<a class="headerlink" href="#creating-signals" title="Link to this heading">¶</a></h2>
+<p>If you want to use signals in your own application, you can use the
+blinker library directly.  The most common use case are named signals in a
+custom <a class="reference external" href="https://blinker.readthedocs.io/en/stable/#blinker.Namespace" title="(in Blinker v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>.  This is what is recommended
+most of the time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">blinker</span><span class="w"> </span><span class="kn">import</span> <span class="n">Namespace</span>
+<span class="n">my_signals</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now you can create new signals like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model_saved</span> <span class="o">=</span> <span class="n">my_signals</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="s1">&#39;model-saved&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The name for the signal here makes it unique and also simplifies
+debugging.  You can access the name of the signal with the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code> attribute.</p>
+</section>
+<section id="sending-signals">
+<span id="signals-sending"></span><h2>Sending Signals<a class="headerlink" href="#sending-signals" title="Link to this heading">¶</a></h2>
+<p>If you want to emit a signal, you can do so by calling the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">send()</span></code> method.  It accepts a sender as first
+argument and optionally some keyword arguments that are forwarded to the
+signal subscribers:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">model_saved</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Try to always pick a good sender.  If you have a class that is emitting a
+signal, pass <code class="docutils literal notranslate"><span class="pre">self</span></code> as sender.  If you are emitting a signal from a random
+function, you can pass <code class="docutils literal notranslate"><span class="pre">current_app._get_current_object()</span></code> as sender.</p>
+<div class="admonition-passing-proxies-as-senders admonition">
+<p class="admonition-title">Passing Proxies as Senders</p>
+<p>Never pass <a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a> as sender to a signal.  Use
+<code class="docutils literal notranslate"><span class="pre">current_app._get_current_object()</span></code> instead.  The reason for this is
+that <a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a> is a proxy and not the real application
+object.</p>
+</div>
+</section>
+<section id="signals-and-flask-s-request-context">
+<h2>Signals and Flask’s Request Context<a class="headerlink" href="#signals-and-flask-s-request-context" title="Link to this heading">¶</a></h2>
+<p>Signals fully support <a class="reference internal" href="reqcontext.html"><span class="doc">The Request Context</span></a> when receiving signals.
+Context-local variables are consistently available between
+<a class="reference internal" href="api.html#flask.request_started" title="flask.request_started"><code class="xref py py-data docutils literal notranslate"><span class="pre">request_started</span></code></a> and <a class="reference internal" href="api.html#flask.request_finished" title="flask.request_finished"><code class="xref py py-data docutils literal notranslate"><span class="pre">request_finished</span></code></a>, so you can
+rely on <a class="reference internal" href="api.html#flask.g" title="flask.g"><code class="xref py py-class docutils literal notranslate"><span class="pre">flask.g</span></code></a> and others as needed.  Note the limitations described
+in <a class="reference internal" href="#signals-sending"><span class="std std-ref">Sending Signals</span></a> and the <a class="reference internal" href="api.html#flask.request_tearing_down" title="flask.request_tearing_down"><code class="xref py py-data docutils literal notranslate"><span class="pre">request_tearing_down</span></code></a> signal.</p>
+</section>
+<section id="decorator-based-signal-subscriptions">
+<h2>Decorator Based Signal Subscriptions<a class="headerlink" href="#decorator-based-signal-subscriptions" title="Link to this heading">¶</a></h2>
+<p>You can also easily subscribe to signals by using the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">connect_via()</span></code> decorator:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">template_rendered</span>
+
+<span class="nd">@template_rendered</span><span class="o">.</span><span class="n">connect_via</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">when_template_rendered</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Template </span><span class="si">{</span><span class="n">template</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> is rendered with </span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+
+
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Signals</a><ul>
+<li><a class="reference internal" href="#core-signals">Core Signals</a></li>
+<li><a class="reference internal" href="#subscribing-to-signals">Subscribing to Signals</a></li>
+<li><a class="reference internal" href="#creating-signals">Creating Signals</a></li>
+<li><a class="reference internal" href="#sending-signals">Sending Signals</a></li>
+<li><a class="reference internal" href="#signals-and-flask-s-request-context">Signals and Flask’s Request Context</a></li>
+<li><a class="reference internal" href="#decorator-based-signal-subscriptions">Decorator Based Signal Subscriptions</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="index.html">Overview</a>
+    <ul>
+          <li>Previous: <a href="config.html" title="previous chapter">Configuration Handling</a>
+          <li>Next: <a href="views.html" title="next chapter">Class-based Views</a>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>
