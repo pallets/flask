@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Security Considerations &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
+    <script src="_static/documentation_options.js?v=56528222"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Deploying to Production" href="deploying/index.html" />
+    <link rel="prev" title="Single-Page Applications" href="patterns/singlepageapplications.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="deploying/index.html" title="Deploying to Production"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="patterns/singlepageapplications.html" title="Single-Page Applications"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Security Considerations</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="security-considerations">
+<h1>Security Considerations<a class="headerlink" href="#security-considerations" title="Link to this heading">¶</a></h1>
+<p>Web applications face many types of potential security problems, and it can be
+hard to get everything right, or even to know what “right” is in general. Flask
+tries to solve a few of these things by default, but there are other parts you
+may have to take care of yourself. Many of these solutions are tradeoffs, and
+will depend on each application’s specific needs and threat model. Many hosting
+platforms may take care of certain types of problems without the need for the
+Flask application to handle them.</p>
+<section id="resource-use">
+<h2>Resource Use<a class="headerlink" href="#resource-use" title="Link to this heading">¶</a></h2>
+<p>A common category of attacks is “Denial of Service” (DoS or DDoS). This is a
+very broad category, and different variants target different layers in a
+deployed application. In general, something is done to increase how much
+processing time or memory is used to handle each request, to the point where
+there are not enough resources to handle legitimate requests.</p>
+<p>Flask provides a few configuration options to handle resource use. They can
+also be set on individual requests to customize only that request. The
+documentation for each goes into more detail.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="config.html#MAX_CONTENT_LENGTH" title="MAX_CONTENT_LENGTH"><code class="xref py py-data docutils literal notranslate"><span class="pre">MAX_CONTENT_LENGTH</span></code></a> or <a class="reference internal" href="api.html#flask.Request.max_content_length" title="flask.Request.max_content_length"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Request.max_content_length</span></code></a> controls
+how much data will be read from a request. It is not set by default,
+although it will still block truly unlimited streams unless the WSGI server
+indicates support.</p></li>
+<li><p><a class="reference internal" href="config.html#MAX_FORM_MEMORY_SIZE" title="MAX_FORM_MEMORY_SIZE"><code class="xref py py-data docutils literal notranslate"><span class="pre">MAX_FORM_MEMORY_SIZE</span></code></a> or <a class="reference internal" href="api.html#flask.Request.max_form_memory_size" title="flask.Request.max_form_memory_size"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Request.max_form_memory_size</span></code></a>
+controls how large any non-file <code class="docutils literal notranslate"><span class="pre">multipart/form-data</span></code> field can be. It is
+set to 500kB by default.</p></li>
+<li><p><a class="reference internal" href="config.html#MAX_FORM_PARTS" title="MAX_FORM_PARTS"><code class="xref py py-data docutils literal notranslate"><span class="pre">MAX_FORM_PARTS</span></code></a> or <a class="reference internal" href="api.html#flask.Request.max_form_parts" title="flask.Request.max_form_parts"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Request.max_form_parts</span></code></a> controls how many
+<code class="docutils literal notranslate"><span class="pre">multipart/form-data</span></code> fields can be parsed. It is set to 1000 by default.
+Combined with the default <code class="code docutils literal notranslate"><span class="pre">max_form_memory_size</span></code>, this means that a form
+will occupy at most 500MB of memory.</p></li>
+</ul>
+<p>Regardless of these settings, you should also review what settings are available
+from your operating system, container deployment (Docker etc), WSGI server, HTTP
+server, and hosting platform. They typically have ways to set process resource
+limits, timeouts, and other checks regardless of how Flask is configured.</p>
+</section>
+<section id="cross-site-scripting-xss">
+<span id="security-xss"></span><h2>Cross-Site Scripting (XSS)<a class="headerlink" href="#cross-site-scripting-xss" title="Link to this heading">¶</a></h2>
+<p>Cross site scripting is the concept of injecting arbitrary HTML (and with
+it JavaScript) into the context of a website.  To remedy this, developers
+have to properly escape text so that it cannot include arbitrary HTML
+tags.  For more information on that have a look at the Wikipedia article
+on <a class="reference external" href="https://en.wikipedia.org/wiki/Cross-site_scripting">Cross-Site Scripting</a>.</p>
+<p>Flask configures Jinja2 to automatically escape all values unless
+explicitly told otherwise.  This should rule out all XSS problems caused
+in templates, but there are still other places where you have to be
+careful:</p>
+<ul class="simple">
+<li><p>generating HTML without the help of Jinja2</p></li>
+<li><p>calling <code class="xref py py-class docutils literal notranslate"><span class="pre">Markup</span></code> on data submitted by users</p></li>
+<li><p>sending out HTML from uploaded files, never do that, use the
+<code class="docutils literal notranslate"><span class="pre">Content-Disposition:</span> <span class="pre">attachment</span></code> header to prevent that problem.</p></li>
+<li><p>sending out textfiles from uploaded files.  Some browsers are using
+content-type guessing based on the first few bytes so users could
+trick a browser to execute HTML.</p></li>
+</ul>
+<p>Another thing that is very important are unquoted attributes.  While
+Jinja2 can protect you from XSS issues by escaping HTML, there is one
+thing it cannot protect you from: XSS by attribute injection.  To counter
+this possible attack vector, be sure to always quote your attributes with
+either double or single quotes when using Jinja expressions in them:</p>
+<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">input</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">value</span> <span class="cp">}}</span><span class="s">&quot;</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Why is this necessary?  Because if you would not be doing that, an
+attacker could easily inject custom JavaScript handlers.  For example an
+attacker could inject this piece of HTML+JavaScript:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>onmouseover=alert(document.cookie)
+</pre></div>
+</div>
+<p>When the user would then move with the mouse over the input, the cookie
+would be presented to the user in an alert window.  But instead of showing
+the cookie to the user, a good attacker might also execute any other
+JavaScript code.  In combination with CSS injections the attacker might
+even make the element fill out the entire page so that the user would
+just have to have the mouse anywhere on the page to trigger the attack.</p>
+<p>There is one class of XSS issues that Jinja’s escaping does not protect
+against. The <code class="docutils literal notranslate"><span class="pre">a</span></code> tag’s <code class="docutils literal notranslate"><span class="pre">href</span></code> attribute can contain a <code class="code docutils literal notranslate"><span class="pre">javascript:</span></code> URI,
+which the browser will execute when clicked if not secured properly.</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;{{ value }}&quot;</span><span class="p">&gt;</span>click here<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;javascript:alert(&#39;unsafe&#39;);&quot;</span><span class="p">&gt;</span>click here<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>To prevent this, you’ll need to set the <a class="reference internal" href="#security-csp"><span class="std std-ref">Content Security Policy (CSP)</span></a> response header.</p>
+</section>
+<section id="cross-site-request-forgery-csrf">
+<h2>Cross-Site Request Forgery (CSRF)<a class="headerlink" href="#cross-site-request-forgery-csrf" title="Link to this heading">¶</a></h2>
+<p>Another big problem is CSRF.  This is a very complex topic and I won’t
+outline it here in detail just mention what it is and how to theoretically
+prevent it.</p>
+<p>If your authentication information is stored in cookies, you have implicit
+state management.  The state of “being logged in” is controlled by a
+cookie, and that cookie is sent with each request to a page.
+Unfortunately that includes requests triggered by 3rd party sites.  If you
+don’t keep that in mind, some people might be able to trick your
+application’s users with social engineering to do stupid things without
+them knowing.</p>
+<p>Say you have a specific URL that, when you sent <code class="docutils literal notranslate"><span class="pre">POST</span></code> requests to will
+delete a user’s profile (say <code class="docutils literal notranslate"><span class="pre">http://example.com/user/delete</span></code>).  If an
+attacker now creates a page that sends a post request to that page with
+some JavaScript they just have to trick some users to load that page and
+their profiles will end up being deleted.</p>
+<p>Imagine you were to run Facebook with millions of concurrent users and
+someone would send out links to images of little kittens.  When users
+would go to that page, their profiles would get deleted while they are
+looking at images of fluffy cats.</p>
+<p>How can you prevent that?  Basically for each request that modifies
+content on the server you would have to either use a one-time token and
+store that in the cookie <strong>and</strong> also transmit it with the form data.
+After receiving the data on the server again, you would then have to
+compare the two tokens and ensure they are equal.</p>
+<p>Why does Flask not do that for you?  The ideal place for this to happen is
+the form validation framework, which does not exist in Flask.</p>
+</section>
+<section id="json-security">
+<span id="security-json"></span><h2>JSON Security<a class="headerlink" href="#json-security" title="Link to this heading">¶</a></h2>
+<p>In Flask 0.10 and lower, <code class="xref py py-func docutils literal notranslate"><span class="pre">jsonify()</span></code> did not serialize top-level
+arrays to JSON. This was because of a security vulnerability in ECMAScript 4.</p>
+<p>ECMAScript 5 closed this vulnerability, so only extremely old browsers are
+still vulnerable. All of these browsers have <a class="reference external" href="https://github.com/pallets/flask/issues/248#issuecomment-59934857">other more serious
+vulnerabilities</a>, so
+this behavior was changed and <code class="xref py py-func docutils literal notranslate"><span class="pre">jsonify()</span></code> now supports serializing
+arrays.</p>
+</section>
+<section id="security-headers">
+<h2>Security Headers<a class="headerlink" href="#security-headers" title="Link to this heading">¶</a></h2>
+<p>Browsers recognize various response headers in order to control security. We
+recommend reviewing each of the headers below for use in your application.
+The <a class="reference external" href="https://github.com/GoogleCloudPlatform/flask-talisman">Flask-Talisman</a> extension can be used to manage HTTPS and the security
+headers for you.</p>
+<section id="http-strict-transport-security-hsts">
+<h3>HTTP Strict Transport Security (HSTS)<a class="headerlink" href="#http-strict-transport-security-hsts" title="Link to this heading">¶</a></h3>
+<p>Tells the browser to convert all HTTP requests to HTTPS, preventing
+man-in-the-middle (MITM) attacks.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Strict-Transport-Security&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;max-age=31536000; includeSubDomains&#39;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security">https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security</a></p></li>
+</ul>
+</section>
+<section id="content-security-policy-csp">
+<span id="security-csp"></span><h3>Content Security Policy (CSP)<a class="headerlink" href="#content-security-policy-csp" title="Link to this heading">¶</a></h3>
+<p>Tell the browser where it can load various types of resource from. This header
+should be used whenever possible, but requires some work to define the correct
+policy for your site. A very strict policy would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Content-Security-Policy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default-src &#39;self&#39;&quot;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference external" href="https://csp.withgoogle.com/docs/index.html">https://csp.withgoogle.com/docs/index.html</a></p></li>
+<li><p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy">https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy</a></p></li>
+</ul>
+</section>
+<section id="x-content-type-options">
+<h3>X-Content-Type-Options<a class="headerlink" href="#x-content-type-options" title="Link to this heading">¶</a></h3>
+<p>Forces the browser to honor the response content type instead of trying to
+detect it, which can be abused to generate a cross-site scripting (XSS)
+attack.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;X-Content-Type-Options&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;nosniff&#39;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options">https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options</a></p></li>
+</ul>
+</section>
+<section id="x-frame-options">
+<h3>X-Frame-Options<a class="headerlink" href="#x-frame-options" title="Link to this heading">¶</a></h3>
+<p>Prevents external sites from embedding your site in an <code class="docutils literal notranslate"><span class="pre">iframe</span></code>. This
+prevents a class of attacks where clicks in the outer frame can be translated
+invisibly to clicks on your page’s elements. This is also known as
+“clickjacking”.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;X-Frame-Options&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;SAMEORIGIN&#39;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options">https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options</a></p></li>
+</ul>
+</section>
+<section id="set-cookie-options">
+<span id="security-cookie"></span><h3>Set-Cookie options<a class="headerlink" href="#set-cookie-options" title="Link to this heading">¶</a></h3>
+<p>These options can be added to a <code class="docutils literal notranslate"><span class="pre">Set-Cookie</span></code> header to improve their
+security. Flask has configuration options to set these on the session cookie.
+They can be set on other cookies too.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Secure</span></code> limits cookies to HTTPS traffic only.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HttpOnly</span></code> protects the contents of cookies from being read with
+JavaScript.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SameSite</span></code> restricts how cookies are sent with requests from
+external sites. Can be set to <code class="docutils literal notranslate"><span class="pre">'Lax'</span></code> (recommended) or <code class="docutils literal notranslate"><span class="pre">'Strict'</span></code>.
+<code class="docutils literal notranslate"><span class="pre">Lax</span></code> prevents sending cookies with CSRF-prone requests from
+external sites, such as submitting a form. <code class="docutils literal notranslate"><span class="pre">Strict</span></code> prevents sending
+cookies with all external requests, including following regular links.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="n">SESSION_COOKIE_SECURE</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">SESSION_COOKIE_HTTPONLY</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">SESSION_COOKIE_SAMESITE</span><span class="o">=</span><span class="s1">&#39;Lax&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;flask&#39;</span><span class="p">,</span> <span class="n">secure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">httponly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">samesite</span><span class="o">=</span><span class="s1">&#39;Lax&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Specifying <code class="docutils literal notranslate"><span class="pre">Expires</span></code> or <code class="docutils literal notranslate"><span class="pre">Max-Age</span></code> options, will remove the cookie after
+the given time, or the current time plus the age, respectively. If neither
+option is set, the cookie will be removed when the browser is closed.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cookie expires after 10 minutes</span>
+<span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s1">&#39;snakes&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="n">max_age</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For the session cookie, if <a class="reference internal" href="api.html#flask.session.permanent" title="flask.session.permanent"><code class="xref py py-attr docutils literal notranslate"><span class="pre">session.permanent</span></code></a>
+is set, then <a class="reference internal" href="config.html#PERMANENT_SESSION_LIFETIME" title="PERMANENT_SESSION_LIFETIME"><code class="xref py py-data docutils literal notranslate"><span class="pre">PERMANENT_SESSION_LIFETIME</span></code></a> is used to set the expiration.
+Flask’s default cookie implementation validates that the cryptographic
+signature is not older than this value. Lowering this value may help mitigate
+replay attacks, where intercepted cookies can be sent at a later time.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="n">PERMANENT_SESSION_LIFETIME</span><span class="o">=</span><span class="mi">600</span>
+<span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">():</span>
+    <span class="o">...</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="n">session</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">permanent</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>Use <code class="xref py py-class docutils literal notranslate"><span class="pre">itsdangerous.TimedSerializer</span></code> to sign and validate other cookie
+values (or any values that need secure signatures).</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies">https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies</a></p></li>
+<li><p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie">https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie</a></p></li>
+</ul>
+</section>
+</section>
+<section id="copy-paste-to-terminal">
+<h2>Copy/Paste to Terminal<a class="headerlink" href="#copy-paste-to-terminal" title="Link to this heading">¶</a></h2>
+<p>Hidden characters such as the backspace character (<code class="docutils literal notranslate"><span class="pre">\b</span></code>, <code class="docutils literal notranslate"><span class="pre">^H</span></code>) can
+cause text to render differently in HTML than how it is interpreted if
+<a class="reference external" href="https://security.stackexchange.com/q/39118">pasted into a terminal</a>.</p>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">y\bose\bm\bi\bt\be\b</span></code> renders as
+<code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">yosemite</span></code> in HTML, but the backspaces are applied when pasted
+into a terminal, and it becomes <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">os</span></code>.</p>
+<p>If you expect users to copy and paste untrusted code from your site,
+such as from comments posted by users on a technical blog, consider
+applying extra filtering, such as replacing all <code class="docutils literal notranslate"><span class="pre">\b</span></code> characters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">body</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\b</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Most modern terminals will warn about and remove hidden characters when
+pasting, so this isn’t strictly necessary. It’s also possible to craft
+dangerous commands in other ways that aren’t possible to filter.
+Depending on your site’s use case, it may be good to show a warning
+about copying code in general.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  
+    
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+  
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Security Considerations</a><ul>
+<li><a class="reference internal" href="#resource-use">Resource Use</a></li>
+<li><a class="reference internal" href="#cross-site-scripting-xss">Cross-Site Scripting (XSS)</a></li>
+<li><a class="reference internal" href="#cross-site-request-forgery-csrf">Cross-Site Request Forgery (CSRF)</a></li>
+<li><a class="reference internal" href="#json-security">JSON Security</a></li>
+<li><a class="reference internal" href="#security-headers">Security Headers</a><ul>
+<li><a class="reference internal" href="#http-strict-transport-security-hsts">HTTP Strict Transport Security (HSTS)</a></li>
+<li><a class="reference internal" href="#content-security-policy-csp">Content Security Policy (CSP)</a></li>
+<li><a class="reference internal" href="#x-content-type-options">X-Content-Type-Options</a></li>
+<li><a class="reference internal" href="#x-frame-options">X-Frame-Options</a></li>
+<li><a class="reference internal" href="#set-cookie-options">Set-Cookie options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#copy-paste-to-terminal">Copy/Paste to Terminal</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="index.html">Overview</a>
+    <ul>
+          <li>Previous: <a href="patterns/singlepageapplications.html" title="previous chapter">Single-Page Applications</a>
+          <li>Next: <a href="deploying/index.html" title="next chapter">Deploying to Production</a>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

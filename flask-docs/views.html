@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Class-based Views &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
+    <script src="_static/documentation_options.js?v=56528222"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Application Structure and Lifecycle" href="lifecycle.html" />
+    <link rel="prev" title="Signals" href="signals.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lifecycle.html" title="Application Structure and Lifecycle"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="signals.html" title="Signals"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Class-based Views</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="class-based-views">
+<h1>Class-based Views<a class="headerlink" href="#class-based-views" title="Link to this heading">¶</a></h1>
+<p>This page introduces using the <a class="reference internal" href="api.html#flask.views.View" title="flask.views.View"><code class="xref py py-class docutils literal notranslate"><span class="pre">View</span></code></a> and <a class="reference internal" href="api.html#flask.views.MethodView" title="flask.views.MethodView"><code class="xref py py-class docutils literal notranslate"><span class="pre">MethodView</span></code></a>
+classes to write class-based views.</p>
+<p>A class-based view is a class that acts as a view function. Because it
+is a class, different instances of the class can be created with
+different arguments, to change the behavior of the view. This is also
+known as generic, reusable, or pluggable views.</p>
+<p>An example of where this is useful is defining a class that creates an
+API based on the database model it is initialized with.</p>
+<p>For more complex API behavior and customization, look into the various
+API extensions for Flask.</p>
+<section id="basic-reusable-view">
+<h2>Basic Reusable View<a class="headerlink" href="#basic-reusable-view" title="Link to this heading">¶</a></h2>
+<p>Let’s walk through an example converting a view function to a view
+class. We start with a view function that queries a list of users then
+renders a template to show the list.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/users/&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">user_list</span><span class="p">():</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">&quot;users.html&quot;</span><span class="p">,</span> <span class="n">users</span><span class="o">=</span><span class="n">users</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This works for the user model, but let’s say you also had more models
+that needed list pages. You’d need to write another view function for
+each model, even though the only thing that would change is the model
+and template name.</p>
+<p>Instead, you can write a <a class="reference internal" href="api.html#flask.views.View" title="flask.views.View"><code class="xref py py-class docutils literal notranslate"><span class="pre">View</span></code></a> subclass that will query a model
+and render a template. As the first step, we’ll convert the view to a
+class without any customization.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">View</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UserList</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">&quot;users.html&quot;</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="n">users</span><span class="p">)</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s2">&quot;/users/&quot;</span><span class="p">,</span> <span class="n">view_func</span><span class="o">=</span><span class="n">UserList</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="s2">&quot;user_list&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="api.html#flask.views.View.dispatch_request" title="flask.views.View.dispatch_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">View.dispatch_request()</span></code></a> method is the equivalent of the view
+function. Calling <a class="reference internal" href="api.html#flask.views.View.as_view" title="flask.views.View.as_view"><code class="xref py py-meth docutils literal notranslate"><span class="pre">View.as_view()</span></code></a> method will create a view
+function that can be registered on the app with its
+<a class="reference internal" href="api.html#flask.Flask.add_url_rule" title="flask.Flask.add_url_rule"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_url_rule()</span></code></a> method. The first argument to
+<code class="docutils literal notranslate"><span class="pre">as_view</span></code> is the name to use to refer to the view with
+<a class="reference internal" href="api.html#flask.url_for" title="flask.url_for"><code class="xref py py-func docutils literal notranslate"><span class="pre">url_for()</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can’t decorate the class with <code class="docutils literal notranslate"><span class="pre">&#64;app.route()</span></code> the way you’d
+do with a basic view function.</p>
+</div>
+<p>Next, we need to be able to register the same view class for different
+models and templates, to make it more useful than the original function.
+The class will take two arguments, the model and template, and store
+them on <code class="docutils literal notranslate"><span class="pre">self</span></code>. Then <code class="docutils literal notranslate"><span class="pre">dispatch_request</span></code> can reference these instead
+of hard-coded values.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ListView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">template</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="n">template</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="n">items</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Remember, we create the view function with <code class="docutils literal notranslate"><span class="pre">View.as_view()</span></code> instead of
+creating the class directly. Any extra arguments passed to <code class="docutils literal notranslate"><span class="pre">as_view</span></code>
+are then passed when creating the class. Now we can register the same
+view to handle multiple models.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span>
+    <span class="s2">&quot;/users/&quot;</span><span class="p">,</span>
+    <span class="n">view_func</span><span class="o">=</span><span class="n">ListView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="s2">&quot;user_list&quot;</span><span class="p">,</span> <span class="n">User</span><span class="p">,</span> <span class="s2">&quot;users.html&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span>
+    <span class="s2">&quot;/stories/&quot;</span><span class="p">,</span>
+    <span class="n">view_func</span><span class="o">=</span><span class="n">ListView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="s2">&quot;story_list&quot;</span><span class="p">,</span> <span class="n">Story</span><span class="p">,</span> <span class="s2">&quot;stories.html&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="url-variables">
+<h2>URL Variables<a class="headerlink" href="#url-variables" title="Link to this heading">¶</a></h2>
+<p>Any variables captured by the URL are passed as keyword arguments to the
+<code class="docutils literal notranslate"><span class="pre">dispatch_request</span></code> method, as they would be for a regular view
+function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">DetailView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">/detail.html&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get_or_404</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span>
+    <span class="s2">&quot;/users/&lt;int:id&gt;&quot;</span><span class="p">,</span>
+    <span class="n">view_func</span><span class="o">=</span><span class="n">DetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="s2">&quot;user_detail&quot;</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="view-lifetime-and-self">
+<h2>View Lifetime and <code class="docutils literal notranslate"><span class="pre">self</span></code><a class="headerlink" href="#view-lifetime-and-self" title="Link to this heading">¶</a></h2>
+<p>By default, a new instance of the view class is created every time a
+request is handled. This means that it is safe to write other data to
+<code class="docutils literal notranslate"><span class="pre">self</span></code> during the request, since the next request will not see it,
+unlike other forms of global state.</p>
+<p>However, if your view class needs to do a lot of complex initialization,
+doing it for every request is unnecessary and can be inefficient. To
+avoid this, set <a class="reference internal" href="api.html#flask.views.View.init_every_request" title="flask.views.View.init_every_request"><code class="xref py py-attr docutils literal notranslate"><span class="pre">View.init_every_request</span></code></a> to <code class="docutils literal notranslate"><span class="pre">False</span></code>, which will
+only create one instance of the class and use it for every request. In
+this case, writing to <code class="docutils literal notranslate"><span class="pre">self</span></code> is not safe. If you need to store data
+during the request, use <a class="reference internal" href="api.html#flask.g" title="flask.g"><code class="xref py py-data docutils literal notranslate"><span class="pre">g</span></code></a> instead.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">ListView</span></code> example, nothing writes to <code class="docutils literal notranslate"><span class="pre">self</span></code> during the
+request, so it is more efficient to create a single instance.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ListView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="n">init_every_request</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">template</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="n">template</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="n">items</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Different instances will still be created each for each <code class="docutils literal notranslate"><span class="pre">as_view</span></code>
+call, but not for each request to those views.</p>
+</section>
+<section id="view-decorators">
+<h2>View Decorators<a class="headerlink" href="#view-decorators" title="Link to this heading">¶</a></h2>
+<p>The view class itself is not the view function. View decorators need to
+be applied to the view function returned by <code class="docutils literal notranslate"><span class="pre">as_view</span></code>, not the class
+itself. Set <a class="reference internal" href="api.html#flask.views.View.decorators" title="flask.views.View.decorators"><code class="xref py py-attr docutils literal notranslate"><span class="pre">View.decorators</span></code></a> to a list of decorators to apply.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">UserList</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="n">decorators</span> <span class="o">=</span> <span class="p">[</span><span class="n">cache</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">login_required</span><span class="p">]</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s1">&#39;/users/&#39;</span><span class="p">,</span> <span class="n">view_func</span><span class="o">=</span><span class="n">UserList</span><span class="o">.</span><span class="n">as_view</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>If you didn’t set <code class="docutils literal notranslate"><span class="pre">decorators</span></code>, you could apply them manually instead.
+This is equivalent to:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">view</span> <span class="o">=</span> <span class="n">UserList</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="s2">&quot;users_list&quot;</span><span class="p">)</span>
+<span class="n">view</span> <span class="o">=</span> <span class="n">cache</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">view</span><span class="p">)</span>
+<span class="n">view</span> <span class="o">=</span> <span class="n">login_required</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s1">&#39;/users/&#39;</span><span class="p">,</span> <span class="n">view_func</span><span class="o">=</span><span class="n">view</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Keep in mind that order matters. If you’re used to <code class="docutils literal notranslate"><span class="pre">&#64;decorator</span></code> style,
+this is equivalent to:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/users/&quot;</span><span class="p">)</span>
+<span class="nd">@login_required</span>
+<span class="nd">@cache</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">user_list</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="method-hints">
+<h2>Method Hints<a class="headerlink" href="#method-hints" title="Link to this heading">¶</a></h2>
+<p>A common pattern is to register a view with <code class="docutils literal notranslate"><span class="pre">methods=[&quot;GET&quot;,</span> <span class="pre">&quot;POST&quot;]</span></code>,
+then check <code class="docutils literal notranslate"><span class="pre">request.method</span> <span class="pre">==</span> <span class="pre">&quot;POST&quot;</span></code> to decide what to do. Setting
+<a class="reference internal" href="api.html#flask.views.View.methods" title="flask.views.View.methods"><code class="xref py py-attr docutils literal notranslate"><span class="pre">View.methods</span></code></a> is equivalent to passing the list of methods to
+<code class="docutils literal notranslate"><span class="pre">add_url_rule</span></code> or <code class="docutils literal notranslate"><span class="pre">route</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="o">...</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s1">&#39;/my-view&#39;</span><span class="p">,</span> <span class="n">view_func</span><span class="o">=</span><span class="n">MyView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="s1">&#39;my-view&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This is equivalent to the following, except further subclasses can
+inherit or change the methods.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span>
+    <span class="s2">&quot;/my-view&quot;</span><span class="p">,</span>
+    <span class="n">view_func</span><span class="o">=</span><span class="n">MyView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="s2">&quot;my-view&quot;</span><span class="p">),</span>
+    <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="method-dispatching-and-apis">
+<h2>Method Dispatching and APIs<a class="headerlink" href="#method-dispatching-and-apis" title="Link to this heading">¶</a></h2>
+<p>For APIs it can be helpful to use a different function for each HTTP
+method. <a class="reference internal" href="api.html#flask.views.MethodView" title="flask.views.MethodView"><code class="xref py py-class docutils literal notranslate"><span class="pre">MethodView</span></code></a> extends the basic <a class="reference internal" href="api.html#flask.views.View" title="flask.views.View"><code class="xref py py-class docutils literal notranslate"><span class="pre">View</span></code></a> to dispatch
+to different methods of the class based on the request method. Each HTTP
+method maps to a method of the class with the same (lowercase) name.</p>
+<p><a class="reference internal" href="api.html#flask.views.MethodView" title="flask.views.MethodView"><code class="xref py py-class docutils literal notranslate"><span class="pre">MethodView</span></code></a> automatically sets <a class="reference internal" href="api.html#flask.views.View.methods" title="flask.views.View.methods"><code class="xref py py-attr docutils literal notranslate"><span class="pre">View.methods</span></code></a> based on the
+methods defined by the class. It even knows how to handle subclasses
+that override or define other methods.</p>
+<p>We can make a generic <code class="docutils literal notranslate"><span class="pre">ItemAPI</span></code> class that provides get (detail),
+patch (edit), and delete methods for a given model. A <code class="docutils literal notranslate"><span class="pre">GroupAPI</span></code> can
+provide get (list) and post (create) methods.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">MethodView</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ItemAPI</span><span class="p">(</span><span class="n">MethodView</span><span class="p">):</span>
+    <span class="n">init_every_request</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validator</span> <span class="o">=</span> <span class="n">generate_validator</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get_or_404</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_item</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">patch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_item</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validator</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">errors</span><span class="p">),</span> <span class="mi">400</span>
+
+        <span class="n">item</span><span class="o">.</span><span class="n">update_from_json</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_item</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">204</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GroupAPI</span><span class="p">(</span><span class="n">MethodView</span><span class="p">):</span>
+    <span class="n">init_every_request</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validator</span> <span class="o">=</span> <span class="n">generate_validator</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">([</span><span class="n">item</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validator</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">errors</span><span class="p">),</span> <span class="mi">400</span>
+
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">))</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">register_api</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="n">item</span> <span class="o">=</span> <span class="n">ItemAPI</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">-item&quot;</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">GroupAPI</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">-group&quot;</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">/&lt;int:id&gt;&quot;</span><span class="p">,</span> <span class="n">view_func</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">,</span> <span class="n">view_func</span><span class="o">=</span><span class="n">group</span><span class="p">)</span>
+
+<span class="n">register_api</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">User</span><span class="p">,</span> <span class="s2">&quot;users&quot;</span><span class="p">)</span>
+<span class="n">register_api</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">Story</span><span class="p">,</span> <span class="s2">&quot;stories&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This produces the following views, a standard REST API!</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>URL</p></td>
+<td><p>Method</p></td>
+<td><p>Description</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">/users/</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GET</span></code></p></td>
+<td><p>List all users</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">/users/</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
+<td><p>Create a new user</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">/users/&lt;id&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GET</span></code></p></td>
+<td><p>Show a single user</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">/users/&lt;id&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PATCH</span></code></p></td>
+<td><p>Update a user</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">/users/&lt;id&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DELETE</span></code></p></td>
+<td><p>Delete a user</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">/stories/</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GET</span></code></p></td>
+<td><p>List all stories</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">/stories/</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
+<td><p>Create a new story</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">/stories/&lt;id&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GET</span></code></p></td>
+<td><p>Show a single story</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">/stories/&lt;id&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PATCH</span></code></p></td>
+<td><p>Update a story</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">/stories/&lt;id&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DELETE</span></code></p></td>
+<td><p>Delete a story</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  
+    
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+  
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Class-based Views</a><ul>
+<li><a class="reference internal" href="#basic-reusable-view">Basic Reusable View</a></li>
+<li><a class="reference internal" href="#url-variables">URL Variables</a></li>
+<li><a class="reference internal" href="#view-lifetime-and-self">View Lifetime and <code class="docutils literal notranslate"><span class="pre">self</span></code></a></li>
+<li><a class="reference internal" href="#view-decorators">View Decorators</a></li>
+<li><a class="reference internal" href="#method-hints">Method Hints</a></li>
+<li><a class="reference internal" href="#method-dispatching-and-apis">Method Dispatching and APIs</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="index.html">Overview</a>
+    <ul>
+          <li>Previous: <a href="signals.html" title="previous chapter">Signals</a>
+          <li>Next: <a href="lifecycle.html" title="next chapter">Application Structure and Lifecycle</a>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

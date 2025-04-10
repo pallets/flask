@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>uWSGI &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
+    <script src="../_static/documentation_options.js?v=56528222"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gevent" href="gevent.html" />
+    <link rel="prev" title="mod_wsgi" href="mod_wsgi.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gevent.html" title="gevent"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mod_wsgi.html" title="mod_wsgi"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Deploying to Production</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">uWSGI</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="uwsgi">
+<h1>uWSGI<a class="headerlink" href="#uwsgi" title="Link to this heading">¶</a></h1>
+<p><a class="reference external" href="https://uwsgi-docs.readthedocs.io/en/latest/">uWSGI</a> is a fast, compiled server suite with extensive configuration
+and capabilities beyond a basic server.</p>
+<ul class="simple">
+<li><p>It can be very performant due to being a compiled program.</p></li>
+<li><p>It is complex to configure beyond the basic application, and has so
+many options that it can be difficult for beginners to understand.</p></li>
+<li><p>It does not support Windows (but does run on WSL).</p></li>
+<li><p>It requires a compiler to install in some cases.</p></li>
+</ul>
+<p>This page outlines the basics of running uWSGI. Be sure to read its
+documentation to understand what features are available.</p>
+<section id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Link to this heading">¶</a></h2>
+<p>uWSGI has multiple ways to install it. The most straightforward is to
+install the <code class="docutils literal notranslate"><span class="pre">pyuwsgi</span></code> package, which provides precompiled wheels for
+common platforms. However, it does not provide SSL support, which can be
+provided with a reverse proxy instead.</p>
+<p>Create a virtualenv, install your application, then install <code class="docutils literal notranslate"><span class="pre">pyuwsgi</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cd hello-app
+$ python -m venv .venv
+$ . .venv/bin/activate
+$ pip install .  # install your application
+$ pip install pyuwsgi
+</pre></div>
+</div>
+<p>If you have a compiler available, you can install the <code class="docutils literal notranslate"><span class="pre">uwsgi</span></code> package
+instead. Or install the <code class="docutils literal notranslate"><span class="pre">pyuwsgi</span></code> package from sdist instead of wheel.
+Either method will include SSL support.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ pip install uwsgi
+
+# or
+$ pip install --no-binary pyuwsgi pyuwsgi
+</pre></div>
+</div>
+</section>
+<section id="running">
+<h2>Running<a class="headerlink" href="#running" title="Link to this heading">¶</a></h2>
+<p>The most basic way to run uWSGI is to tell it to start an HTTP server
+and import your application.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ uwsgi --http 127.0.0.1:8000 --master -p 4 -w hello:app
+
+*** Starting uWSGI 2.0.20 (64bit) on [x] ***
+*** Operational MODE: preforking ***
+mounting hello:app on /
+spawned uWSGI master process (pid: x)
+spawned uWSGI worker 1 (pid: x, cores: 1)
+spawned uWSGI worker 2 (pid: x, cores: 1)
+spawned uWSGI worker 3 (pid: x, cores: 1)
+spawned uWSGI worker 4 (pid: x, cores: 1)
+spawned uWSGI http 1 (pid: x)
+</pre></div>
+</div>
+<p>If you’re using the app factory pattern, you’ll need to create a small
+Python file to create the app, then point uWSGI at that.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">wsgi.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hello</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ uwsgi --http 127.0.0.1:8000 --master -p 4 -w wsgi:app
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--http</span></code> option starts an HTTP server at 127.0.0.1 port 8000. The
+<code class="docutils literal notranslate"><span class="pre">--master</span></code> option specifies the standard worker manager. The <code class="docutils literal notranslate"><span class="pre">-p</span></code>
+option starts 4 worker processes; a starting value could be <code class="docutils literal notranslate"><span class="pre">CPU</span> <span class="pre">*</span> <span class="pre">2</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">-w</span></code> option tells uWSGI how to import your application</p>
+</section>
+<section id="binding-externally">
+<h2>Binding Externally<a class="headerlink" href="#binding-externally" title="Link to this heading">¶</a></h2>
+<p>uWSGI should not be run as root with the configuration shown in this doc
+because it would cause your application code to run as root, which is
+not secure. However, this means it will not be possible to bind to port
+80 or 443. Instead, a reverse proxy such as <a class="reference internal" href="nginx.html"><span class="doc">nginx</span></a> or
+<a class="reference internal" href="apache-httpd.html"><span class="doc">Apache httpd</span></a> should be used in front of uWSGI. It is possible to
+run uWSGI as root securely, but that is beyond the scope of this doc.</p>
+<p>uWSGI has optimized integration with <a class="reference external" href="https://uwsgi-docs.readthedocs.io/en/latest/Nginx.html">Nginx uWSGI</a> and
+<a class="reference external" href="https://uwsgi-docs.readthedocs.io/en/latest/Apache.html#mod-proxy-uwsgi">Apache mod_proxy_uwsgi</a>, and possibly other servers, instead of using
+a standard HTTP proxy. That configuration is beyond the scope of this
+doc, see the links for more information.</p>
+<p>You can bind to all external IPs on a non-privileged port using the
+<code class="docutils literal notranslate"><span class="pre">--http</span> <span class="pre">0.0.0.0:8000</span></code> option. Don’t do this when using a reverse proxy
+setup, otherwise it will be possible to bypass the proxy.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ uwsgi --http 0.0.0.0:8000 --master -p 4 -w wsgi:app
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code> is not a valid address to navigate to, you’d use a specific
+IP address in your browser.</p>
+</section>
+<section id="async-with-gevent">
+<h2>Async with gevent<a class="headerlink" href="#async-with-gevent" title="Link to this heading">¶</a></h2>
+<p>The default sync worker is appropriate for many use cases. If you need
+asynchronous support, uWSGI provides a <a class="reference external" href="https://www.gevent.org/">gevent</a> worker. This is not the
+same as Python’s <code class="docutils literal notranslate"><span class="pre">async/await</span></code>, or the ASGI server spec. You must
+actually use gevent in your own code to see any benefit to using the
+worker.</p>
+<p>When using gevent, greenlet&gt;=1.0 is required, otherwise context locals
+such as <code class="docutils literal notranslate"><span class="pre">request</span></code> will not work as expected. When using PyPy,
+PyPy&gt;=7.3.7 is required.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ uwsgi --http 127.0.0.1:8000 --master --gevent 100 -w wsgi:app
+
+*** Starting uWSGI 2.0.20 (64bit) on [x] ***
+*** Operational MODE: async ***
+mounting hello:app on /
+spawned uWSGI master process (pid: x)
+spawned uWSGI worker 1 (pid: x, cores: 100)
+spawned uWSGI http 1 (pid: x)
+*** running gevent loop engine [addr:x] ***
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+  
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">uWSGI</a><ul>
+<li><a class="reference internal" href="#installing">Installing</a></li>
+<li><a class="reference internal" href="#running">Running</a></li>
+<li><a class="reference internal" href="#binding-externally">Binding Externally</a></li>
+<li><a class="reference internal" href="#async-with-gevent">Async with gevent</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="../index.html">Overview</a>
+    <ul>
+      <li><a href="index.html">Deploying to Production</a>
+        <ul>
+          <li>Previous: <a href="mod_wsgi.html" title="previous chapter">mod_wsgi</a>
+          <li>Next: <a href="gevent.html" title="next chapter">gevent</a></ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

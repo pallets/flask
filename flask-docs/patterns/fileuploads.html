@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Uploading Files &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
+    <script src="../_static/documentation_options.js?v=56528222"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Caching" href="caching.html" />
+    <link rel="prev" title="SQLAlchemy in Flask" href="sqlalchemy.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="caching.html" title="Caching"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="sqlalchemy.html" title="SQLAlchemy in Flask"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Patterns for Flask</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Uploading Files</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="uploading-files">
+<h1>Uploading Files<a class="headerlink" href="#uploading-files" title="Link to this heading">¶</a></h1>
+<p>Ah yes, the good old problem of file uploads.  The basic idea of file
+uploads is actually quite simple.  It basically works like this:</p>
+<ol class="arabic simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">&lt;form&gt;</span></code> tag is marked with <code class="docutils literal notranslate"><span class="pre">enctype=multipart/form-data</span></code>
+and an <code class="docutils literal notranslate"><span class="pre">&lt;input</span> <span class="pre">type=file&gt;</span></code> is placed in that form.</p></li>
+<li><p>The application accesses the file from the <code class="xref py py-attr docutils literal notranslate"><span class="pre">files</span></code>
+dictionary on the request object.</p></li>
+<li><p>use the <a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/datastructures/#werkzeug.datastructures.FileStorage.save" title="(in Werkzeug v3.1.x)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a> method of the file to save
+the file permanently somewhere on the filesystem.</p></li>
+</ol>
+<section id="a-gentle-introduction">
+<h2>A Gentle Introduction<a class="headerlink" href="#a-gentle-introduction" title="Link to this heading">¶</a></h2>
+<p>Let’s start with a very basic application that uploads a file to a
+specific upload folder and displays a file to the user.  Let’s look at the
+bootstrapping code for our application:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">flash</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">url_for</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">werkzeug.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">secure_filename</span>
+
+<span class="n">UPLOAD_FOLDER</span> <span class="o">=</span> <span class="s1">&#39;/path/to/the/uploads&#39;</span>
+<span class="n">ALLOWED_EXTENSIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;txt&#39;</span><span class="p">,</span> <span class="s1">&#39;pdf&#39;</span><span class="p">,</span> <span class="s1">&#39;png&#39;</span><span class="p">,</span> <span class="s1">&#39;jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;jpeg&#39;</span><span class="p">,</span> <span class="s1">&#39;gif&#39;</span><span class="p">}</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;UPLOAD_FOLDER&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">UPLOAD_FOLDER</span>
+</pre></div>
+</div>
+<p>So first we need a couple of imports.  Most should be straightforward, the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">werkzeug.secure_filename()</span></code> is explained a little bit later.  The
+<code class="docutils literal notranslate"><span class="pre">UPLOAD_FOLDER</span></code> is where we will store the uploaded files and the
+<code class="docutils literal notranslate"><span class="pre">ALLOWED_EXTENSIONS</span></code> is the set of allowed file extensions.</p>
+<p>Why do we limit the extensions that are allowed?  You probably don’t want
+your users to be able to upload everything there if the server is directly
+sending out the data to the client.  That way you can make sure that users
+are not able to upload HTML files that would cause XSS problems (see
+<a class="reference internal" href="../web-security.html#security-xss"><span class="std std-ref">Cross-Site Scripting (XSS)</span></a>).  Also make sure to disallow <code class="docutils literal notranslate"><span class="pre">.php</span></code> files if the server
+executes them, but who has PHP installed on their server, right?  :)</p>
+<p>Next the functions that check if an extension is valid and that uploads
+the file and redirects the user to the URL for the uploaded file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">allowed_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">and</span> \
+           <span class="n">filename</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">ALLOWED_EXTENSIONS</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">upload_file</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="c1"># check if the post request has the file part</span>
+        <span class="k">if</span> <span class="s1">&#39;file&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;No file part&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;file&#39;</span><span class="p">]</span>
+        <span class="c1"># If the user does not select a file, the browser submits an</span>
+        <span class="c1"># empty file without a filename.</span>
+        <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">filename</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;No selected file&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">file</span> <span class="ow">and</span> <span class="n">allowed_file</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">):</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">secure_filename</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;UPLOAD_FOLDER&#39;</span><span class="p">],</span> <span class="n">filename</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;download_file&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">filename</span><span class="p">))</span>
+    <span class="k">return</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    &lt;!doctype html&gt;</span>
+<span class="s1">    &lt;title&gt;Upload new File&lt;/title&gt;</span>
+<span class="s1">    &lt;h1&gt;Upload new File&lt;/h1&gt;</span>
+<span class="s1">    &lt;form method=post enctype=multipart/form-data&gt;</span>
+<span class="s1">      &lt;input type=file name=file&gt;</span>
+<span class="s1">      &lt;input type=submit value=Upload&gt;</span>
+<span class="s1">    &lt;/form&gt;</span>
+<span class="s1">    &#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<p>So what does that <a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/utils/#werkzeug.utils.secure_filename" title="(in Werkzeug v3.1.x)"><code class="xref py py-func docutils literal notranslate"><span class="pre">secure_filename()</span></code></a> function actually do?
+Now the problem is that there is that principle called “never trust user
+input”.  This is also true for the filename of an uploaded file.  All
+submitted form data can be forged, and filenames can be dangerous.  For
+the moment just remember: always use that function to secure a filename
+before storing it directly on the filesystem.</p>
+<div class="admonition-information-for-the-pros admonition">
+<p class="admonition-title">Information for the Pros</p>
+<p>So you’re interested in what that <a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/utils/#werkzeug.utils.secure_filename" title="(in Werkzeug v3.1.x)"><code class="xref py py-func docutils literal notranslate"><span class="pre">secure_filename()</span></code></a>
+function does and what the problem is if you’re not using it?  So just
+imagine someone would send the following information as <code class="code docutils literal notranslate"><span class="pre">filename</span></code> to
+your application:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;../../../../home/username/.bashrc&quot;</span>
+</pre></div>
+</div>
+<p>Assuming the number of <code class="docutils literal notranslate"><span class="pre">../</span></code> is correct and you would join this with
+the <code class="docutils literal notranslate"><span class="pre">UPLOAD_FOLDER</span></code> the user might have the ability to modify a file on
+the server’s filesystem he or she should not modify.  This does require some
+knowledge about how the application looks like, but trust me, hackers
+are patient :)</p>
+<p>Now let’s look how that function works:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">secure_filename</span><span class="p">(</span><span class="s1">&#39;../../../../home/username/.bashrc&#39;</span><span class="p">)</span>
+<span class="go">&#39;home_username_.bashrc&#39;</span>
+</pre></div>
+</div>
+</div>
+<p>We want to be able to serve the uploaded files so they can be downloaded
+by users. We’ll define a <code class="docutils literal notranslate"><span class="pre">download_file</span></code> view to serve files in the
+upload folder by name. <code class="docutils literal notranslate"><span class="pre">url_for(&quot;download_file&quot;,</span> <span class="pre">name=name)</span></code> generates
+download URLs.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_from_directory</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/uploads/&lt;name&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">download_file</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">send_from_directory</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;UPLOAD_FOLDER&quot;</span><span class="p">],</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you’re using middleware or the HTTP server to serve files, you can
+register the <code class="docutils literal notranslate"><span class="pre">download_file</span></code> endpoint as <code class="docutils literal notranslate"><span class="pre">build_only</span></code> so <code class="docutils literal notranslate"><span class="pre">url_for</span></code>
+will work without a view function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span>
+    <span class="s2">&quot;/uploads/&lt;name&gt;&quot;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;download_file&quot;</span><span class="p">,</span> <span class="n">build_only</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="improving-uploads">
+<h2>Improving Uploads<a class="headerlink" href="#improving-uploads" title="Link to this heading">¶</a></h2>
+<details class="changelog">
+<summary>Changelog</summary><div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.6.</span></p>
+</div>
+</details><p>So how exactly does Flask handle uploads?  Well it will store them in the
+webserver’s memory if the files are reasonably small, otherwise in a
+temporary location (as returned by <a class="reference external" href="https://docs.python.org/3/library/tempfile.html#tempfile.gettempdir" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">tempfile.gettempdir()</span></code></a>).  But how
+do you specify the maximum file size after which an upload is aborted?  By
+default Flask will happily accept file uploads with an unlimited amount of
+memory, but you can limit that by setting the <code class="docutils literal notranslate"><span class="pre">MAX_CONTENT_LENGTH</span></code>
+config key:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">Request</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;MAX_CONTENT_LENGTH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">1000</span>
+</pre></div>
+</div>
+<p>The code above will limit the maximum allowed payload to 16 megabytes.
+If a larger file is transmitted, Flask will raise a
+<a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/exceptions/#werkzeug.exceptions.RequestEntityTooLarge" title="(in Werkzeug v3.1.x)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">RequestEntityTooLarge</span></code></a> exception.</p>
+<div class="admonition-connection-reset-issue admonition">
+<p class="admonition-title">Connection Reset Issue</p>
+<p>When using the local development server, you may get a connection
+reset error instead of a 413 response. You will get the correct
+status response when running the app with a production WSGI server.</p>
+</div>
+<p>This feature was added in Flask 0.6 but can be achieved in older versions
+as well by subclassing the request object.  For more information on that
+consult the Werkzeug documentation on file handling.</p>
+</section>
+<section id="upload-progress-bars">
+<h2>Upload Progress Bars<a class="headerlink" href="#upload-progress-bars" title="Link to this heading">¶</a></h2>
+<p>A while ago many developers had the idea to read the incoming file in
+small chunks and store the upload progress in the database to be able to
+poll the progress with JavaScript from the client. The client asks the
+server every 5 seconds how much it has transmitted, but this is
+something it should already know.</p>
+</section>
+<section id="an-easier-solution">
+<h2>An Easier Solution<a class="headerlink" href="#an-easier-solution" title="Link to this heading">¶</a></h2>
+<p>Now there are better solutions that work faster and are more reliable. There
+are JavaScript libraries like <a class="reference external" href="https://jquery.com/">jQuery</a> that have form plugins to ease the
+construction of progress bar.</p>
+<p>Because the common pattern for file uploads exists almost unchanged in all
+applications dealing with uploads, there are also some Flask extensions that
+implement a full fledged upload mechanism that allows controlling which
+file extensions are allowed to be uploaded.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+  
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Uploading Files</a><ul>
+<li><a class="reference internal" href="#a-gentle-introduction">A Gentle Introduction</a></li>
+<li><a class="reference internal" href="#improving-uploads">Improving Uploads</a></li>
+<li><a class="reference internal" href="#upload-progress-bars">Upload Progress Bars</a></li>
+<li><a class="reference internal" href="#an-easier-solution">An Easier Solution</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="../index.html">Overview</a>
+    <ul>
+      <li><a href="index.html">Patterns for Flask</a>
+        <ul>
+          <li>Previous: <a href="sqlalchemy.html" title="previous chapter">SQLAlchemy in Flask</a>
+          <li>Next: <a href="caching.html" title="next chapter">Caching</a></ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Debugging Application Errors &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
+    <script src="_static/documentation_options.js?v=56528222"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Logging" href="logging.html" />
+    <link rel="prev" title="Handling Application Errors" href="errorhandling.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="logging.html" title="Logging"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="errorhandling.html" title="Handling Application Errors"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Debugging Application Errors</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="debugging-application-errors">
+<h1>Debugging Application Errors<a class="headerlink" href="#debugging-application-errors" title="Link to this heading">¶</a></h1>
+<section id="in-production">
+<h2>In Production<a class="headerlink" href="#in-production" title="Link to this heading">¶</a></h2>
+<p><strong>Do not run the development server, or enable the built-in debugger, in
+a production environment.</strong> The debugger allows executing arbitrary
+Python code from the browser. It’s protected by a pin, but that should
+not be relied on for security.</p>
+<p>Use an error logging tool, such as Sentry, as described in
+<a class="reference internal" href="errorhandling.html#error-logging-tools"><span class="std std-ref">Error Logging Tools</span></a>, or enable logging and notifications as
+described in <a class="reference internal" href="logging.html"><span class="doc">Logging</span></a>.</p>
+<p>If you have access to the server, you could add some code to start an
+external debugger if <code class="docutils literal notranslate"><span class="pre">request.remote_addr</span></code> matches your IP. Some IDE
+debuggers also have a remote mode so breakpoints on the server can be
+interacted with locally. Only enable a debugger temporarily.</p>
+</section>
+<section id="the-built-in-debugger">
+<h2>The Built-In Debugger<a class="headerlink" href="#the-built-in-debugger" title="Link to this heading">¶</a></h2>
+<p>The built-in Werkzeug development server provides a debugger which shows
+an interactive traceback in the browser when an unhandled error occurs
+during a request. This debugger should only be used during development.</p>
+<img alt="screenshot of debugger in action" class="screenshot align-center" src="_images/debugger.png" />
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The debugger allows executing arbitrary Python code from the
+browser. It is protected by a pin, but still represents a major
+security risk. Do not run the development server or debugger in a
+production environment.</p>
+</div>
+<p>The debugger is enabled by default when the development server is run in debug mode.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ flask --app hello run --debug
+</pre></div>
+</div>
+<p>When running from Python code, passing <code class="docutils literal notranslate"><span class="pre">debug=True</span></code> enables debug mode, which is
+mostly equivalent.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="server.html"><span class="doc">Development Server</span></a> and <a class="reference internal" href="cli.html"><span class="doc">Command Line Interface</span></a> have more information about running the debugger and
+debug mode. More information about the debugger can be found in the <a class="reference external" href="https://werkzeug.palletsprojects.com/debug/">Werkzeug
+documentation</a>.</p>
+</section>
+<section id="external-debuggers">
+<h2>External Debuggers<a class="headerlink" href="#external-debuggers" title="Link to this heading">¶</a></h2>
+<p>External debuggers, such as those provided by IDEs, can offer a more
+powerful debugging experience than the built-in debugger. They can also
+be used to step through code during a request before an error is raised,
+or if no error is raised. Some even have a remote mode so you can debug
+code running on another machine.</p>
+<p>When using an external debugger, the app should still be in debug mode, otherwise Flask
+turns unhandled errors into generic 500 error pages. However, the built-in debugger and
+reloader should be disabled so they don’t interfere with the external debugger.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ flask --app hello run --debug --no-debugger --no-reload
+</pre></div>
+</div>
+<p>When running from Python:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_debugger</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_reloader</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Disabling these isn’t required, an external debugger will continue to work with the
+following caveats.</p>
+<ul>
+<li><p>If the built-in debugger is not disabled, it will catch unhandled exceptions before
+the external debugger can.</p></li>
+<li><p>If the reloader is not disabled, it could cause an unexpected reload if code changes
+during a breakpoint.</p></li>
+<li><p>The development server will still catch unhandled exceptions if the built-in
+debugger is disabled, otherwise it would crash on any error. If you want that (and
+usually you don’t) pass <code class="docutils literal notranslate"><span class="pre">passthrough_errors=True</span></code> to <code class="docutils literal notranslate"><span class="pre">app.run</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+    <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">passthrough_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">use_debugger</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_reloader</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  
+    
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+  
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Debugging Application Errors</a><ul>
+<li><a class="reference internal" href="#in-production">In Production</a></li>
+<li><a class="reference internal" href="#the-built-in-debugger">The Built-In Debugger</a></li>
+<li><a class="reference internal" href="#external-debuggers">External Debuggers</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="index.html">Overview</a>
+    <ul>
+          <li>Previous: <a href="errorhandling.html" title="previous chapter">Handling Application Errors</a>
+          <li>Next: <a href="logging.html" title="next chapter">Logging</a>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

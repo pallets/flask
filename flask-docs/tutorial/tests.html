@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Test Coverage &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
+    <script src="../_static/documentation_options.js?v=56528222"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Deploy to Production" href="deploy.html" />
+    <link rel="prev" title="Make the Project Installable" href="install.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="deploy.html" title="Deploy to Production"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Make the Project Installable"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Tutorial</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Test Coverage</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="test-coverage">
+<h1>Test Coverage<a class="headerlink" href="#test-coverage" title="Link to this heading">¶</a></h1>
+<p>Writing unit tests for your application lets you check that the code
+you wrote works the way you expect. Flask provides a test client that
+simulates requests to the application and returns the response data.</p>
+<p>You should test as much of your code as possible. Code in functions only
+runs when the function is called, and code in branches, such as <code class="docutils literal notranslate"><span class="pre">if</span></code>
+blocks, only runs when the condition is met. You want to make sure that
+each function is tested with data that covers each branch.</p>
+<p>The closer you get to 100% coverage, the more comfortable you can be
+that making a change won’t unexpectedly change other behavior. However,
+100% coverage doesn’t guarantee that your application doesn’t have bugs.
+In particular, it doesn’t test how the user interacts with the
+application in the browser. Despite this, test coverage is an important
+tool to use during development.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is being introduced late in the tutorial, but in your future
+projects you should test as you develop.</p>
+</div>
+<p>You’ll use <a class="reference external" href="https://pytest.readthedocs.io/">pytest</a> and <a class="reference external" href="https://coverage.readthedocs.io/">coverage</a> to test and measure your code.
+Install them both:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ pip install pytest coverage
+</pre></div>
+</div>
+<section id="setup-and-fixtures">
+<h2>Setup and Fixtures<a class="headerlink" href="#setup-and-fixtures" title="Link to this heading">¶</a></h2>
+<p>The test code is located in the <code class="docutils literal notranslate"><span class="pre">tests</span></code> directory. This directory is
+<em>next to</em> the <code class="docutils literal notranslate"><span class="pre">flaskr</span></code> package, not inside it. The
+<code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code> file contains setup functions called <em>fixtures</em>
+that each test will use. Tests are in Python modules that start with
+<code class="docutils literal notranslate"><span class="pre">test_</span></code>, and each test function in those modules also starts with
+<code class="docutils literal notranslate"><span class="pre">test_</span></code>.</p>
+<p>Each test will create a new temporary database file and populate some
+data that will be used in the tests. Write a SQL file to insert that
+data.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/data.sql</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="k">user</span><span class="w"> </span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">)</span>
+<span class="k">VALUES</span>
+<span class="w">  </span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;pbkdf2:sha256:50000$TCI4GzcX$0de171a4f4dac32e3364c7ddc7c14f3e2fa61f2d17574483f7ffbb431b4acb2f&#39;</span><span class="p">),</span>
+<span class="w">  </span><span class="p">(</span><span class="s1">&#39;other&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;pbkdf2:sha256:50000$kJPKsz6N$d2d4784f1b030a9761f5ccaeeaca413f27f2ecb76d6168407af962ddce849f79&#39;</span><span class="p">);</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">post</span><span class="w"> </span><span class="p">(</span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="n">body</span><span class="p">,</span><span class="w"> </span><span class="n">author_id</span><span class="p">,</span><span class="w"> </span><span class="n">created</span><span class="p">)</span>
+<span class="k">VALUES</span>
+<span class="w">  </span><span class="p">(</span><span class="s1">&#39;test title&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;test&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">x</span><span class="s1">&#39;0a&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s1">&#39;body&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;2018-01-01 00:00:00&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">app</span></code> fixture will call the factory and pass <code class="docutils literal notranslate"><span class="pre">test_config</span></code> to
+configure the application and database for testing instead of using your
+local development configuration.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flaskr</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flaskr.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_db</span><span class="p">,</span> <span class="n">init_db</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;data.sql&#39;</span><span class="p">),</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">_data_sql</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">app</span><span class="p">():</span>
+    <span class="n">db_fd</span><span class="p">,</span> <span class="n">db_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">({</span>
+        <span class="s1">&#39;TESTING&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;DATABASE&#39;</span><span class="p">:</span> <span class="n">db_path</span><span class="p">,</span>
+    <span class="p">})</span>
+
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+        <span class="n">init_db</span><span class="p">()</span>
+        <span class="n">get_db</span><span class="p">()</span><span class="o">.</span><span class="n">executescript</span><span class="p">(</span><span class="n">_data_sql</span><span class="p">)</span>
+
+    <span class="k">yield</span> <span class="n">app</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">db_fd</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">client</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">test_client</span><span class="p">()</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">runner</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">test_cli_runner</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p><a class="reference external" href="https://docs.python.org/3/library/tempfile.html#tempfile.mkstemp" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">tempfile.mkstemp()</span></code></a> creates and opens a temporary file, returning
+the file descriptor and the path to it. The <code class="docutils literal notranslate"><span class="pre">DATABASE</span></code> path is
+overridden so it points to this temporary path instead of the instance
+folder. After setting the path, the database tables are created and the
+test data is inserted. After the test is over, the temporary file is
+closed and removed.</p>
+<p><a class="reference internal" href="../config.html#TESTING" title="TESTING"><code class="xref py py-data docutils literal notranslate"><span class="pre">TESTING</span></code></a> tells Flask that the app is in test mode. Flask changes
+some internal behavior so it’s easier to test, and other extensions can
+also use the flag to make testing them easier.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">client</span></code> fixture calls
+<a class="reference internal" href="../api.html#flask.Flask.test_client" title="flask.Flask.test_client"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.test_client()</span></code></a> with the application
+object created by the <code class="docutils literal notranslate"><span class="pre">app</span></code> fixture. Tests will use the client to make
+requests to the application without running the server.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">runner</span></code> fixture is similar to <code class="docutils literal notranslate"><span class="pre">client</span></code>.
+<a class="reference internal" href="../api.html#flask.Flask.test_cli_runner" title="flask.Flask.test_cli_runner"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.test_cli_runner()</span></code></a> creates a runner
+that can call the Click commands registered with the application.</p>
+<p>Pytest uses fixtures by matching their function names with the names
+of arguments in the test functions. For example, the <code class="docutils literal notranslate"><span class="pre">test_hello</span></code>
+function you’ll write next takes a <code class="docutils literal notranslate"><span class="pre">client</span></code> argument. Pytest matches
+that with the <code class="docutils literal notranslate"><span class="pre">client</span></code> fixture function, calls it, and passes the
+returned value to the test function.</p>
+</section>
+<section id="factory">
+<h2>Factory<a class="headerlink" href="#factory" title="Link to this heading">¶</a></h2>
+<p>There’s not much to test about the factory itself. Most of the code will
+be executed for each test already, so if something fails the other tests
+will notice.</p>
+<p>The only behavior that can change is passing test config. If config is
+not passed, there should be some default configuration, otherwise the
+configuration should be overridden.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_factory.py</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flaskr</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_config</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">create_app</span><span class="p">()</span><span class="o">.</span><span class="n">testing</span>
+    <span class="k">assert</span> <span class="n">create_app</span><span class="p">({</span><span class="s1">&#39;TESTING&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span><span class="o">.</span><span class="n">testing</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_hello</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;Hello, World!&#39;</span>
+</pre></div>
+</div>
+</div>
+<p>You added the <code class="docutils literal notranslate"><span class="pre">hello</span></code> route as an example when writing the factory at
+the beginning of the tutorial. It returns “Hello, World!”, so the test
+checks that the response data matches.</p>
+</section>
+<section id="database">
+<h2>Database<a class="headerlink" href="#database" title="Link to this heading">¶</a></h2>
+<p>Within an application context, <code class="docutils literal notranslate"><span class="pre">get_db</span></code> should return the same
+connection each time it’s called. After the context, the connection
+should be closed.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_db.py</span></code></span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flaskr.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_db</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_close_db</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">db</span> <span class="ow">is</span> <span class="n">get_db</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">sqlite3</span><span class="o">.</span><span class="n">ProgrammingError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;SELECT 1&#39;</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="s1">&#39;closed&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">init-db</span></code> command should call the <code class="docutils literal notranslate"><span class="pre">init_db</span></code> function and output
+a message.</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_db.py</span></code></span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_init_db_command</span><span class="p">(</span><span class="n">runner</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Recorder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="n">called</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">fake_init_db</span><span class="p">():</span>
+        <span class="n">Recorder</span><span class="o">.</span><span class="n">called</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setattr</span><span class="p">(</span><span class="s1">&#39;flaskr.db.init_db&#39;</span><span class="p">,</span> <span class="n">fake_init_db</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;init-db&#39;</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="s1">&#39;Initialized&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">output</span>
+    <span class="k">assert</span> <span class="n">Recorder</span><span class="o">.</span><span class="n">called</span>
+</pre></div>
+</div>
+</div>
+<p>This test uses Pytest’s <code class="docutils literal notranslate"><span class="pre">monkeypatch</span></code> fixture to replace the
+<code class="docutils literal notranslate"><span class="pre">init_db</span></code> function with one that records that it’s been called. The
+<code class="docutils literal notranslate"><span class="pre">runner</span></code> fixture you wrote above is used to call the <code class="docutils literal notranslate"><span class="pre">init-db</span></code>
+command by name.</p>
+</section>
+<section id="authentication">
+<h2>Authentication<a class="headerlink" href="#authentication" title="Link to this heading">¶</a></h2>
+<p>For most of the views, a user needs to be logged in. The easiest way to
+do this in tests is to make a <code class="docutils literal notranslate"><span class="pre">POST</span></code> request to the <code class="docutils literal notranslate"><span class="pre">login</span></code> view
+with the client. Rather than writing that out every time, you can write
+a class with methods to do that, and use a fixture to pass it the client
+for each test.</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">AuthActions</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">client</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="s1">&#39;/auth/login&#39;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">username</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="n">password</span><span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/auth/logout&#39;</span><span class="p">)</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">auth</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">AuthActions</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>With the <code class="docutils literal notranslate"><span class="pre">auth</span></code> fixture, you can call <code class="docutils literal notranslate"><span class="pre">auth.login()</span></code> in a test to
+log in as the <code class="docutils literal notranslate"><span class="pre">test</span></code> user, which was inserted as part of the test
+data in the <code class="docutils literal notranslate"><span class="pre">app</span></code> fixture.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">register</span></code> view should render successfully on <code class="docutils literal notranslate"><span class="pre">GET</span></code>. On <code class="docutils literal notranslate"><span class="pre">POST</span></code>
+with valid form data, it should redirect to the login URL and the user’s
+data should be in the database. Invalid data should display error
+messages.</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_auth.py</span></code></span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">g</span><span class="p">,</span> <span class="n">session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flaskr.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_db</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_register</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/auth/register&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="s1">&#39;/auth/register&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;a&#39;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Location&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;/auth/login&quot;</span>
+
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+        <span class="k">assert</span> <span class="n">get_db</span><span class="p">()</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+            <span class="s2">&quot;SELECT * FROM user WHERE username = &#39;a&#39;&quot;</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">((</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">),</span> <span class="p">(</span>
+    <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;Username is required.&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;Password is required.&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;already registered&#39;</span><span class="p">),</span>
+<span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_register_validate_input</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="s1">&#39;/auth/register&#39;</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">username</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="n">password</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<p><a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/test/#werkzeug.test.Client.get" title="(in Werkzeug v3.1.x)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">client.get()</span></code></a> makes a <code class="docutils literal notranslate"><span class="pre">GET</span></code> request
+and returns the <a class="reference internal" href="../api.html#flask.Response" title="flask.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> object returned by Flask. Similarly,
+<a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/test/#werkzeug.test.Client.post" title="(in Werkzeug v3.1.x)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">client.post()</span></code></a> makes a <code class="docutils literal notranslate"><span class="pre">POST</span></code>
+request, converting the <code class="docutils literal notranslate"><span class="pre">data</span></code> dict into form data.</p>
+<p>To test that the page renders successfully, a simple request is made and
+checked for a <code class="docutils literal notranslate"><span class="pre">200</span> <span class="pre">OK</span></code> <a class="reference internal" href="../api.html#flask.Response.status_code" title="flask.Response.status_code"><code class="xref py py-attr docutils literal notranslate"><span class="pre">status_code</span></code></a>. If
+rendering failed, Flask would return a <code class="docutils literal notranslate"><span class="pre">500</span> <span class="pre">Internal</span> <span class="pre">Server</span> <span class="pre">Error</span></code>
+code.</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">headers</span></code> will have a <code class="docutils literal notranslate"><span class="pre">Location</span></code> header with the login
+URL when the register view redirects to the login view.</p>
+<p><a class="reference internal" href="../api.html#flask.Response.data" title="flask.Response.data"><code class="xref py py-attr docutils literal notranslate"><span class="pre">data</span></code></a> contains the body of the response as bytes. If
+you expect a certain value to render on the page, check that it’s in
+<code class="docutils literal notranslate"><span class="pre">data</span></code>. Bytes must be compared to bytes. If you want to compare text,
+use <a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/wrappers/#werkzeug.wrappers.Response.get_data" title="(in Werkzeug v3.1.x)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_data(as_text=True)</span></code></a>
+instead.</p>
+<p><code class="docutils literal notranslate"><span class="pre">pytest.mark.parametrize</span></code> tells Pytest to run the same test function
+with different arguments. You use it here to test different invalid
+input and error messages without writing the same code three times.</p>
+<p>The tests for the <code class="docutils literal notranslate"><span class="pre">login</span></code> view are very similar to those for
+<code class="docutils literal notranslate"><span class="pre">register</span></code>. Rather than testing the data in the database,
+<a class="reference internal" href="../api.html#flask.session" title="flask.session"><code class="xref py py-data docutils literal notranslate"><span class="pre">session</span></code></a> should have <code class="docutils literal notranslate"><span class="pre">user_id</span></code> set after logging in.</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_auth.py</span></code></span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_login</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">auth</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/auth/login&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Location&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span>
+
+    <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;test&#39;</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">((</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">),</span> <span class="p">(</span>
+    <span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;Incorrect username.&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;Incorrect password.&#39;</span><span class="p">),</span>
+<span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_login_validate_input</span><span class="p">(</span><span class="n">auth</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<p>Using <code class="docutils literal notranslate"><span class="pre">client</span></code> in a <code class="docutils literal notranslate"><span class="pre">with</span></code> block allows accessing context variables
+such as <a class="reference internal" href="../api.html#flask.session" title="flask.session"><code class="xref py py-data docutils literal notranslate"><span class="pre">session</span></code></a> after the response is returned. Normally,
+accessing <code class="docutils literal notranslate"><span class="pre">session</span></code> outside of a request would raise an error.</p>
+<p>Testing <code class="docutils literal notranslate"><span class="pre">logout</span></code> is the opposite of <code class="docutils literal notranslate"><span class="pre">login</span></code>. <a class="reference internal" href="../api.html#flask.session" title="flask.session"><code class="xref py py-data docutils literal notranslate"><span class="pre">session</span></code></a> should
+not contain <code class="docutils literal notranslate"><span class="pre">user_id</span></code> after logging out.</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_auth.py</span></code></span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_logout</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">auth</span><span class="p">):</span>
+    <span class="n">auth</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">auth</span><span class="o">.</span><span class="n">logout</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="blog">
+<h2>Blog<a class="headerlink" href="#blog" title="Link to this heading">¶</a></h2>
+<p>All the blog views use the <code class="docutils literal notranslate"><span class="pre">auth</span></code> fixture you wrote earlier. Call
+<code class="docutils literal notranslate"><span class="pre">auth.login()</span></code> and subsequent requests from the client will be logged
+in as the <code class="docutils literal notranslate"><span class="pre">test</span></code> user.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">index</span></code> view should display information about the post that was
+added with the test data. When logged in as the author, there should be
+a link to edit the post.</p>
+<p>You can also test some more authentication behavior while testing the
+<code class="docutils literal notranslate"><span class="pre">index</span></code> view. When not logged in, each page shows links to log in or
+register. When logged in, there’s a link to log out.</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_blog.py</span></code></span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flaskr.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_db</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_index</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">auth</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="sa">b</span><span class="s2">&quot;Log In&quot;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">assert</span> <span class="sa">b</span><span class="s2">&quot;Register&quot;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">auth</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="sa">b</span><span class="s1">&#39;Log Out&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">assert</span> <span class="sa">b</span><span class="s1">&#39;test title&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">assert</span> <span class="sa">b</span><span class="s1">&#39;by test on 2018-01-01&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">assert</span> <span class="sa">b</span><span class="s1">&#39;test</span><span class="se">\n</span><span class="s1">body&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">assert</span> <span class="sa">b</span><span class="s1">&#39;href=&quot;/1/update&quot;&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<p>A user must be logged in to access the <code class="docutils literal notranslate"><span class="pre">create</span></code>, <code class="docutils literal notranslate"><span class="pre">update</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">delete</span></code> views. The logged in user must be the author of the post to
+access <code class="docutils literal notranslate"><span class="pre">update</span></code> and <code class="docutils literal notranslate"><span class="pre">delete</span></code>, otherwise a <code class="docutils literal notranslate"><span class="pre">403</span> <span class="pre">Forbidden</span></code> status
+is returned. If a <code class="docutils literal notranslate"><span class="pre">post</span></code> with the given <code class="docutils literal notranslate"><span class="pre">id</span></code> doesn’t exist,
+<code class="docutils literal notranslate"><span class="pre">update</span></code> and <code class="docutils literal notranslate"><span class="pre">delete</span></code> should return <code class="docutils literal notranslate"><span class="pre">404</span> <span class="pre">Not</span> <span class="pre">Found</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_blog.py</span></code></span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="p">(</span>
+    <span class="s1">&#39;/create&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;/1/update&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;/1/delete&#39;</span><span class="p">,</span>
+<span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_login_required</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Location&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;/auth/login&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_author_required</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">auth</span><span class="p">):</span>
+    <span class="c1"># change the post author to another user</span>
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;UPDATE post SET author_id = 2 WHERE id = 1&#39;</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="n">auth</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+    <span class="c1"># current user can&#39;t modify other user&#39;s post</span>
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/1/update&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">403</span>
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/1/delete&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">403</span>
+    <span class="c1"># current user doesn&#39;t see edit link</span>
+    <span class="k">assert</span> <span class="sa">b</span><span class="s1">&#39;href=&quot;/1/update&quot;&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="p">(</span>
+    <span class="s1">&#39;/2/update&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;/2/delete&#39;</span><span class="p">,</span>
+<span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_exists_required</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">auth</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="n">auth</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span>
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">create</span></code> and <code class="docutils literal notranslate"><span class="pre">update</span></code> views should render and return a
+<code class="docutils literal notranslate"><span class="pre">200</span> <span class="pre">OK</span></code> status for a <code class="docutils literal notranslate"><span class="pre">GET</span></code> request. When valid data is sent in a
+<code class="docutils literal notranslate"><span class="pre">POST</span></code> request, <code class="docutils literal notranslate"><span class="pre">create</span></code> should insert the new post data into the
+database, and <code class="docutils literal notranslate"><span class="pre">update</span></code> should modify the existing data. Both pages
+should show an error message on invalid data.</p>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_blog.py</span></code></span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_create</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">auth</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+    <span class="n">auth</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/create&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/create&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;created&#39;</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">})</span>
+
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;SELECT COUNT(id) FROM post&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">2</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_update</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">auth</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+    <span class="n">auth</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/1/update&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/1/update&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;updated&#39;</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">})</span>
+
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+        <span class="n">post</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;SELECT * FROM post WHERE id = 1&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">post</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;updated&#39;</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="p">(</span>
+    <span class="s1">&#39;/create&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;/1/update&#39;</span><span class="p">,</span>
+<span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_create_update_validate</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">auth</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="n">auth</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">})</span>
+    <span class="k">assert</span> <span class="sa">b</span><span class="s1">&#39;Title is required.&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">delete</span></code> view should redirect to the index URL and the post should
+no longer exist in the database.</p>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_blog.py</span></code></span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_delete</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">auth</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+    <span class="n">auth</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/1/delete&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Location&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span>
+
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+        <span class="n">post</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;SELECT * FROM post WHERE id = 1&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">post</span> <span class="ow">is</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="running-the-tests">
+<h2>Running the Tests<a class="headerlink" href="#running-the-tests" title="Link to this heading">¶</a></h2>
+<p>Some extra configuration, which is not required but makes running tests with coverage
+less verbose, can be added to the project’s <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file.</p>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></span><a class="headerlink" href="#id14" title="Link to this code">¶</a></div>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[tool.pytest.ini_options]</span>
+<span class="n">testpaths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;tests&quot;</span><span class="p">]</span>
+
+<span class="k">[tool.coverage.run]</span>
+<span class="n">branch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;flaskr&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p>To run the tests, use the <code class="docutils literal notranslate"><span class="pre">pytest</span></code> command. It will find and run all
+the test functions you’ve written.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ pytest
+
+========================= test session starts ==========================
+platform linux -- Python 3.6.4, pytest-3.5.0, py-1.5.3, pluggy-0.6.0
+rootdir: /home/user/Projects/flask-tutorial
+collected 23 items
+
+tests/test_auth.py ........                                      [ 34%]
+tests/test_blog.py ............                                  [ 86%]
+tests/test_db.py ..                                              [ 95%]
+tests/test_factory.py ..                                         [100%]
+
+====================== 24 passed in 0.64 seconds =======================
+</pre></div>
+</div>
+<p>If any tests fail, pytest will show the error that was raised. You can
+run <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">-v</span></code> to get a list of each test function rather than dots.</p>
+<p>To measure the code coverage of your tests, use the <code class="docutils literal notranslate"><span class="pre">coverage</span></code> command
+to run pytest instead of running it directly.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ coverage run -m pytest
+</pre></div>
+</div>
+<p>You can either view a simple coverage report in the terminal:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ coverage report
+
+Name                 Stmts   Miss Branch BrPart  Cover
+------------------------------------------------------
+flaskr/__init__.py      21      0      2      0   100%
+flaskr/auth.py          54      0     22      0   100%
+flaskr/blog.py          54      0     16      0   100%
+flaskr/db.py            24      0      4      0   100%
+------------------------------------------------------
+TOTAL                  153      0     44      0   100%
+</pre></div>
+</div>
+<p>An HTML report allows you to see which lines were covered in each file:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ coverage html
+</pre></div>
+</div>
+<p>This generates files in the <code class="docutils literal notranslate"><span class="pre">htmlcov</span></code> directory. Open
+<code class="docutils literal notranslate"><span class="pre">htmlcov/index.html</span></code> in your browser to see the report.</p>
+<p>Continue to <a class="reference internal" href="deploy.html"><span class="doc">Deploy to Production</span></a>.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+  
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Test Coverage</a><ul>
+<li><a class="reference internal" href="#setup-and-fixtures">Setup and Fixtures</a></li>
+<li><a class="reference internal" href="#factory">Factory</a></li>
+<li><a class="reference internal" href="#database">Database</a></li>
+<li><a class="reference internal" href="#authentication">Authentication</a></li>
+<li><a class="reference internal" href="#blog">Blog</a></li>
+<li><a class="reference internal" href="#running-the-tests">Running the Tests</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="../index.html">Overview</a>
+    <ul>
+      <li><a href="index.html">Tutorial</a>
+        <ul>
+          <li>Previous: <a href="install.html" title="previous chapter">Make the Project Installable</a>
+          <li>Next: <a href="deploy.html" title="next chapter">Deploy to Production</a></ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>
