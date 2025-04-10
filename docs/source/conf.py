@@ -8,30 +8,30 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../src'))
 
-project = 'Flask'
-copyright = '2025, Pallets Team'
-author = 'Pallets Team'
+sys.path.insert(0, os.path.abspath("../../src"))
+
+project = "Flask"
+copyright = "2025, Pallets Team"
+author = "Pallets Team"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx.ext.autodoc',      # Para generar doc automáticamente desde los docstrings
-    'sphinx.ext.napoleon',     # Para soportar docstrings estilo Google/NumPy
-    'sphinx.ext.todo',         # Para mostrar TODOs
+    "sphinx.ext.autodoc",  # Para generar doc automáticamente desde los docstrings
+    "sphinx.ext.napoleon",  # Para soportar docstrings estilo Google/NumPy
+    "sphinx.ext.todo",  # Para mostrar TODOs
 ]
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
-
 
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+html_theme = "sphinx_rtd_theme"
+html_static_path = ["_static"]
 
 todo_include_todos = True
