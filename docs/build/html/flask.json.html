@@ -1,0 +1,1053 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>flask.json package &mdash; Flask  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="flask package" href="flask.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Flask
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">flask</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="flask.html">flask package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="flask.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">flask.json package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.app">flask.app module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.blueprints">flask.blueprints module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.cli">flask.cli module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.config">flask.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.ctx">flask.ctx module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.debughelpers">flask.debughelpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.globals">flask.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.helpers">flask.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.logging">flask.logging module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.sessions">flask.sessions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.signals">flask.signals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.templating">flask.templating module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.testing">flask.testing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.typing">flask.typing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.views">flask.views module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask.wrappers">flask.wrappers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flask.html#module-flask">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Flask</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">flask</a></li>
+          <li class="breadcrumb-item"><a href="flask.html">flask package</a></li>
+      <li class="breadcrumb-item active">flask.json package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/flask.json.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="flask-json-package">
+<h1>flask.json package<a class="headerlink" href="#flask-json-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-flask.json.provider">
+<span id="flask-json-provider-module"></span><h2>flask.json.provider module<a class="headerlink" href="#module-flask.json.provider" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="flask.json.provider.DefaultJSONProvider">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask.json.provider.</span></span><span class="sig-name descname"><span class="pre">DefaultJSONProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">App</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flask.json.provider.DefaultJSONProvider" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#flask.json.provider.JSONProvider" title="flask.json.provider.JSONProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONProvider</span></code></a></p>
+<p>Provide JSON operations using Python’s built-in <code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code>
+library. Serializes the following additional data types:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.date</span></code> are
+serialized to <span class="target" id="index-0"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc822.html"><strong>RFC 822</strong></a> strings. This is the same as the HTTP
+date format.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code> is serialized to a string.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dataclasses.dataclass</span></code> is passed to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses.asdict()</span></code>.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Markup</span></code> (or any object with a <code class="docutils literal notranslate"><span class="pre">__html__</span></code>
+method) will call the <code class="docutils literal notranslate"><span class="pre">__html__</span></code> method to get a string.</p></li>
+</ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.provider.DefaultJSONProvider.compact">
+<span class="sig-name descname"><span class="pre">compact</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#flask.json.provider.DefaultJSONProvider.compact" title="Link to this definition"></a></dt>
+<dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, or <code class="docutils literal notranslate"><span class="pre">None</span></code> out of debug mode, the <a class="reference internal" href="#flask.json.provider.DefaultJSONProvider.response" title="flask.json.provider.DefaultJSONProvider.response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">response()</span></code></a>
+output will not add indentation, newlines, or spaces. If <code class="docutils literal notranslate"><span class="pre">False</span></code>,
+or <code class="docutils literal notranslate"><span class="pre">None</span></code> in debug mode, it will use a non-compact representation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.provider.DefaultJSONProvider.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.provider.DefaultJSONProvider.default" title="Link to this definition"></a></dt>
+<dd><p>Apply this function to any object that <code class="xref py py-meth docutils literal notranslate"><span class="pre">json.dumps()</span></code> does
+not know how to serialize. It should return a valid JSON type or
+raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.provider.DefaultJSONProvider.dumps">
+<span class="sig-name descname"><span class="pre">dumps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#flask.json.provider.DefaultJSONProvider.dumps" title="Link to this definition"></a></dt>
+<dd><p>Serialize data as JSON to a string.</p>
+<p>Keyword arguments are passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code>. Sets some
+parameter defaults from the <a class="reference internal" href="#flask.json.provider.DefaultJSONProvider.default" title="flask.json.provider.DefaultJSONProvider.default"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default</span></code></a>,
+<a class="reference internal" href="#flask.json.provider.DefaultJSONProvider.ensure_ascii" title="flask.json.provider.DefaultJSONProvider.ensure_ascii"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ensure_ascii</span></code></a>, and <a class="reference internal" href="#flask.json.provider.DefaultJSONProvider.sort_keys" title="flask.json.provider.DefaultJSONProvider.sort_keys"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sort_keys</span></code></a> attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – The data to serialize.</p></li>
+<li><p><strong>kwargs</strong> – Passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.provider.DefaultJSONProvider.ensure_ascii">
+<span class="sig-name descname"><span class="pre">ensure_ascii</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#flask.json.provider.DefaultJSONProvider.ensure_ascii" title="Link to this definition"></a></dt>
+<dd><p>Replace non-ASCII characters with escape sequences. This may be
+more compatible with some clients, but can be disabled for better
+performance and size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.provider.DefaultJSONProvider.loads">
+<span class="sig-name descname"><span class="pre">loads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.provider.DefaultJSONProvider.loads" title="Link to this definition"></a></dt>
+<dd><p>Deserialize data as JSON from a string or bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> – Text or UTF-8 bytes.</p></li>
+<li><p><strong>kwargs</strong> – Passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">json.loads()</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.provider.DefaultJSONProvider.mimetype">
+<span class="sig-name descname"><span class="pre">mimetype</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'application/json'</span></em><a class="headerlink" href="#flask.json.provider.DefaultJSONProvider.mimetype" title="Link to this definition"></a></dt>
+<dd><p>The mimetype set in <a class="reference internal" href="#flask.json.provider.DefaultJSONProvider.response" title="flask.json.provider.DefaultJSONProvider.response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">response()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.provider.DefaultJSONProvider.response">
+<span class="sig-name descname"><span class="pre">response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="flask.html#flask.wrappers.Response" title="flask.wrappers.Response"><span class="pre">Response</span></a></span></span><a class="headerlink" href="#flask.json.provider.DefaultJSONProvider.response" title="Link to this definition"></a></dt>
+<dd><p>Serialize the given arguments as JSON, and return a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code> object with it. The response mimetype
+will be “application/json” and can be changed with
+<a class="reference internal" href="#flask.json.provider.DefaultJSONProvider.mimetype" title="flask.json.provider.DefaultJSONProvider.mimetype"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mimetype</span></code></a>.</p>
+<p>If <a class="reference internal" href="#flask.json.provider.DefaultJSONProvider.compact" title="flask.json.provider.DefaultJSONProvider.compact"><code class="xref py py-attr docutils literal notranslate"><span class="pre">compact</span></code></a> is <code class="docutils literal notranslate"><span class="pre">False</span></code> or debug mode is enabled, the
+output will be formatted to be easier to read.</p>
+<p>Either positional or keyword arguments can be given, not both.
+If no arguments are given, <code class="docutils literal notranslate"><span class="pre">None</span></code> is serialized.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – A single value to serialize, or multiple values to
+treat as a list to serialize.</p></li>
+<li><p><strong>kwargs</strong> – Treat as a dict to serialize.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.provider.DefaultJSONProvider.sort_keys">
+<span class="sig-name descname"><span class="pre">sort_keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#flask.json.provider.DefaultJSONProvider.sort_keys" title="Link to this definition"></a></dt>
+<dd><p>Sort the keys in any serialized dicts. This may be useful for
+some caching situations, but can be disabled for better performance.
+When enabled, keys must all be strings, they are not converted
+before sorting.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask.json.provider.JSONProvider">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask.json.provider.</span></span><span class="sig-name descname"><span class="pre">JSONProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">App</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flask.json.provider.JSONProvider" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A standard set of JSON operations for an application. Subclasses
+of this can be used to customize JSON behavior or use different
+JSON libraries.</p>
+<p>To implement a provider for a specific library, subclass this base
+class and implement at least <a class="reference internal" href="#flask.json.provider.JSONProvider.dumps" title="flask.json.provider.JSONProvider.dumps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dumps()</span></code></a> and <a class="reference internal" href="#flask.json.provider.JSONProvider.loads" title="flask.json.provider.JSONProvider.loads"><code class="xref py py-meth docutils literal notranslate"><span class="pre">loads()</span></code></a>. All
+other methods have default implementations.</p>
+<p>To use a different provider, either subclass <code class="docutils literal notranslate"><span class="pre">Flask</span></code> and set
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">json_provider_class</span></code> to a provider class, or set
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">app.json</span></code> to an instance of the class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> – An application instance. This will be stored as a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">weakref.proxy</span></code> on the <code class="xref py py-attr docutils literal notranslate"><span class="pre">_app</span></code> attribute.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.2.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.provider.JSONProvider.dump">
+<span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IO</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#flask.json.provider.JSONProvider.dump" title="Link to this definition"></a></dt>
+<dd><p>Serialize data as JSON and write to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – The data to serialize.</p></li>
+<li><p><strong>fp</strong> – A file opened for writing text. Should use the UTF-8
+encoding to be valid JSON.</p></li>
+<li><p><strong>kwargs</strong> – May be passed to the underlying JSON library.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.provider.JSONProvider.dumps">
+<span class="sig-name descname"><span class="pre">dumps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#flask.json.provider.JSONProvider.dumps" title="Link to this definition"></a></dt>
+<dd><p>Serialize data as JSON.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – The data to serialize.</p></li>
+<li><p><strong>kwargs</strong> – May be passed to the underlying JSON library.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.provider.JSONProvider.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IO</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.provider.JSONProvider.load" title="Link to this definition"></a></dt>
+<dd><p>Deserialize data as JSON read from a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fp</strong> – A file opened for reading text or UTF-8 bytes.</p></li>
+<li><p><strong>kwargs</strong> – May be passed to the underlying JSON library.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.provider.JSONProvider.loads">
+<span class="sig-name descname"><span class="pre">loads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.provider.JSONProvider.loads" title="Link to this definition"></a></dt>
+<dd><p>Deserialize data as JSON.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> – Text or UTF-8 bytes.</p></li>
+<li><p><strong>kwargs</strong> – May be passed to the underlying JSON library.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.provider.JSONProvider.response">
+<span class="sig-name descname"><span class="pre">response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="flask.html#flask.wrappers.Response" title="flask.wrappers.Response"><span class="pre">Response</span></a></span></span><a class="headerlink" href="#flask.json.provider.JSONProvider.response" title="Link to this definition"></a></dt>
+<dd><p>Serialize the given arguments as JSON, and return a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code> object with the <code class="docutils literal notranslate"><span class="pre">application/json</span></code>
+mimetype.</p>
+<p>The <a class="reference internal" href="#flask.json.jsonify" title="flask.json.jsonify"><code class="xref py py-func docutils literal notranslate"><span class="pre">jsonify()</span></code></a> function calls this method for
+the current application.</p>
+<p>Either positional or keyword arguments can be given, not both.
+If no arguments are given, <code class="docutils literal notranslate"><span class="pre">None</span></code> is serialized.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – A single value to serialize, or multiple values to
+treat as a list to serialize.</p></li>
+<li><p><strong>kwargs</strong> – Treat as a dict to serialize.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-flask.json.tag">
+<span id="flask-json-tag-module"></span><h2>flask.json.tag module<a class="headerlink" href="#module-flask.json.tag" title="Link to this heading"></a></h2>
+<section id="tagged-json">
+<h3>Tagged JSON<a class="headerlink" href="#tagged-json" title="Link to this heading"></a></h3>
+<p>A compact representation for lossless serialization of non-standard JSON
+types. <a class="reference internal" href="flask.html#flask.sessions.SecureCookieSessionInterface" title="flask.sessions.SecureCookieSessionInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">SecureCookieSessionInterface</span></code></a> uses this
+to serialize the session data, but it may be useful in other places. It
+can be extended to support other types.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="flask.json.tag.TaggedJSONSerializer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask.json.tag.</span></span><span class="sig-name descname"><span class="pre">TaggedJSONSerializer</span></span><a class="headerlink" href="#flask.json.tag.TaggedJSONSerializer" title="Link to this definition"></a></dt>
+<dd><p>Serializer that uses a tag system to compactly represent objects that
+are not JSON types. Passed as the intermediate serializer to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">itsdangerous.Serializer</span></code>.</p>
+<p>The following extra types are supported:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Markup</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></p></li>
+</ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.tag.TaggedJSONSerializer.default_tags">
+<span class="sig-name descname"><span class="pre">default_tags</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;class</span> <span class="pre">'flask.json.tag.TagDict'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'flask.json.tag.PassDict'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'flask.json.tag.TagTuple'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'flask.json.tag.PassList'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'flask.json.tag.TagBytes'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'flask.json.tag.TagMarkup'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'flask.json.tag.TagUUID'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'flask.json.tag.TagDateTime'&gt;]</span></em><a class="headerlink" href="#flask.json.tag.TaggedJSONSerializer.default_tags" title="Link to this definition"></a></dt>
+<dd><p>Tag classes to bind when creating the serializer. Other tags can be
+added later using <a class="reference internal" href="#id10" title="flask.json.tag.TaggedJSONSerializer.register"><code class="xref py py-meth docutils literal notranslate"><span class="pre">register()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TaggedJSONSerializer.dumps">
+<span class="sig-name descname"><span class="pre">dumps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#flask.json.tag.TaggedJSONSerializer.dumps" title="Link to this definition"></a></dt>
+<dd><p>Tag the value and dump it to a compact JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TaggedJSONSerializer.loads">
+<span class="sig-name descname"><span class="pre">loads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TaggedJSONSerializer.loads" title="Link to this definition"></a></dt>
+<dd><p>Load data from a JSON string and deserialized any tagged objects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TaggedJSONSerializer.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#id0" title="flask.json.tag.JSONTag"><span class="pre">JSONTag</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#flask.json.tag.TaggedJSONSerializer.register" title="Link to this definition"></a></dt>
+<dd><p>Register a new tag with this serializer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tag_class</strong> – tag class to register. Will be instantiated with this
+serializer instance.</p></li>
+<li><p><strong>force</strong> – overwrite an existing tag. If false (default), a
+<code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code> is raised.</p></li>
+<li><p><strong>index</strong> – index to insert the new tag in the tag order. Useful when
+the new tag is a special case of an existing tag. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
+(default), the tag is appended to the end of the order.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – if the tag key is already registered and <code class="docutils literal notranslate"><span class="pre">force</span></code> is
+not true.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TaggedJSONSerializer.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TaggedJSONSerializer.tag" title="Link to this definition"></a></dt>
+<dd><p>Convert a value to a tagged representation if necessary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TaggedJSONSerializer.untag">
+<span class="sig-name descname"><span class="pre">untag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TaggedJSONSerializer.untag" title="Link to this definition"></a></dt>
+<dd><p>Convert a tagged representation back to the original type.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask.json.tag.JSONTag">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask.json.tag.</span></span><span class="sig-name descname"><span class="pre">JSONTag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id6" title="flask.json.tag.TaggedJSONSerializer"><span class="pre">TaggedJSONSerializer</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flask.json.tag.JSONTag" title="Link to this definition"></a></dt>
+<dd><p>Base class for defining type tags for <a class="reference internal" href="#id6" title="flask.json.tag.TaggedJSONSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaggedJSONSerializer</span></code></a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.JSONTag.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#flask.json.tag.JSONTag.check" title="Link to this definition"></a></dt>
+<dd><p>Check if the given value should be tagged by this tag.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.tag.JSONTag.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#flask.json.tag.JSONTag.key" title="Link to this definition"></a></dt>
+<dd><p>The tag to mark the serialized object with. If empty, this tag is
+only used as an intermediate step during tagging.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.JSONTag.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#flask.json.tag.JSONTag.tag" title="Link to this definition"></a></dt>
+<dd><p>Convert the value to a valid JSON type and add the tag structure
+around it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.JSONTag.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.JSONTag.to_json" title="Link to this definition"></a></dt>
+<dd><p>Convert the Python object to an object that is a valid JSON type.
+The tag will be added later.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.JSONTag.to_python">
+<span class="sig-name descname"><span class="pre">to_python</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.JSONTag.to_python" title="Link to this definition"></a></dt>
+<dd><p>Convert the JSON representation back to the correct type. The tag
+will already be removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>Let’s see an example that adds support for
+<code class="xref py py-class docutils literal notranslate"><span class="pre">OrderedDict</span></code>. Dicts don’t have an order in JSON, so
+to handle this we will dump the items as a list of <code class="docutils literal notranslate"><span class="pre">[key,</span> <span class="pre">value]</span></code>
+pairs. Subclass <a class="reference internal" href="#id0" title="flask.json.tag.JSONTag"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONTag</span></code></a> and give it the new key <code class="docutils literal notranslate"><span class="pre">'</span> <span class="pre">od'</span></code> to
+identify the type. The session serializer processes dicts first, so
+insert the new tag at the front of the order since <code class="docutils literal notranslate"><span class="pre">OrderedDict</span></code> must
+be processed before <code class="docutils literal notranslate"><span class="pre">dict</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask.json.tag</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONTag</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TagOrderedDict</span><span class="p">(</span><span class="n">JSONTag</span><span class="p">):</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;serializer&#39;</span><span class="p">,)</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39; od&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[[</span><span class="n">k</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">value</span><span class="p">)]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_python</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">session_interface</span><span class="o">.</span><span class="n">serializer</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">TagOrderedDict</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask.json.tag.</span></span><span class="sig-name descname"><span class="pre">JSONTag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id6" title="flask.json.tag.TaggedJSONSerializer"><span class="pre">TaggedJSONSerializer</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for defining type tags for <a class="reference internal" href="#id6" title="flask.json.tag.TaggedJSONSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaggedJSONSerializer</span></code></a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Check if the given value should be tagged by this tag.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd><p>The tag to mark the serialized object with. If empty, this tag is
+only used as an intermediate step during tagging.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.tag.JSONTag.serializer">
+<span class="sig-name descname"><span class="pre">serializer</span></span><a class="headerlink" href="#flask.json.tag.JSONTag.serializer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd><p>Convert the value to a valid JSON type and add the tag structure
+around it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd><p>Convert the Python object to an object that is a valid JSON type.
+The tag will be added later.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">to_python</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd><p>Convert the JSON representation back to the correct type. The tag
+will already be removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask.json.tag.PassDict">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask.json.tag.</span></span><span class="sig-name descname"><span class="pre">PassDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id6" title="flask.json.tag.TaggedJSONSerializer"><span class="pre">TaggedJSONSerializer</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flask.json.tag.PassDict" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#id0" title="flask.json.tag.JSONTag"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONTag</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.PassDict.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#flask.json.tag.PassDict.check" title="Link to this definition"></a></dt>
+<dd><p>Check if the given value should be tagged by this tag.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.PassDict.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.PassDict.tag" title="Link to this definition"></a></dt>
+<dd><p>Convert the value to a valid JSON type and add the tag structure
+around it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.PassDict.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.PassDict.to_json" title="Link to this definition"></a></dt>
+<dd><p>Convert the Python object to an object that is a valid JSON type.
+The tag will be added later.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask.json.tag.PassList">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask.json.tag.</span></span><span class="sig-name descname"><span class="pre">PassList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id6" title="flask.json.tag.TaggedJSONSerializer"><span class="pre">TaggedJSONSerializer</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flask.json.tag.PassList" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#id0" title="flask.json.tag.JSONTag"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONTag</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.PassList.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#flask.json.tag.PassList.check" title="Link to this definition"></a></dt>
+<dd><p>Check if the given value should be tagged by this tag.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.PassList.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.PassList.tag" title="Link to this definition"></a></dt>
+<dd><p>Convert the value to a valid JSON type and add the tag structure
+around it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.PassList.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.PassList.to_json" title="Link to this definition"></a></dt>
+<dd><p>Convert the Python object to an object that is a valid JSON type.
+The tag will be added later.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask.json.tag.TagBytes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask.json.tag.</span></span><span class="sig-name descname"><span class="pre">TagBytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id6" title="flask.json.tag.TaggedJSONSerializer"><span class="pre">TaggedJSONSerializer</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flask.json.tag.TagBytes" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#id0" title="flask.json.tag.JSONTag"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONTag</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagBytes.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#flask.json.tag.TagBytes.check" title="Link to this definition"></a></dt>
+<dd><p>Check if the given value should be tagged by this tag.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.tag.TagBytes.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'</span> <span class="pre">b'</span></em><a class="headerlink" href="#flask.json.tag.TagBytes.key" title="Link to this definition"></a></dt>
+<dd><p>The tag to mark the serialized object with. If empty, this tag is
+only used as an intermediate step during tagging.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagBytes.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TagBytes.to_json" title="Link to this definition"></a></dt>
+<dd><p>Convert the Python object to an object that is a valid JSON type.
+The tag will be added later.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagBytes.to_python">
+<span class="sig-name descname"><span class="pre">to_python</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TagBytes.to_python" title="Link to this definition"></a></dt>
+<dd><p>Convert the JSON representation back to the correct type. The tag
+will already be removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask.json.tag.TagDateTime">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask.json.tag.</span></span><span class="sig-name descname"><span class="pre">TagDateTime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id6" title="flask.json.tag.TaggedJSONSerializer"><span class="pre">TaggedJSONSerializer</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flask.json.tag.TagDateTime" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#id0" title="flask.json.tag.JSONTag"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONTag</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagDateTime.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#flask.json.tag.TagDateTime.check" title="Link to this definition"></a></dt>
+<dd><p>Check if the given value should be tagged by this tag.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.tag.TagDateTime.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'</span> <span class="pre">d'</span></em><a class="headerlink" href="#flask.json.tag.TagDateTime.key" title="Link to this definition"></a></dt>
+<dd><p>The tag to mark the serialized object with. If empty, this tag is
+only used as an intermediate step during tagging.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagDateTime.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TagDateTime.to_json" title="Link to this definition"></a></dt>
+<dd><p>Convert the Python object to an object that is a valid JSON type.
+The tag will be added later.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagDateTime.to_python">
+<span class="sig-name descname"><span class="pre">to_python</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TagDateTime.to_python" title="Link to this definition"></a></dt>
+<dd><p>Convert the JSON representation back to the correct type. The tag
+will already be removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask.json.tag.TagDict">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask.json.tag.</span></span><span class="sig-name descname"><span class="pre">TagDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id6" title="flask.json.tag.TaggedJSONSerializer"><span class="pre">TaggedJSONSerializer</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flask.json.tag.TagDict" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#id0" title="flask.json.tag.JSONTag"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONTag</span></code></a></p>
+<p>Tag for 1-item dicts whose only key matches a registered tag.</p>
+<p>Internally, the dict key is suffixed with <cite>__</cite>, and the suffix is removed
+when deserializing.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagDict.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#flask.json.tag.TagDict.check" title="Link to this definition"></a></dt>
+<dd><p>Check if the given value should be tagged by this tag.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.tag.TagDict.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'</span> <span class="pre">di'</span></em><a class="headerlink" href="#flask.json.tag.TagDict.key" title="Link to this definition"></a></dt>
+<dd><p>The tag to mark the serialized object with. If empty, this tag is
+only used as an intermediate step during tagging.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagDict.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TagDict.to_json" title="Link to this definition"></a></dt>
+<dd><p>Convert the Python object to an object that is a valid JSON type.
+The tag will be added later.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagDict.to_python">
+<span class="sig-name descname"><span class="pre">to_python</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TagDict.to_python" title="Link to this definition"></a></dt>
+<dd><p>Convert the JSON representation back to the correct type. The tag
+will already be removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask.json.tag.TagMarkup">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask.json.tag.</span></span><span class="sig-name descname"><span class="pre">TagMarkup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id6" title="flask.json.tag.TaggedJSONSerializer"><span class="pre">TaggedJSONSerializer</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flask.json.tag.TagMarkup" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#id0" title="flask.json.tag.JSONTag"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONTag</span></code></a></p>
+<p>Serialize anything matching the <code class="xref py py-class docutils literal notranslate"><span class="pre">Markup</span></code> API by
+having a <code class="docutils literal notranslate"><span class="pre">__html__</span></code> method to the result of that method. Always
+deserializes to an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Markup</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagMarkup.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#flask.json.tag.TagMarkup.check" title="Link to this definition"></a></dt>
+<dd><p>Check if the given value should be tagged by this tag.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.tag.TagMarkup.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'</span> <span class="pre">m'</span></em><a class="headerlink" href="#flask.json.tag.TagMarkup.key" title="Link to this definition"></a></dt>
+<dd><p>The tag to mark the serialized object with. If empty, this tag is
+only used as an intermediate step during tagging.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagMarkup.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TagMarkup.to_json" title="Link to this definition"></a></dt>
+<dd><p>Convert the Python object to an object that is a valid JSON type.
+The tag will be added later.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagMarkup.to_python">
+<span class="sig-name descname"><span class="pre">to_python</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TagMarkup.to_python" title="Link to this definition"></a></dt>
+<dd><p>Convert the JSON representation back to the correct type. The tag
+will already be removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask.json.tag.TagTuple">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask.json.tag.</span></span><span class="sig-name descname"><span class="pre">TagTuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id6" title="flask.json.tag.TaggedJSONSerializer"><span class="pre">TaggedJSONSerializer</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flask.json.tag.TagTuple" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#id0" title="flask.json.tag.JSONTag"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONTag</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagTuple.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#flask.json.tag.TagTuple.check" title="Link to this definition"></a></dt>
+<dd><p>Check if the given value should be tagged by this tag.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.tag.TagTuple.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'</span> <span class="pre">t'</span></em><a class="headerlink" href="#flask.json.tag.TagTuple.key" title="Link to this definition"></a></dt>
+<dd><p>The tag to mark the serialized object with. If empty, this tag is
+only used as an intermediate step during tagging.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagTuple.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TagTuple.to_json" title="Link to this definition"></a></dt>
+<dd><p>Convert the Python object to an object that is a valid JSON type.
+The tag will be added later.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagTuple.to_python">
+<span class="sig-name descname"><span class="pre">to_python</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TagTuple.to_python" title="Link to this definition"></a></dt>
+<dd><p>Convert the JSON representation back to the correct type. The tag
+will already be removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flask.json.tag.TagUUID">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask.json.tag.</span></span><span class="sig-name descname"><span class="pre">TagUUID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#id6" title="flask.json.tag.TaggedJSONSerializer"><span class="pre">TaggedJSONSerializer</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flask.json.tag.TagUUID" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#id0" title="flask.json.tag.JSONTag"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONTag</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagUUID.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#flask.json.tag.TagUUID.check" title="Link to this definition"></a></dt>
+<dd><p>Check if the given value should be tagged by this tag.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.tag.TagUUID.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'</span> <span class="pre">u'</span></em><a class="headerlink" href="#flask.json.tag.TagUUID.key" title="Link to this definition"></a></dt>
+<dd><p>The tag to mark the serialized object with. If empty, this tag is
+only used as an intermediate step during tagging.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagUUID.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TagUUID.to_json" title="Link to this definition"></a></dt>
+<dd><p>Convert the Python object to an object that is a valid JSON type.
+The tag will be added later.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flask.json.tag.TagUUID.to_python">
+<span class="sig-name descname"><span class="pre">to_python</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.tag.TagUUID.to_python" title="Link to this definition"></a></dt>
+<dd><p>Convert the JSON representation back to the correct type. The tag
+will already be removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="id6">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flask.json.tag.</span></span><span class="sig-name descname"><span class="pre">TaggedJSONSerializer</span></span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Serializer that uses a tag system to compactly represent objects that
+are not JSON types. Passed as the intermediate serializer to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">itsdangerous.Serializer</span></code>.</p>
+<p>The following extra types are supported:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Markup</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></p></li>
+</ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">default_tags</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;class</span> <span class="pre">'flask.json.tag.TagDict'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'flask.json.tag.PassDict'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'flask.json.tag.TagTuple'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'flask.json.tag.PassList'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'flask.json.tag.TagBytes'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'flask.json.tag.TagMarkup'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'flask.json.tag.TagUUID'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'flask.json.tag.TagDateTime'&gt;]</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd><p>Tag classes to bind when creating the serializer. Other tags can be
+added later using <a class="reference internal" href="#id10" title="flask.json.tag.TaggedJSONSerializer.register"><code class="xref py py-meth docutils literal notranslate"><span class="pre">register()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">dumps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd><p>Tag the value and dump it to a compact JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">loads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd><p>Load data from a JSON string and deserialized any tagged objects.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.tag.TaggedJSONSerializer.order">
+<span class="sig-name descname"><span class="pre">order</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#id0" title="flask.json.tag.JSONTag"><span class="pre">JSONTag</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#flask.json.tag.TaggedJSONSerializer.order" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#id0" title="flask.json.tag.JSONTag"><span class="pre">JSONTag</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dd><p>Register a new tag with this serializer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tag_class</strong> – tag class to register. Will be instantiated with this
+serializer instance.</p></li>
+<li><p><strong>force</strong> – overwrite an existing tag. If false (default), a
+<code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code> is raised.</p></li>
+<li><p><strong>index</strong> – index to insert the new tag in the tag order. Useful when
+the new tag is a special case of an existing tag. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
+(default), the tag is appended to the end of the order.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – if the tag key is already registered and <code class="docutils literal notranslate"><span class="pre">force</span></code> is
+not true.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dd><p>Convert a value to a tagged representation if necessary.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flask.json.tag.TaggedJSONSerializer.tags">
+<span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#id0" title="flask.json.tag.JSONTag"><span class="pre">JSONTag</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#flask.json.tag.TaggedJSONSerializer.tags" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">untag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
+<dd><p>Convert a tagged representation back to the original type.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-flask.json">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-flask.json" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="flask.json.dump">
+<span class="sig-prename descclassname"><span class="pre">flask.json.</span></span><span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IO</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#flask.json.dump" title="Link to this definition"></a></dt>
+<dd><p>Serialize data as JSON and write to a file.</p>
+<p>If <code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code> is available, it will use its
+<a class="reference internal" href="#flask.json.provider.JSONProvider.dump" title="flask.json.provider.JSONProvider.dump"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.json.dump()</span></code></a>
+method, otherwise it will use <code class="xref py py-func docutils literal notranslate"><span class="pre">json.dump()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – The data to serialize.</p></li>
+<li><p><strong>fp</strong> – A file opened for writing text. Should use the UTF-8
+encoding to be valid JSON.</p></li>
+<li><p><strong>kwargs</strong> – Arguments passed to the <code class="docutils literal notranslate"><span class="pre">dump</span></code> implementation.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.3: </span>The <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter was removed.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.2: </span>Calls <code class="docutils literal notranslate"><span class="pre">current_app.json.dump</span></code>, allowing an app to override
+the behavior.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0: </span>Writing to a binary file, and the <code class="docutils literal notranslate"><span class="pre">encoding</span></code> argument, will be
+removed in Flask 2.1.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flask.json.dumps">
+<span class="sig-prename descclassname"><span class="pre">flask.json.</span></span><span class="sig-name descname"><span class="pre">dumps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#flask.json.dumps" title="Link to this definition"></a></dt>
+<dd><p>Serialize data as JSON.</p>
+<p>If <code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code> is available, it will use its
+<a class="reference internal" href="#flask.json.provider.JSONProvider.dumps" title="flask.json.provider.JSONProvider.dumps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.json.dumps()</span></code></a>
+method, otherwise it will use <code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – The data to serialize.</p></li>
+<li><p><strong>kwargs</strong> – Arguments passed to the <code class="docutils literal notranslate"><span class="pre">dumps</span></code> implementation.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.3: </span>The <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter was removed.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.2: </span>Calls <code class="docutils literal notranslate"><span class="pre">current_app.json.dumps</span></code>, allowing an app to override
+the behavior.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.2: </span><code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code> is supported by converting to a string.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0: </span><code class="docutils literal notranslate"><span class="pre">encoding</span></code> will be removed in Flask 2.1.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.0.3: </span><code class="docutils literal notranslate"><span class="pre">app</span></code> can be passed directly, rather than requiring an app
+context for configuration.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flask.json.jsonify">
+<span class="sig-prename descclassname"><span class="pre">flask.json.</span></span><span class="sig-name descname"><span class="pre">jsonify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="flask.html#flask.wrappers.Response" title="flask.wrappers.Response"><span class="pre">Response</span></a></span></span><a class="headerlink" href="#flask.json.jsonify" title="Link to this definition"></a></dt>
+<dd><p>Serialize the given arguments as JSON, and return a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code> object with the <code class="docutils literal notranslate"><span class="pre">application/json</span></code>
+mimetype. A dict or list returned from a view will be converted to a
+JSON response automatically without needing to call this.</p>
+<p>This requires an active request or application context, and calls
+<a class="reference internal" href="#flask.json.provider.JSONProvider.response" title="flask.json.provider.JSONProvider.response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.json.response()</span></code></a>.</p>
+<p>In debug mode, the output is formatted with indentation to make it
+easier to read. This may also be controlled by the provider.</p>
+<p>Either positional or keyword arguments can be given, not both.
+If no arguments are given, <code class="docutils literal notranslate"><span class="pre">None</span></code> is serialized.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – A single value to serialize, or multiple values to
+treat as a list to serialize.</p></li>
+<li><p><strong>kwargs</strong> – Treat as a dict to serialize.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.2: </span>Calls <code class="docutils literal notranslate"><span class="pre">current_app.json.response</span></code>, allowing an app to override
+the behavior.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.2: </span><code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code> is supported by converting to a string.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.11: </span>Added support for serializing top-level arrays. This was a
+security risk in ancient browsers. See <span class="xref std std-ref">security-json</span>.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.2.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flask.json.load">
+<span class="sig-prename descclassname"><span class="pre">flask.json.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IO</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.load" title="Link to this definition"></a></dt>
+<dd><p>Deserialize data as JSON read from a file.</p>
+<p>If <code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code> is available, it will use its
+<a class="reference internal" href="#flask.json.provider.JSONProvider.load" title="flask.json.provider.JSONProvider.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.json.load()</span></code></a>
+method, otherwise it will use <code class="xref py py-func docutils literal notranslate"><span class="pre">json.load()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fp</strong> – A file opened for reading text or UTF-8 bytes.</p></li>
+<li><p><strong>kwargs</strong> – Arguments passed to the <code class="docutils literal notranslate"><span class="pre">load</span></code> implementation.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.3: </span>The <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter was removed.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.2: </span>Calls <code class="docutils literal notranslate"><span class="pre">current_app.json.load</span></code>, allowing an app to override
+the behavior.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.2: </span>The <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter will be removed in Flask 2.3.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0: </span><code class="docutils literal notranslate"><span class="pre">encoding</span></code> will be removed in Flask 2.1. The file must be text
+mode, or binary mode with UTF-8 bytes.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flask.json.loads">
+<span class="sig-prename descclassname"><span class="pre">flask.json.</span></span><span class="sig-name descname"><span class="pre">loads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#flask.json.loads" title="Link to this definition"></a></dt>
+<dd><p>Deserialize data as JSON.</p>
+<p>If <code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code> is available, it will use its
+<a class="reference internal" href="#flask.json.provider.JSONProvider.loads" title="flask.json.provider.JSONProvider.loads"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.json.loads()</span></code></a>
+method, otherwise it will use <code class="xref py py-func docutils literal notranslate"><span class="pre">json.loads()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> – Text or UTF-8 bytes.</p></li>
+<li><p><strong>kwargs</strong> – Arguments passed to the <code class="docutils literal notranslate"><span class="pre">loads</span></code> implementation.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.3: </span>The <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter was removed.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.2: </span>Calls <code class="docutils literal notranslate"><span class="pre">current_app.json.loads</span></code>, allowing an app to override
+the behavior.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0: </span><code class="docutils literal notranslate"><span class="pre">encoding</span></code> will be removed in Flask 2.1. The data must be a
+string or UTF-8 bytes.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.0.3: </span><code class="docutils literal notranslate"><span class="pre">app</span></code> can be passed directly, rather than requiring an app
+context for configuration.</p>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="flask.html" class="btn btn-neutral float-left" title="flask package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pallets Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
