@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Using SQLite 3 with Flask &#8212; Flask Documentation (3.2.x)</title>
+    <title>Template Inheritance &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="SQLAlchemy in Flask" href="sqlalchemy.html" />
-    <link rel="prev" title="Using URL Processors" href="urlprocessors.html" /> 
+    <link rel="next" title="Message Flashing" href="flashing.html" />
+    <link rel="prev" title="Form Validation with WTForms" href="wtforms.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,161 +28,80 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="sqlalchemy.html" title="SQLAlchemy in Flask"
+          <a href="flashing.html" title="Message Flashing"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="urlprocessors.html" title="Using URL Processors"
+          <a href="wtforms.html" title="Form Validation with WTForms"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Patterns for Flask</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Using SQLite 3 with Flask</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Template Inheritance</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="using-sqlite-3-with-flask">
-<h1>Using SQLite 3 with Flask<a class="headerlink" href="#using-sqlite-3-with-flask" title="Link to this heading">¶</a></h1>
-<p>In Flask you can easily implement the opening of database connections on
-demand and closing them when the context dies (usually at the end of the
-request).</p>
-<p>Here is a simple example of how you can use SQLite 3 with Flask:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">g</span>
 
-<span class="n">DATABASE</span> <span class="o">=</span> <span class="s1">&#39;/path/to/database.db&#39;</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">get_db</span><span class="p">():</span>
-    <span class="n">db</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;_database&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">_database</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">DATABASE</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">db</span>
-
-<span class="nd">@app</span><span class="o">.</span><span class="n">teardown_appcontext</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">close_connection</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
-    <span class="n">db</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;_database&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+  <section id="template-inheritance">
+<h1>Template Inheritance<a class="headerlink" href="#template-inheritance" title="Link to this heading">¶</a></h1>
+<p>The most powerful part of Jinja is template inheritance. Template inheritance
+allows you to build a base “skeleton” template that contains all the common
+elements of your site and defines <strong>blocks</strong> that child templates can override.</p>
+<p>Sounds complicated but is very basic. It’s easiest to understand it by starting
+with an example.</p>
+<section id="base-template">
+<h2>Base Template<a class="headerlink" href="#base-template" title="Link to this heading">¶</a></h2>
+<p>This template, which we’ll call <code class="file docutils literal notranslate"><span class="pre">layout.html</span></code>, defines a simple HTML skeleton
+document that you might use for a simple two-column page. It’s the job of
+“child” templates to fill the empty blocks with content:</p>
+<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="cp">{%</span> <span class="k">block</span> <span class="nv">head</span> <span class="cp">%}</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">url_for</span><span class="o">(</span><span class="s1">&#39;static&#39;</span><span class="o">,</span> <span class="nv">filename</span><span class="o">=</span><span class="s1">&#39;style.css&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="s">&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span><span class="cp">{%</span> <span class="k">block</span> <span class="nv">title</span> <span class="cp">%}{%</span> <span class="k">endblock</span> <span class="cp">%}</span> - My Webpage<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    <span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;content&quot;</span><span class="p">&gt;</span><span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}{%</span> <span class="k">endblock</span> <span class="cp">%}</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;footer&quot;</span><span class="p">&gt;</span>
+      <span class="cp">{%</span> <span class="k">block</span> <span class="nv">footer</span> <span class="cp">%}</span>
+      <span class="ni">&amp;copy;</span> Copyright 2010 by <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://domain.invalid/&quot;</span><span class="p">&gt;</span>you<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>.
+      <span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
 </pre></div>
 </div>
-<p>Now, to use the database, the application must either have an active
-application context (which is always true if there is a request in flight)
-or create an application context itself.  At that point the <code class="docutils literal notranslate"><span class="pre">get_db</span></code>
-function can be used to get the current database connection.  Whenever the
-context is destroyed the database connection will be terminated.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
-    <span class="n">cur</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-    <span class="o">...</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Please keep in mind that the teardown request and appcontext functions
-are always executed, even if a before-request handler failed or was
-never executed.  Because of this we have to make sure here that the
-database is there before we close it.</p>
-</div>
-<section id="connect-on-demand">
-<h2>Connect on Demand<a class="headerlink" href="#connect-on-demand" title="Link to this heading">¶</a></h2>
-<p>The upside of this approach (connecting on first use) is that this will
-only open the connection if truly necessary.  If you want to use this
-code outside a request context you can use it in a Python shell by opening
-the application context by hand:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
-    <span class="c1"># now you can use get_db()</span>
-</pre></div>
-</div>
+<p>In this example, the <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">block</span> <span class="pre">%}</span></code> tags define four blocks that child templates
+can fill in. All the <code class="code docutils literal notranslate"><span class="pre">block</span></code> tag does is tell the template engine that a
+child template may override those portions of the template.</p>
 </section>
-<section id="easy-querying">
-<h2>Easy Querying<a class="headerlink" href="#easy-querying" title="Link to this heading">¶</a></h2>
-<p>Now in each request handling function you can access <code class="code docutils literal notranslate"><span class="pre">get_db()</span></code> to get the
-current open database connection.  To simplify working with SQLite, a
-row factory function is useful.  It is executed for every result returned
-from the database to convert the result.  For instance, in order to get
-dictionaries instead of tuples, this could be inserted into the <code class="docutils literal notranslate"><span class="pre">get_db</span></code>
-function we created above:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">make_dicts</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">cursor</span><span class="o">.</span><span class="n">description</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
-
-<span class="n">db</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">make_dicts</span>
+<section id="child-template">
+<h2>Child Template<a class="headerlink" href="#child-template" title="Link to this heading">¶</a></h2>
+<p>A child template might look like this:</p>
+<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">extends</span> <span class="s2">&quot;layout.html&quot;</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">block</span> <span class="nv">title</span> <span class="cp">%}</span>Index<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">block</span> <span class="nv">head</span> <span class="cp">%}</span>
+  <span class="cp">{{</span> <span class="nb">super</span><span class="o">()</span> <span class="cp">}}</span>
+  <span class="p">&lt;</span><span class="nt">style</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text/css&quot;</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">.</span><span class="nc">important</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="mh">#336699</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Index<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;important&quot;</span><span class="p">&gt;</span>
+    Welcome on my awesome homepage.
+<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
 </pre></div>
 </div>
-<p>This will make the sqlite3 module return dicts for this database connection, which are much nicer to deal with. Even more simply, we could place this in <code class="docutils literal notranslate"><span class="pre">get_db</span></code> instead:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">db</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span>
-</pre></div>
-</div>
-<p>This would use Row objects rather than dicts to return the results of queries. These are <code class="docutils literal notranslate"><span class="pre">namedtuple</span></code> s, so we can access them either by index or by key. For example, assuming we have a <code class="docutils literal notranslate"><span class="pre">sqlite3.Row</span></code> called <code class="docutils literal notranslate"><span class="pre">r</span></code> for the rows <code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">FirstName</span></code>, <code class="docutils literal notranslate"><span class="pre">LastName</span></code>, and <code class="docutils literal notranslate"><span class="pre">MiddleInitial</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># You can get values based on the row&#39;s name</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;FirstName&#39;</span><span class="p">]</span>
-<span class="go">John</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Or, you can get them based on index</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="go">John</span>
-<span class="go"># Row objects are also iterable:</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-<span class="go">1</span>
-<span class="go">John</span>
-<span class="go">Doe</span>
-<span class="go">M</span>
-</pre></div>
-</div>
-<p>Additionally, it is a good idea to provide a query function that combines
-getting the cursor, executing and fetching the results:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">query_db</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">one</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="n">cur</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-    <span class="n">rv</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-    <span class="n">cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">rv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">rv</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">one</span> <span class="k">else</span> <span class="n">rv</span>
-</pre></div>
-</div>
-<p>This handy little function, in combination with a row factory, makes
-working with the database much more pleasant than it is by just using the
-raw cursor and connection objects.</p>
-<p>Here is how you can use it:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">query_db</span><span class="p">(</span><span class="s1">&#39;select * from users&#39;</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">],</span> <span class="s1">&#39;has the id&#39;</span><span class="p">,</span> <span class="n">user</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">])</span>
-</pre></div>
-</div>
-<p>Or if you just want a single result:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">user</span> <span class="o">=</span> <span class="n">query_db</span><span class="p">(</span><span class="s1">&#39;select * from users where username = ?&#39;</span><span class="p">,</span>
-                <span class="p">[</span><span class="n">the_username</span><span class="p">],</span> <span class="n">one</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No such user&#39;</span><span class="p">)</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">the_username</span><span class="p">,</span> <span class="s1">&#39;has the id&#39;</span><span class="p">,</span> <span class="n">user</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">])</span>
-</pre></div>
-</div>
-<p>To pass variable parts to the SQL statement, use a question mark in the
-statement and pass in the arguments as a list.  Never directly add them to
-the SQL statement with string formatting because this makes it possible
-to attack the application using <a class="reference external" href="https://en.wikipedia.org/wiki/SQL_injection">SQL Injections</a>.</p>
-</section>
-<section id="initial-schemas">
-<h2>Initial Schemas<a class="headerlink" href="#initial-schemas" title="Link to this heading">¶</a></h2>
-<p>Relational databases need schemas, so applications often ship a
-<code class="code docutils literal notranslate"><span class="pre">schema.sql</span></code> file that creates the database.  It’s a good idea to provide
-a function that creates the database based on that schema.  This function
-can do that for you:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">init_db</span><span class="p">():</span>
-    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
-        <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
-        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="s1">&#39;schema.sql&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span><span class="o">.</span><span class="n">executescript</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>You can then create such a database from the Python shell:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">yourapplication</span><span class="w"> </span><span class="kn">import</span> <span class="n">init_db</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">init_db</span><span class="p">()</span>
-</pre></div>
-</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">extends</span> <span class="pre">%}</span></code> tag is the key here. It tells the template engine that
+this template “extends” another template.  When the template system evaluates
+this template, first it locates the parent.  The extends tag must be the
+first tag in the template.  To render the contents of a block defined in
+the parent template, use <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">super()</span> <span class="pre">}}</span></code>.</p>
 </section>
 </section>
 
@@ -194,19 +113,18 @@ can do that for you:</p>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
 
   <h3>Contents</h3>
   <ul>
-<li><a class="reference internal" href="#">Using SQLite 3 with Flask</a><ul>
-<li><a class="reference internal" href="#connect-on-demand">Connect on Demand</a></li>
-<li><a class="reference internal" href="#easy-querying">Easy Querying</a></li>
-<li><a class="reference internal" href="#initial-schemas">Initial Schemas</a></li>
+<li><a class="reference internal" href="#">Template Inheritance</a><ul>
+<li><a class="reference internal" href="#base-template">Base Template</a></li>
+<li><a class="reference internal" href="#child-template">Child Template</a></li>
 </ul>
 </li>
 </ul>
@@ -216,8 +134,8 @@ can do that for you:</p>
     <ul>
       <li><a href="index.html">Patterns for Flask</a>
         <ul>
-          <li>Previous: <a href="urlprocessors.html" title="previous chapter">Using URL Processors</a>
-          <li>Next: <a href="sqlalchemy.html" title="next chapter">SQLAlchemy in Flask</a></ul>
+          <li>Previous: <a href="wtforms.html" title="previous chapter">Form Validation with WTForms</a>
+          <li>Next: <a href="flashing.html" title="next chapter">Message Flashing</a></ul>
       </li>
     </ul>
   </li>

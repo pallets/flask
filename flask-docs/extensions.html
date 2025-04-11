@@ -5,18 +5,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Extensions &#8212; Flask Documentation (3.2.x)</title>
+    <title>Installation &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
+    <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=a5c4661c" />
     <script src="_static/documentation_options.js?v=56528222"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script data-project="flask" data-version="3.2.x" src="_static/describe_version.js?v=fa7f30d0"></script>
+    <script src="_static/tabs.js?v=3030b3cb"></script>
     <link rel="icon" href="_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Command Line Interface" href="cli.html" />
-    <link rel="prev" title="Modular Applications with Blueprints" href="blueprints.html" /> 
+    <link rel="next" title="Quickstart" href="quickstart.html" />
+    <link rel="prev" title="Welcome to Flask" href="index.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,59 +30,117 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="cli.html" title="Command Line Interface"
+          <a href="quickstart.html" title="Quickstart"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="blueprints.html" title="Modular Applications with Blueprints"
+          <a href="index.html" title="Welcome to Flask"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Flask Documentation (3.2.x)</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Extensions</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Installation</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="extensions">
-<h1>Extensions<a class="headerlink" href="#extensions" title="Link to this heading">¶</a></h1>
-<p>Extensions are extra packages that add functionality to a Flask
-application. For example, an extension might add support for sending
-email or connecting to a database. Some extensions add entire new
-frameworks to help build certain types of applications, like a REST API.</p>
-<section id="finding-extensions">
-<h2>Finding Extensions<a class="headerlink" href="#finding-extensions" title="Link to this heading">¶</a></h2>
-<p>Flask extensions are usually named “Flask-Foo” or “Foo-Flask”. You can
-search PyPI for packages tagged with <a class="reference external" href="https://pypi.org/search/?c=Framework+%3A%3A+Flask">Framework :: Flask</a>.</p>
+
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
+<section id="python-version">
+<h2>Python Version<a class="headerlink" href="#python-version" title="Link to this heading">¶</a></h2>
+<p>We recommend using the latest version of Python. Flask supports Python 3.9 and newer.</p>
 </section>
-<section id="using-extensions">
-<h2>Using Extensions<a class="headerlink" href="#using-extensions" title="Link to this heading">¶</a></h2>
-<p>Consult each extension’s documentation for installation, configuration,
-and usage instructions. Generally, extensions pull their own
-configuration from <a class="reference internal" href="api.html#flask.Flask.config" title="flask.Flask.config"><code class="xref py py-attr docutils literal notranslate"><span class="pre">app.config</span></code></a> and are
-passed an application instance during initialization. For example,
-an extension called “Flask-Foo” might be used like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask_foo</span><span class="w"> </span><span class="kn">import</span> <span class="n">Foo</span>
-
-<span class="n">foo</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-    <span class="n">FOO_BAR</span><span class="o">=</span><span class="s1">&#39;baz&#39;</span><span class="p">,</span>
-    <span class="n">FOO_SPAM</span><span class="o">=</span><span class="s1">&#39;eggs&#39;</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">foo</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
+<p>These distributions will be installed automatically when installing Flask.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://palletsprojects.com/p/werkzeug/">Werkzeug</a> implements WSGI, the standard Python interface between
+applications and servers.</p></li>
+<li><p><a class="reference external" href="https://palletsprojects.com/p/jinja/">Jinja</a> is a template language that renders the pages your application
+serves.</p></li>
+<li><p><a class="reference external" href="https://palletsprojects.com/p/markupsafe/">MarkupSafe</a> comes with Jinja. It escapes untrusted input when rendering
+templates to avoid injection attacks.</p></li>
+<li><p><a class="reference external" href="https://palletsprojects.com/p/itsdangerous/">ItsDangerous</a> securely signs data to ensure its integrity. This is used
+to protect Flask’s session cookie.</p></li>
+<li><p><a class="reference external" href="https://palletsprojects.com/p/click/">Click</a> is a framework for writing command line applications. It provides
+the <code class="docutils literal notranslate"><span class="pre">flask</span></code> command and allows adding custom management commands.</p></li>
+<li><p><a class="reference external" href="https://blinker.readthedocs.io/">Blinker</a> provides support for <a class="reference internal" href="signals.html"><span class="doc">Signals</span></a>.</p></li>
+</ul>
+<section id="optional-dependencies">
+<h3>Optional dependencies<a class="headerlink" href="#optional-dependencies" title="Link to this heading">¶</a></h3>
+<p>These distributions will not be installed automatically. Flask will detect and
+use them if you install them.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/theskumar/python-dotenv#readme">python-dotenv</a> enables support for <a class="reference internal" href="cli.html#dotenv"><span class="std std-ref">Environment Variables From dotenv</span></a> when running <code class="docutils literal notranslate"><span class="pre">flask</span></code>
+commands.</p></li>
+<li><p><a class="reference external" href="https://pythonhosted.org/watchdog/">Watchdog</a> provides a faster, more efficient reloader for the development
+server.</p></li>
+</ul>
+</section>
+<section id="greenlet">
+<h3>greenlet<a class="headerlink" href="#greenlet" title="Link to this heading">¶</a></h3>
+<p>You may choose to use gevent or eventlet with your application. In this
+case, greenlet&gt;=1.0 is required. When using PyPy, PyPy&gt;=7.3.7 is
+required.</p>
+<p>These are not minimum supported versions, they only indicate the first
+versions that added necessary features. You should use the latest
+versions of each.</p>
+</section>
+</section>
+<section id="virtual-environments">
+<h2>Virtual environments<a class="headerlink" href="#virtual-environments" title="Link to this heading">¶</a></h2>
+<p>Use a virtual environment to manage the dependencies for your project, both in
+development and in production.</p>
+<p>What problem does a virtual environment solve? The more Python projects you
+have, the more likely it is that you need to work with different versions of
+Python libraries, or even Python itself. Newer versions of libraries for one
+project can break compatibility in another project.</p>
+<p>Virtual environments are independent groups of Python libraries, one for each
+project. Packages installed for one project will not affect other projects or
+the operating system’s packages.</p>
+<p>Python comes bundled with the <a class="reference external" href="https://docs.python.org/3/library/venv.html#module-venv" title="(in Python v3.13)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">venv</span></code></a> module to create virtual
+environments.</p>
+<section id="create-an-environment">
+<span id="install-create-env"></span><h3>Create an environment<a class="headerlink" href="#create-an-environment" title="Link to this heading">¶</a></h3>
+<p>Create a project folder and a <code class="file docutils literal notranslate"><span class="pre">.venv</span></code> folder within:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-bWFjT1MvTGludXg=" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-0-bWFjT1MvTGludXg=" name="bWFjT1MvTGludXg=" role="tab" tabindex="0">macOS/Linux</button><button aria-controls="panel-0-V2luZG93cw==" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-V2luZG93cw==" name="V2luZG93cw==" role="tab" tabindex="-1">Windows</button></div><div aria-labelledby="tab-0-bWFjT1MvTGludXg=" class="sphinx-tabs-panel group-tab" id="panel-0-bWFjT1MvTGludXg=" name="bWFjT1MvTGludXg=" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ mkdir myproject
+$ cd myproject
+$ python3 -m venv .venv
 </pre></div>
 </div>
+</div><div aria-labelledby="tab-0-V2luZG93cw==" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-V2luZG93cw==" name="V2luZG93cw==" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt; mkdir myproject
+&gt; cd myproject
+&gt; py -3 -m venv .venv
+</pre></div>
+</div>
+</div></div>
 </section>
-<section id="building-extensions">
-<h2>Building Extensions<a class="headerlink" href="#building-extensions" title="Link to this heading">¶</a></h2>
-<p>While <a class="reference external" href="https://pypi.org/search/?c=Framework+%3A%3A+Flask">PyPI</a> contains many Flask extensions, you may not find
-an extension that fits your need. If this is the case, you can create
-your own, and publish it for others to use as well. Read
-<a class="reference internal" href="extensiondev.html"><span class="doc">Flask Extension Development</span></a> to develop your own Flask extension.</p>
+<section id="activate-the-environment">
+<span id="install-activate-env"></span><h3>Activate the environment<a class="headerlink" href="#activate-the-environment" title="Link to this heading">¶</a></h3>
+<p>Before you work on your project, activate the corresponding environment:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-bWFjT1MvTGludXg=" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-1-bWFjT1MvTGludXg=" name="bWFjT1MvTGludXg=" role="tab" tabindex="0">macOS/Linux</button><button aria-controls="panel-1-V2luZG93cw==" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-V2luZG93cw==" name="V2luZG93cw==" role="tab" tabindex="-1">Windows</button></div><div aria-labelledby="tab-1-bWFjT1MvTGludXg=" class="sphinx-tabs-panel group-tab" id="panel-1-bWFjT1MvTGludXg=" name="bWFjT1MvTGludXg=" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ . .venv/bin/activate
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-V2luZG93cw==" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-V2luZG93cw==" name="V2luZG93cw==" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt; .venv\Scripts\activate
+</pre></div>
+</div>
+</div></div>
+<p>Your shell prompt will change to show the name of the activated
+environment.</p>
+</section>
+</section>
+<section id="install-flask">
+<h2>Install Flask<a class="headerlink" href="#install-flask" title="Link to this heading">¶</a></h2>
+<p>Within the activated environment, use the following command to install
+Flask:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>Flask
+</pre></div>
+</div>
+<p>Flask is now installed. Check out the <a class="reference internal" href="quickstart.html"><span class="doc">Quickstart</span></a> or go to the
+<a class="reference internal" href="index.html"><span class="doc">Documentation Overview</span></a>.</p>
 </section>
 </section>
 
@@ -92,19 +152,28 @@ your own, and publish it for others to use as well. Read
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
 
   <h3>Contents</h3>
   <ul>
-<li><a class="reference internal" href="#">Extensions</a><ul>
-<li><a class="reference internal" href="#finding-extensions">Finding Extensions</a></li>
-<li><a class="reference internal" href="#using-extensions">Using Extensions</a></li>
-<li><a class="reference internal" href="#building-extensions">Building Extensions</a></li>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#python-version">Python Version</a></li>
+<li><a class="reference internal" href="#dependencies">Dependencies</a><ul>
+<li><a class="reference internal" href="#optional-dependencies">Optional dependencies</a></li>
+<li><a class="reference internal" href="#greenlet">greenlet</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#virtual-environments">Virtual environments</a><ul>
+<li><a class="reference internal" href="#create-an-environment">Create an environment</a></li>
+<li><a class="reference internal" href="#activate-the-environment">Activate the environment</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#install-flask">Install Flask</a></li>
 </ul>
 </li>
 </ul>
@@ -112,8 +181,8 @@ your own, and publish it for others to use as well. Read
 <ul>
   <li><a href="index.html">Overview</a>
     <ul>
-          <li>Previous: <a href="blueprints.html" title="previous chapter">Modular Applications with Blueprints</a>
-          <li>Next: <a href="cli.html" title="next chapter">Command Line Interface</a>
+          <li>Previous: <a href="index.html" title="previous chapter">Welcome to Flask</a>
+          <li>Next: <a href="quickstart.html" title="next chapter">Quickstart</a>
     </ul>
   </li>
 </ul>

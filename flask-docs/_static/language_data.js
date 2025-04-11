@@ -1,192 +1,228 @@
-/*
- * This script contains the language-specific data used by searchtools.js,
- * namely the list of stopwords, stemmer, scorer and splitter.
- */
+<!DOCTYPE html>
 
-var stopwords = ["a", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in", "into", "is", "it", "near", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then", "there", "these", "they", "this", "to", "was", "will", "with"];
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Application Context &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
+    <script src="_static/documentation_options.js?v=56528222"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The Request Context" href="reqcontext.html" />
+    <link rel="prev" title="Application Structure and Lifecycle" href="lifecycle.html" />
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="reqcontext.html" title="The Request Context"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="lifecycle.html" title="Application Structure and Lifecycle"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Application Context</a></li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="the-application-context">
+<h1>The Application Context<a class="headerlink" href="#the-application-context" title="Link to this heading">¶</a></h1>
+<p>The application context keeps track of the application-level data during
+a request, CLI command, or other activity. Rather than passing the
+application around to each function, the <a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a> and
+<a class="reference internal" href="api.html#flask.g" title="flask.g"><code class="xref py py-data docutils literal notranslate"><span class="pre">g</span></code></a> proxies are accessed instead.</p>
+<p>This is similar to <a class="reference internal" href="reqcontext.html"><span class="doc">The Request Context</span></a>, which keeps track of
+request-level data during a request. A corresponding application context
+is pushed when a request context is pushed.</p>
+<section id="purpose-of-the-context">
+<h2>Purpose of the Context<a class="headerlink" href="#purpose-of-the-context" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="api.html#flask.Flask" title="flask.Flask"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flask</span></code></a> application object has attributes, such as
+<a class="reference internal" href="api.html#flask.Flask.config" title="flask.Flask.config"><code class="xref py py-attr docutils literal notranslate"><span class="pre">config</span></code></a>, that are useful to access within views and
+<a class="reference internal" href="cli.html"><span class="doc">CLI commands</span></a>. However, importing the <code class="docutils literal notranslate"><span class="pre">app</span></code> instance
+within the modules in your project is prone to circular import issues.
+When using the <a class="reference internal" href="patterns/appfactories.html"><span class="doc">app factory pattern</span></a> or
+writing reusable <a class="reference internal" href="blueprints.html"><span class="doc">blueprints</span></a> or
+<a class="reference internal" href="extensions.html"><span class="doc">extensions</span></a> there won’t be an <code class="docutils literal notranslate"><span class="pre">app</span></code> instance to
+import at all.</p>
+<p>Flask solves this issue with the <em>application context</em>. Rather than
+referring to an <code class="docutils literal notranslate"><span class="pre">app</span></code> directly, you use the <a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a>
+proxy, which points to the application handling the current activity.</p>
+<p>Flask automatically <em>pushes</em> an application context when handling a
+request. View functions, error handlers, and other functions that run
+during a request will have access to <a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a>.</p>
+<p>Flask will also automatically push an app context when running CLI
+commands registered with <a class="reference internal" href="api.html#flask.Flask.cli" title="flask.Flask.cli"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Flask.cli</span></code></a> using <code class="docutils literal notranslate"><span class="pre">&#64;app.cli.command()</span></code>.</p>
+</section>
+<section id="lifetime-of-the-context">
+<h2>Lifetime of the Context<a class="headerlink" href="#lifetime-of-the-context" title="Link to this heading">¶</a></h2>
+<p>The application context is created and destroyed as necessary. When a
+Flask application begins handling a request, it pushes an application
+context and a <a class="reference internal" href="reqcontext.html"><span class="doc">request context</span></a>. When the request
+ends it pops the request context then the application context.
+Typically, an application context will have the same lifetime as a
+request.</p>
+<p>See <a class="reference internal" href="reqcontext.html"><span class="doc">The Request Context</span></a> for more information about how the contexts work
+and the full life cycle of a request.</p>
+</section>
+<section id="manually-push-a-context">
+<h2>Manually Push a Context<a class="headerlink" href="#manually-push-a-context" title="Link to this heading">¶</a></h2>
+<p>If you try to access <a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a>, or anything that uses it,
+outside an application context, you’ll get this error message:</p>
+<div class="highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="x">RuntimeError: Working outside of application context.</span>
+
+<span class="x">This typically means that you attempted to use functionality that</span>
+<span class="x">needed to interface with the current application object in some way.</span>
+<span class="x">To solve this, set up an application context with app.app_context().</span>
+</pre></div>
+</div>
+<p>If you see that error while configuring your application, such as when
+initializing an extension, you can push a context manually since you
+have direct access to the <code class="docutils literal notranslate"><span class="pre">app</span></code>. Use <a class="reference internal" href="api.html#flask.Flask.app_context" title="flask.Flask.app_context"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app_context()</span></code></a> in a
+<code class="docutils literal notranslate"><span class="pre">with</span></code> block, and everything that runs in the block will have access
+to <a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">():</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+        <span class="n">init_db</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">app</span>
+</pre></div>
+</div>
+<p>If you see that error somewhere else in your code not related to
+configuring the application, it most likely indicates that you should
+move that code into a view function or CLI command.</p>
+</section>
+<section id="storing-data">
+<h2>Storing Data<a class="headerlink" href="#storing-data" title="Link to this heading">¶</a></h2>
+<p>The application context is a good place to store common data during a
+request or CLI command. Flask provides the <a class="reference internal" href="api.html#flask.g" title="flask.g"><code class="xref py py-data docutils literal notranslate"><span class="pre">g</span> <span class="pre">object</span></code></a> for this
+purpose. It is a simple namespace object that has the same lifetime as
+an application context.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">g</span></code> name stands for “global”, but that is referring to the
+data being global <em>within a context</em>. The data on <code class="docutils literal notranslate"><span class="pre">g</span></code> is lost
+after the context ends, and it is not an appropriate place to store
+data between requests. Use the <a class="reference internal" href="api.html#flask.session" title="flask.session"><code class="xref py py-data docutils literal notranslate"><span class="pre">session</span></code></a> or a database to
+store data across requests.</p>
+</div>
+<p>A common use for <a class="reference internal" href="api.html#flask.g" title="flask.g"><code class="xref py py-data docutils literal notranslate"><span class="pre">g</span></code></a> is to manage resources during a request.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_X()</span></code> creates resource <code class="docutils literal notranslate"><span class="pre">X</span></code> if it does not exist, caching it
+as <code class="docutils literal notranslate"><span class="pre">g.X</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">teardown_X()</span></code> closes or otherwise deallocates the resource if it
+exists. It is registered as a <a class="reference internal" href="api.html#flask.Flask.teardown_appcontext" title="flask.Flask.teardown_appcontext"><code class="xref py py-meth docutils literal notranslate"><span class="pre">teardown_appcontext()</span></code></a>
+handler.</p></li>
+</ol>
+<p>For example, you can manage a database connection using this pattern:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">g</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_db</span><span class="p">():</span>
+    <span class="k">if</span> <span class="s1">&#39;db&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">connect_to_database</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">db</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">teardown_appcontext</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">teardown_db</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;db&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>During a request, every call to <code class="docutils literal notranslate"><span class="pre">get_db()</span></code> will return the same
+connection, and it will be closed automatically at the end of the
+request.</p>
+<p>You can use <a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/local/#werkzeug.local.LocalProxy" title="(in Werkzeug v3.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalProxy</span></code></a> to make a new context
+local from <code class="docutils literal notranslate"><span class="pre">get_db()</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">werkzeug.local</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalProxy</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">LocalProxy</span><span class="p">(</span><span class="n">get_db</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Accessing <code class="docutils literal notranslate"><span class="pre">db</span></code> will call <code class="docutils literal notranslate"><span class="pre">get_db</span></code> internally, in the same way that
+<a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a> works.</p>
+</section>
+<section id="events-and-signals">
+<h2>Events and Signals<a class="headerlink" href="#events-and-signals" title="Link to this heading">¶</a></h2>
+<p>The application will call functions registered with <a class="reference internal" href="api.html#flask.Flask.teardown_appcontext" title="flask.Flask.teardown_appcontext"><code class="xref py py-meth docutils literal notranslate"><span class="pre">teardown_appcontext()</span></code></a>
+when the application context is popped.</p>
+<p>The following signals are sent: <a class="reference internal" href="api.html#flask.appcontext_pushed" title="flask.appcontext_pushed"><code class="xref py py-data docutils literal notranslate"><span class="pre">appcontext_pushed</span></code></a>,
+<a class="reference internal" href="api.html#flask.appcontext_tearing_down" title="flask.appcontext_tearing_down"><code class="xref py py-data docutils literal notranslate"><span class="pre">appcontext_tearing_down</span></code></a>, and <a class="reference internal" href="api.html#flask.appcontext_popped" title="flask.appcontext_popped"><code class="xref py py-data docutils literal notranslate"><span class="pre">appcontext_popped</span></code></a>.</p>
+</section>
+</section>
 
 
-/* Non-minified version is copied as a separate JS file, if available */
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
 
-/**
- * Porter Stemmer
- */
-var Stemmer = function() {
 
-  var step2list = {
-    ational: 'ate',
-    tional: 'tion',
-    enci: 'ence',
-    anci: 'ance',
-    izer: 'ize',
-    bli: 'ble',
-    alli: 'al',
-    entli: 'ent',
-    eli: 'e',
-    ousli: 'ous',
-    ization: 'ize',
-    ation: 'ate',
-    ator: 'ate',
-    alism: 'al',
-    iveness: 'ive',
-    fulness: 'ful',
-    ousness: 'ous',
-    aliti: 'al',
-    iviti: 'ive',
-    biliti: 'ble',
-    logi: 'log'
-  };
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
 
-  var step3list = {
-    icate: 'ic',
-    ative: '',
-    alize: 'al',
-    iciti: 'ic',
-    ical: 'ic',
-    ful: '',
-    ness: ''
-  };
 
-  var c = "[^aeiou]";          // consonant
-  var v = "[aeiouy]";          // vowel
-  var C = c + "[^aeiouy]*";    // consonant sequence
-  var V = v + "[aeiou]*";      // vowel sequence
-
-  var mgr0 = "^(" + C + ")?" + V + C;                      // [C]VC... is m>0
-  var meq1 = "^(" + C + ")?" + V + C + "(" + V + ")?$";    // [C]VC[V] is m=1
-  var mgr1 = "^(" + C + ")?" + V + C + V + C;              // [C]VCVC... is m>1
-  var s_v   = "^(" + C + ")?" + v;                         // vowel in stem
-
-  this.stemWord = function (w) {
-    var stem;
-    var suffix;
-    var firstch;
-    var origword = w;
-
-    if (w.length < 3)
-      return w;
-
-    var re;
-    var re2;
-    var re3;
-    var re4;
-
-    firstch = w.substr(0,1);
-    if (firstch == "y")
-      w = firstch.toUpperCase() + w.substr(1);
-
-    // Step 1a
-    re = /^(.+?)(ss|i)es$/;
-    re2 = /^(.+?)([^s])s$/;
-
-    if (re.test(w))
-      w = w.replace(re,"$1$2");
-    else if (re2.test(w))
-      w = w.replace(re2,"$1$2");
-
-    // Step 1b
-    re = /^(.+?)eed$/;
-    re2 = /^(.+?)(ed|ing)$/;
-    if (re.test(w)) {
-      var fp = re.exec(w);
-      re = new RegExp(mgr0);
-      if (re.test(fp[1])) {
-        re = /.$/;
-        w = w.replace(re,"");
-      }
-    }
-    else if (re2.test(w)) {
-      var fp = re2.exec(w);
-      stem = fp[1];
-      re2 = new RegExp(s_v);
-      if (re2.test(stem)) {
-        w = stem;
-        re2 = /(at|bl|iz)$/;
-        re3 = new RegExp("([^aeiouylsz])\\1$");
-        re4 = new RegExp("^" + C + v + "[^aeiouwxy]$");
-        if (re2.test(w))
-          w = w + "e";
-        else if (re3.test(w)) {
-          re = /.$/;
-          w = w.replace(re,"");
-        }
-        else if (re4.test(w))
-          w = w + "e";
-      }
-    }
-
-    // Step 1c
-    re = /^(.+?)y$/;
-    if (re.test(w)) {
-      var fp = re.exec(w);
-      stem = fp[1];
-      re = new RegExp(s_v);
-      if (re.test(stem))
-        w = stem + "i";
-    }
-
-    // Step 2
-    re = /^(.+?)(ational|tional|enci|anci|izer|bli|alli|entli|eli|ousli|ization|ation|ator|alism|iveness|fulness|ousness|aliti|iviti|biliti|logi)$/;
-    if (re.test(w)) {
-      var fp = re.exec(w);
-      stem = fp[1];
-      suffix = fp[2];
-      re = new RegExp(mgr0);
-      if (re.test(stem))
-        w = stem + step2list[suffix];
-    }
-
-    // Step 3
-    re = /^(.+?)(icate|ative|alize|iciti|ical|ful|ness)$/;
-    if (re.test(w)) {
-      var fp = re.exec(w);
-      stem = fp[1];
-      suffix = fp[2];
-      re = new RegExp(mgr0);
-      if (re.test(stem))
-        w = stem + step3list[suffix];
-    }
-
-    // Step 4
-    re = /^(.+?)(al|ance|ence|er|ic|able|ible|ant|ement|ment|ent|ou|ism|ate|iti|ous|ive|ize)$/;
-    re2 = /^(.+?)(s|t)(ion)$/;
-    if (re.test(w)) {
-      var fp = re.exec(w);
-      stem = fp[1];
-      re = new RegExp(mgr1);
-      if (re.test(stem))
-        w = stem;
-    }
-    else if (re2.test(w)) {
-      var fp = re2.exec(w);
-      stem = fp[1] + fp[2];
-      re2 = new RegExp(mgr1);
-      if (re2.test(stem))
-        w = stem;
-    }
-
-    // Step 5
-    re = /^(.+?)e$/;
-    if (re.test(w)) {
-      var fp = re.exec(w);
-      stem = fp[1];
-      re = new RegExp(mgr1);
-      re2 = new RegExp(meq1);
-      re3 = new RegExp("^" + C + v + "[^aeiouwxy]$");
-      if (re.test(stem) || (re2.test(stem) && !(re3.test(stem))))
-        w = stem;
-    }
-    re = /ll$/;
-    re2 = new RegExp(mgr1);
-    if (re.test(w) && re2.test(w)) {
-      re = /.$/;
-      w = w.replace(re,"");
-    }
-
-    // and turn initial Y back to y
-    if (firstch == "y")
-      w = firstch.toLowerCase() + w.substr(1);
-    return w;
-  }
-}
-
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">The Application Context</a><ul>
+<li><a class="reference internal" href="#purpose-of-the-context">Purpose of the Context</a></li>
+<li><a class="reference internal" href="#lifetime-of-the-context">Lifetime of the Context</a></li>
+<li><a class="reference internal" href="#manually-push-a-context">Manually Push a Context</a></li>
+<li><a class="reference internal" href="#storing-data">Storing Data</a></li>
+<li><a class="reference internal" href="#events-and-signals">Events and Signals</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="index.html">Overview</a>
+    <ul>
+          <li>Previous: <a href="lifecycle.html" title="previous chapter">Application Structure and Lifecycle</a>
+          <li>Next: <a href="reqcontext.html" title="next chapter">The Request Context</a>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

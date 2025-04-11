@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Define and Access the Database &#8212; Flask Documentation (3.2.x)</title>
+    <title>Tutorial &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Blueprints and Views" href="views.html" />
-    <link rel="prev" title="Application Setup" href="factory.html" /> 
+    <link rel="next" title="Project Layout" href="layout.html" />
+    <link rel="prev" title="Quickstart" href="../quickstart.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,213 +28,65 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="views.html" title="Blueprints and Views"
+          <a href="layout.html" title="Project Layout"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="factory.html" title="Application Setup"
+          <a href="../quickstart.html" title="Quickstart"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Tutorial</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Define and Access the Database</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Tutorial</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="define-and-access-the-database">
-<h1>Define and Access the Database<a class="headerlink" href="#define-and-access-the-database" title="Link to this heading">¶</a></h1>
-<p>The application will use a <a class="reference external" href="https://sqlite.org/about.html">SQLite</a> database to store users and posts.
-Python comes with built-in support for SQLite in the <a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#module-sqlite3" title="(in Python v3.13)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sqlite3</span></code></a>
-module.</p>
-<p>SQLite is convenient because it doesn’t require setting up a separate
-database server and is built-in to Python. However, if concurrent
-requests try to write to the database at the same time, they will slow
-down as each write happens sequentially. Small applications won’t notice
-this. Once you become big, you may want to switch to a different
-database.</p>
-<p>The tutorial doesn’t go into detail about SQL. If you are not familiar
-with it, the SQLite docs describe the <a class="reference external" href="https://sqlite.org/lang.html">language</a>.</p>
-<section id="connect-to-the-database">
-<h2>Connect to the Database<a class="headerlink" href="#connect-to-the-database" title="Link to this heading">¶</a></h2>
-<p>The first thing to do when working with a SQLite database (and most
-other Python database libraries) is to create a connection to it. Any
-queries and operations are performed using the connection, which is
-closed after the work is finished.</p>
-<p>In web applications this connection is typically tied to the request. It
-is created at some point when handling a request, and closed before the
-response is sent.</p>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/db.py</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">current_app</span><span class="p">,</span> <span class="n">g</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">get_db</span><span class="p">():</span>
-    <span class="k">if</span> <span class="s1">&#39;db&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
-        <span class="n">g</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-            <span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DATABASE&#39;</span><span class="p">],</span>
-            <span class="n">detect_types</span><span class="o">=</span><span class="n">sqlite3</span><span class="o">.</span><span class="n">PARSE_DECLTYPES</span>
-        <span class="p">)</span>
-        <span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span>
-
-    <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">db</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">close_db</span><span class="p">(</span><span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">db</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;db&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</pre></div>
+  <section id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="layout.html">Project Layout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="factory.html">Application Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database.html">Define and Access the Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">Blueprints and Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="static.html">Static Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blog.html">Blog Blueprint</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Make the Project Installable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Test Coverage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy.html">Deploy to Production</a></li>
+<li class="toctree-l1"><a class="reference internal" href="next.html">Keep Developing!</a></li>
+</ul>
 </div>
-</div>
-<p><a class="reference internal" href="../api.html#flask.g" title="flask.g"><code class="xref py py-data docutils literal notranslate"><span class="pre">g</span></code></a> is a special object that is unique for each request. It is
-used to store data that might be accessed by multiple functions during
-the request. The connection is stored and reused instead of creating a
-new connection if <code class="docutils literal notranslate"><span class="pre">get_db</span></code> is called a second time in the same
-request.</p>
-<p><a class="reference internal" href="../api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a> is another special object that points to the Flask
-application handling the request. Since you used an application factory,
-there is no application object when writing the rest of your code.
-<code class="docutils literal notranslate"><span class="pre">get_db</span></code> will be called when the application has been created and is
-handling a request, so <a class="reference internal" href="../api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a> can be used.</p>
-<p><a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.connect" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sqlite3.connect()</span></code></a> establishes a connection to the file pointed at
-by the <code class="docutils literal notranslate"><span class="pre">DATABASE</span></code> configuration key. This file doesn’t have to exist
-yet, and won’t until you initialize the database later.</p>
-<p><a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Row" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlite3.Row</span></code></a> tells the connection to return rows that behave
-like dicts. This allows accessing the columns by name.</p>
-<p><code class="docutils literal notranslate"><span class="pre">close_db</span></code> checks if a connection was created by checking if <code class="docutils literal notranslate"><span class="pre">g.db</span></code>
-was set. If the connection exists, it is closed. Further down you will
-tell your application about the <code class="docutils literal notranslate"><span class="pre">close_db</span></code> function in the application
-factory so that it is called after each request.</p>
-</section>
-<section id="create-the-tables">
-<h2>Create the Tables<a class="headerlink" href="#create-the-tables" title="Link to this heading">¶</a></h2>
-<p>In SQLite, data is stored in <em>tables</em> and <em>columns</em>. These need to be
-created before you can store and retrieve data. Flaskr will store users
-in the <code class="docutils literal notranslate"><span class="pre">user</span></code> table, and posts in the <code class="docutils literal notranslate"><span class="pre">post</span></code> table. Create a file
-with the SQL commands needed to create empty tables:</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/schema.sql</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="k">user</span><span class="p">;</span>
-<span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">post</span><span class="p">;</span>
-
-<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">user</span><span class="w"> </span><span class="p">(</span>
-<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="n">AUTOINCREMENT</span><span class="p">,</span>
-<span class="w">  </span><span class="n">username</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-<span class="w">  </span><span class="n">password</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
-<span class="p">);</span>
-
-<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">post</span><span class="w"> </span><span class="p">(</span>
-<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="n">AUTOINCREMENT</span><span class="p">,</span>
-<span class="w">  </span><span class="n">author_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-<span class="w">  </span><span class="n">created</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">CURRENT_TIMESTAMP</span><span class="p">,</span>
-<span class="w">  </span><span class="n">title</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-<span class="w">  </span><span class="n">body</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="k">user</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">);</span>
-</pre></div>
-</div>
-</div>
-<p>Add the Python functions that will run these SQL commands to the
-<code class="docutils literal notranslate"><span class="pre">db.py</span></code> file:</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/db.py</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">init_db</span><span class="p">():</span>
-    <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
-
-    <span class="k">with</span> <span class="n">current_app</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="s1">&#39;schema.sql&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">executescript</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf8&#39;</span><span class="p">))</span>
-
-
-<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;init-db&#39;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">init_db_command</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Clear the existing data and create new tables.&quot;&quot;&quot;</span>
-    <span class="n">init_db</span><span class="p">()</span>
-    <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="s1">&#39;Initialized the database.&#39;</span><span class="p">)</span>
-
-
-<span class="n">sqlite3</span><span class="o">.</span><span class="n">register_converter</span><span class="p">(</span>
-    <span class="s2">&quot;timestamp&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p><a class="reference internal" href="../api.html#flask.Flask.open_resource" title="flask.Flask.open_resource"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open_resource()</span></code></a> opens a file relative to
-the <code class="docutils literal notranslate"><span class="pre">flaskr</span></code> package, which is useful since you won’t necessarily know
-where that location is when deploying the application later. <code class="docutils literal notranslate"><span class="pre">get_db</span></code>
-returns a database connection, which is used to execute the commands
-read from the file.</p>
-<p><a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.command" title="(in Click v8.1.x)"><code class="xref py py-func docutils literal notranslate"><span class="pre">click.command()</span></code></a> defines a command line command called <code class="docutils literal notranslate"><span class="pre">init-db</span></code>
-that calls the <code class="docutils literal notranslate"><span class="pre">init_db</span></code> function and shows a success message to the
-user. You can read <a class="reference internal" href="../cli.html"><span class="doc">Command Line Interface</span></a> to learn more about writing commands.</p>
-<p>The call to <a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.register_converter" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sqlite3.register_converter()</span></code></a> tells Python how to
-interpret timestamp values in the database. We convert the value to a
-<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a>.</p>
-</section>
-<section id="register-with-the-application">
-<h2>Register with the Application<a class="headerlink" href="#register-with-the-application" title="Link to this heading">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">close_db</span></code> and <code class="docutils literal notranslate"><span class="pre">init_db_command</span></code> functions need to be registered
-with the application instance; otherwise, they won’t be used by the
-application. However, since you’re using a factory function, that
-instance isn’t available when writing the functions. Instead, write a
-function that takes an application and does the registration.</p>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/db.py</span></code></span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">teardown_appcontext</span><span class="p">(</span><span class="n">close_db</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">init_db_command</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p><a class="reference internal" href="../api.html#flask.Flask.teardown_appcontext" title="flask.Flask.teardown_appcontext"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.teardown_appcontext()</span></code></a> tells
-Flask to call that function when cleaning up after returning the
-response.</p>
-<p><a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Group.add_command" title="(in Click v8.1.x)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.cli.add_command()</span></code></a> adds a new
-command that can be called with the <code class="docutils literal notranslate"><span class="pre">flask</span></code> command.</p>
-<p>Import and call this function from the factory. Place the new code at
-the end of the factory function before returning the app.</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/__init__.py</span></code></span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">():</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="o">...</span>
-    <span class="c1"># existing code omitted</span>
-
-    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">db</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">app</span>
-</pre></div>
-</div>
-</div>
-</section>
-<section id="initialize-the-database-file">
-<h2>Initialize the Database File<a class="headerlink" href="#initialize-the-database-file" title="Link to this heading">¶</a></h2>
-<p>Now that <code class="docutils literal notranslate"><span class="pre">init-db</span></code> has been registered with the app, it can be called
-using the <code class="docutils literal notranslate"><span class="pre">flask</span></code> command, similar to the <code class="docutils literal notranslate"><span class="pre">run</span></code> command from the
-previous page.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you’re still running the server from the previous page, you can
-either stop the server, or run this command in a new terminal. If
-you use a new terminal, remember to change to your project directory
-and activate the env as described in <a class="reference internal" href="../installation.html"><span class="doc">Installation</span></a>.</p>
-</div>
-<p>Run the <code class="docutils literal notranslate"><span class="pre">init-db</span></code> command:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ flask --app flaskr init-db
-Initialized the database.
-</pre></div>
-</div>
-<p>There will now be a <code class="docutils literal notranslate"><span class="pre">flaskr.sqlite</span></code> file in the <code class="docutils literal notranslate"><span class="pre">instance</span></code> folder in
-your project.</p>
-<p>Continue to <a class="reference internal" href="views.html"><span class="doc">Blueprints and Views</span></a>.</p>
-</section>
+<p>This tutorial will walk you through creating a basic blog application
+called Flaskr. Users will be able to register, log in, create posts,
+and edit or delete their own posts. You will be able to package and
+install the application on other computers.</p>
+<img alt="screenshot of index page" class="screenshot align-center" src="../_images/flaskr_index.png" />
+<p>It’s assumed that you’re already familiar with Python. The <a class="reference external" href="https://docs.python.org/3/tutorial/">official
+tutorial</a> in the Python docs is a great way to learn or review first.</p>
+<p>While it’s designed to give a good starting point, the tutorial doesn’t
+cover all of Flask’s features. Check out the <a class="reference internal" href="../quickstart.html"><span class="doc">Quickstart</span></a> for an
+overview of what Flask can do, then dive into the docs to find out more.
+The tutorial only uses what’s provided by Flask and Python. In another
+project, you might decide to use <a class="reference internal" href="../extensions.html"><span class="doc">Extensions</span></a> or other libraries
+to make some tasks simpler.</p>
+<img alt="screenshot of login page" class="screenshot align-center" src="../_images/flaskr_login.png" />
+<p>Flask is flexible. It doesn’t require you to use any particular project
+or code layout. However, when first starting, it’s helpful to use a more
+structured approach. This means that the tutorial will require a bit of
+boilerplate up front, but it’s done to avoid many common pitfalls that
+new developers encounter, and it creates a project that’s easy to expand
+on. Once you become more comfortable with Flask, you can step out of
+this structure and take full advantage of Flask’s flexibility.</p>
+<img alt="screenshot of edit page" class="screenshot align-center" src="../_images/flaskr_edit.png" />
+<p><a class="reference external" href="https://github.com/pallets/flask/tree/main/examples/tutorial">The tutorial project is available as an example in the Flask
+repository</a>, if you want to compare your project
+with the final product as you follow the tutorial.</p>
+<p>Continue to <a class="reference internal" href="layout.html"><span class="doc">Project Layout</span></a>.</p>
 </section>
 
 
@@ -245,32 +97,18 @@ your project.</p>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
 
-  <h3>Contents</h3>
-  <ul>
-<li><a class="reference internal" href="#">Define and Access the Database</a><ul>
-<li><a class="reference internal" href="#connect-to-the-database">Connect to the Database</a></li>
-<li><a class="reference internal" href="#create-the-tables">Create the Tables</a></li>
-<li><a class="reference internal" href="#register-with-the-application">Register with the Application</a></li>
-<li><a class="reference internal" href="#initialize-the-database-file">Initialize the Database File</a></li>
-</ul>
-</li>
-</ul>
 <h3>Navigation</h3>
 <ul>
   <li><a href="../index.html">Overview</a>
     <ul>
-      <li><a href="index.html">Tutorial</a>
-        <ul>
-          <li>Previous: <a href="factory.html" title="previous chapter">Application Setup</a>
-          <li>Next: <a href="views.html" title="next chapter">Blueprints and Views</a></ul>
-      </li>
+          <li>Previous: <a href="../quickstart.html" title="previous chapter">Quickstart</a>
+          <li>Next: <a href="layout.html" title="next chapter">Project Layout</a>
     </ul>
   </li>
 </ul>

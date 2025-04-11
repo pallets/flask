@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Adding a favicon &#8212; Flask Documentation (3.2.x)</title>
+    <title>Patterns for Flask &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Streaming Contents" href="streaming.html" />
-    <link rel="prev" title="MongoDB with MongoEngine" href="mongoengine.html" /> 
+    <link rel="next" title="Large Applications as Packages" href="packages.html" />
+    <link rel="prev" title="Working with the Shell" href="../shell.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,73 +28,153 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="streaming.html" title="Streaming Contents"
+          <a href="packages.html" title="Large Applications as Packages"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="mongoengine.html" title="MongoDB with MongoEngine"
+          <a href="../shell.html" title="Working with the Shell"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Patterns for Flask</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Adding a favicon</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Patterns for Flask</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="adding-a-favicon">
-<h1>Adding a favicon<a class="headerlink" href="#adding-a-favicon" title="Link to this heading">¶</a></h1>
-<p>A “favicon” is an icon used by browsers for tabs and bookmarks. This helps
-to distinguish your website and to give it a unique brand.</p>
-<p>A common question is how to add a favicon to a Flask application. First, of
-course, you need an icon. It should be 16 × 16 pixels and in the ICO file
-format. This is not a requirement but a de-facto standard supported by all
-relevant browsers. Put the icon in your static directory as
-<code class="file docutils literal notranslate"><span class="pre">favicon.ico</span></code>.</p>
-<p>Now, to get browsers to find your icon, the correct way is to add a link
-tag in your HTML. So, for example:</p>
-<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;shortcut icon&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">url_for</span><span class="o">(</span><span class="s1">&#39;static&#39;</span><span class="o">,</span> <span class="nv">filename</span><span class="o">=</span><span class="s1">&#39;favicon.ico&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="s">&quot;</span><span class="p">&gt;</span>
-</pre></div>
-</div>
-<p>That’s all you need for most browsers, however some really old ones do not
-support this standard. The old de-facto standard is to serve this file,
-with this name, at the website root. If your application is not mounted at
-the root path of the domain you either need to configure the web server to
-serve the icon at the root or if you can’t do that you’re out of luck. If
-however your application is the root you can simply route a redirect:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span>
-    <span class="s2">&quot;/favicon.ico&quot;</span><span class="p">,</span>
-    <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;favicon&quot;</span><span class="p">,</span>
-    <span class="n">redirect_to</span><span class="o">=</span><span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;favicon.ico&quot;</span><span class="p">),</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>If you want to save the extra redirect request you can also write a view
-using <a class="reference internal" href="../api.html#flask.send_from_directory" title="flask.send_from_directory"><code class="xref py py-func docutils literal notranslate"><span class="pre">send_from_directory()</span></code></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_from_directory</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/favicon.ico&#39;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">favicon</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">send_from_directory</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span> <span class="s1">&#39;static&#39;</span><span class="p">),</span>
-                               <span class="s1">&#39;favicon.ico&#39;</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s1">&#39;image/vnd.microsoft.icon&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>We can leave out the explicit mimetype and it will be guessed, but we may
-as well specify it to avoid the extra guessing, as it will always be the
-same.</p>
-<p>The above will serve the icon via your application and if possible it’s
-better to configure your dedicated web server to serve it; refer to the
-web server’s documentation.</p>
-<section id="see-also">
-<h2>See also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>The <a class="reference external" href="https://en.wikipedia.org/wiki/Favicon">Favicon</a> article on
-Wikipedia</p></li>
+  <section id="patterns-for-flask">
+<h1>Patterns for Flask<a class="headerlink" href="#patterns-for-flask" title="Link to this heading">¶</a></h1>
+<p>Certain features and interactions are common enough that you will find
+them in most web applications. For example, many applications use a
+relational database and user authentication. They will open a database
+connection at the beginning of the request and get the information for
+the logged in user. At the end of the request, the database connection
+is closed.</p>
+<p>These types of patterns may be a bit outside the scope of Flask itself,
+but Flask makes it easy to implement them. Some common patterns are
+collected in the following pages.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="packages.html">Large Applications as Packages</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="packages.html#simple-packages">Simple Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages.html#working-with-blueprints">Working with Blueprints</a></li>
 </ul>
-</section>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="appfactories.html">Application Factories</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="appfactories.html#basic-factories">Basic Factories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appfactories.html#factories-extensions">Factories &amp; Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appfactories.html#using-applications">Using Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appfactories.html#factory-improvements">Factory Improvements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="appdispatch.html">Application Dispatching</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="appdispatch.html#working-with-this-document">Working with this Document</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appdispatch.html#combining-applications">Combining Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appdispatch.html#dispatch-by-subdomain">Dispatch by Subdomain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appdispatch.html#dispatch-by-path">Dispatch by Path</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="urlprocessors.html">Using URL Processors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="urlprocessors.html#internationalized-application-urls">Internationalized Application URLs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="urlprocessors.html#internationalized-blueprint-urls">Internationalized Blueprint URLs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sqlite3.html">Using SQLite 3 with Flask</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sqlite3.html#connect-on-demand">Connect on Demand</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlite3.html#easy-querying">Easy Querying</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlite3.html#initial-schemas">Initial Schemas</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sqlalchemy.html">SQLAlchemy in Flask</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html#flask-sqlalchemy-extension">Flask-SQLAlchemy Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html#declarative">Declarative</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html#manual-object-relational-mapping">Manual Object Relational Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html#sql-abstraction-layer">SQL Abstraction Layer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fileuploads.html">Uploading Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fileuploads.html#a-gentle-introduction">A Gentle Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fileuploads.html#improving-uploads">Improving Uploads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fileuploads.html#upload-progress-bars">Upload Progress Bars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fileuploads.html#an-easier-solution">An Easier Solution</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="caching.html">Caching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="viewdecorators.html">View Decorators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="viewdecorators.html#login-required-decorator">Login Required Decorator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewdecorators.html#caching-decorator">Caching Decorator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewdecorators.html#templating-decorator">Templating Decorator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewdecorators.html#endpoint-decorator">Endpoint Decorator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="wtforms.html">Form Validation with WTForms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="wtforms.html#the-forms">The Forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wtforms.html#in-the-view">In the View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wtforms.html#forms-in-templates">Forms in Templates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="templateinheritance.html">Template Inheritance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="templateinheritance.html#base-template">Base Template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="templateinheritance.html#child-template">Child Template</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="flashing.html">Message Flashing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="flashing.html#simple-flashing">Simple Flashing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashing.html#flashing-with-categories">Flashing With Categories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flashing.html#filtering-flash-messages">Filtering Flash Messages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="javascript.html">JavaScript, <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, and JSON</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="javascript.html#rendering-templates">Rendering Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="javascript.html#generating-urls">Generating URLs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="javascript.html#making-a-request-with-fetch">Making a Request with <code class="docutils literal notranslate"><span class="pre">fetch</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="javascript.html#following-redirects">Following Redirects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="javascript.html#replacing-content">Replacing Content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="javascript.html#return-json-from-views">Return JSON from Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="javascript.html#receiving-json-in-views">Receiving JSON in Views</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lazyloading.html">Lazily Loading Views</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lazyloading.html#converting-to-centralized-url-map">Converting to Centralized URL Map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lazyloading.html#loading-late">Loading Late</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mongoengine.html">MongoDB with MongoEngine</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mongoengine.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mongoengine.html#mapping-documents">Mapping Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mongoengine.html#creating-data">Creating Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mongoengine.html#queries">Queries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mongoengine.html#documentation">Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="favicon.html">Adding a favicon</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="favicon.html#see-also">See also</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="streaming.html">Streaming Contents</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="streaming.html#basic-usage">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming.html#streaming-from-templates">Streaming from Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming.html#streaming-with-context">Streaming with Context</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deferredcallbacks.html">Deferred Request Callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="methodoverrides.html">Adding HTTP Method Overrides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requestchecksum.html">Request Content Checksums</a></li>
+<li class="toctree-l1"><a class="reference internal" href="celery.html">Background Tasks with Celery</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="celery.html#install">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="celery.html#integrate-celery-with-flask">Integrate Celery with Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="celery.html#application-factory">Application Factory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="celery.html#defining-tasks">Defining Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="celery.html#calling-tasks">Calling Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="celery.html#getting-results">Getting Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="celery.html#passing-data-to-tasks">Passing Data to Tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="subclassing.html">Subclassing Flask</a></li>
+<li class="toctree-l1"><a class="reference internal" href="singlepageapplications.html">Single-Page Applications</a></li>
+</ul>
+</div>
 </section>
 
 
@@ -105,29 +185,18 @@ Wikipedia</p></li>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
 
-  <h3>Contents</h3>
-  <ul>
-<li><a class="reference internal" href="#">Adding a favicon</a><ul>
-<li><a class="reference internal" href="#see-also">See also</a></li>
-</ul>
-</li>
-</ul>
 <h3>Navigation</h3>
 <ul>
   <li><a href="../index.html">Overview</a>
     <ul>
-      <li><a href="index.html">Patterns for Flask</a>
-        <ul>
-          <li>Previous: <a href="mongoengine.html" title="previous chapter">MongoDB with MongoEngine</a>
-          <li>Next: <a href="streaming.html" title="next chapter">Streaming Contents</a></ul>
-      </li>
+          <li>Previous: <a href="../shell.html" title="previous chapter">Working with the Shell</a>
+          <li>Next: <a href="packages.html" title="next chapter">Large Applications as Packages</a>
     </ul>
   </li>
 </ul>

@@ -1,53 +1,72 @@
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="./">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Contributing &#8212; Flask Documentation (3.2.x)</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
-    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
-    <script src="_static/documentation_options.js?v=56528222"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script data-project="flask" data-version="3.2.x" src="_static/describe_version.js?v=fa7f30d0"></script>
-    <link rel="icon" href="_static/shortcut-icon.png"/>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="BSD-3-Clause License" href="license.html" />
-    <link rel="prev" title="Flask Extension Development" href="extensiondev.html" /> 
+    <title>ASGI &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
+    <script src="../_static/documentation_options.js?v=56528222"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tell Flask it is Behind a Proxy" href="proxy_fix.html" />
+    <link rel="prev" title="eventlet" href="eventlet.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
+          <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
+          <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="license.html" title="BSD-3-Clause License"
+          <a href="proxy_fix.html" title="Tell Flask it is Behind a Proxy"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="extensiondev.html" title="Flask Extension Development"
+          <a href="eventlet.html" title="eventlet"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Flask Documentation (3.2.x)</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Contributing</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Deploying to Production</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ASGI</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="contributing">
-<h1>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">¶</a></h1>
-<p>See the Pallets <a class="reference external" href="_contrib">detailed contributing documentation</a> for many ways
-to contribute, including reporting issues, requesting features, asking or
-answering questions, and making PRs.</p>
+
+  <section id="asgi">
+<h1>ASGI<a class="headerlink" href="#asgi" title="Link to this heading">¶</a></h1>
+<p>If you’d like to use an ASGI server you will need to utilise WSGI to
+ASGI middleware. The asgiref
+<a class="reference external" href="https://github.com/django/asgiref#wsgi-to-asgi-adapter">WsgiToAsgi</a>
+adapter is recommended as it integrates with the event loop used for
+Flask’s <a class="reference internal" href="../async-await.html#async-await"><span class="std std-ref">Using async and await</span></a> support. You can use the adapter by
+wrapping the Flask app,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">asgiref.wsgi</span><span class="w"> </span><span class="kn">import</span> <span class="n">WsgiToAsgi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="o">...</span>
+
+<span class="n">asgi_app</span> <span class="o">=</span> <span class="n">WsgiToAsgi</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and then serving the <code class="docutils literal notranslate"><span class="pre">asgi_app</span></code> with the ASGI server, e.g. using
+<a class="reference external" href="https://github.com/pgjones/hypercorn">Hypercorn</a>,</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ hypercorn module:asgi_app
+</pre></div>
+</div>
 </section>
 
 
@@ -58,25 +77,28 @@ answering questions, and making PRs.</p>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
-            <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/flask-vertical.png" alt="Logo of Flask"/>
+
+
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
 <h3>Navigation</h3>
 <ul>
-  <li><a href="index.html">Overview</a>
+  <li><a href="../index.html">Overview</a>
     <ul>
-          <li>Previous: <a href="extensiondev.html" title="previous chapter">Flask Extension Development</a>
-          <li>Next: <a href="license.html" title="next chapter">BSD-3-Clause License</a>
+      <li><a href="index.html">Deploying to Production</a>
+        <ul>
+          <li>Previous: <a href="eventlet.html" title="previous chapter">eventlet</a>
+          <li>Next: <a href="proxy_fix.html" title="next chapter">Tell Flask it is Behind a Proxy</a></ul>
+      </li>
     </ul>
   </li>
 </ul>
 <search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
+    <form class="search" action="../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>

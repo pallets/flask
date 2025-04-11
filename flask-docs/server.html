@@ -5,20 +5,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Development Server &#8212; Flask Documentation (3.2.x)</title>
+    <title>Templates &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
-    <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=a5c4661c" />
     <script src="_static/documentation_options.js?v=56528222"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script data-project="flask" data-version="3.2.x" src="_static/describe_version.js?v=fa7f30d0"></script>
-    <script src="_static/tabs.js?v=3030b3cb"></script>
     <link rel="icon" href="_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Working with the Shell" href="shell.html" />
-    <link rel="prev" title="Command Line Interface" href="cli.html" /> 
+    <link rel="next" title="Testing Flask Applications" href="testing.html" />
+    <link rel="prev" title="Keep Developing!" href="tutorial/next.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -30,105 +28,236 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="shell.html" title="Working with the Shell"
+          <a href="testing.html" title="Testing Flask Applications"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="cli.html" title="Command Line Interface"
+          <a href="tutorial/next.html" title="Keep Developing!"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Flask Documentation (3.2.x)</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Development Server</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Templates</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="development-server">
-<h1>Development Server<a class="headerlink" href="#development-server" title="Link to this heading">¶</a></h1>
-<p>Flask provides a <code class="docutils literal notranslate"><span class="pre">run</span></code> command to run the application with a development server. In
-debug mode, this server provides an interactive debugger and will reload when code is
-changed.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Do not use the development server when deploying to production. It
-is intended for use only during local development. It is not
-designed to be particularly efficient, stable, or secure.</p>
-<p>See <a class="reference internal" href="deploying/index.html"><span class="doc">Deploying to Production</span></a> for deployment options.</p>
-</div>
-<section id="command-line">
-<h2>Command Line<a class="headerlink" href="#command-line" title="Link to this heading">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> CLI command is the recommended way to run the development server. Use
-the <code class="docutils literal notranslate"><span class="pre">--app</span></code> option to point to your application, and the <code class="docutils literal notranslate"><span class="pre">--debug</span></code> option to enable
-debug mode.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ flask --app hello run --debug
-</pre></div>
-</div>
-<p>This enables debug mode, including the interactive debugger and reloader, and then
-starts the server on <a class="reference external" href="http://localhost:5000/">http://localhost:5000/</a>. Use <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span> <span class="pre">--help</span></code> to see the
-available options, and <a class="reference internal" href="cli.html"><span class="doc">Command Line Interface</span></a> for detailed instructions about configuring and using
-the CLI.</p>
-<section id="address-already-in-use">
-<span id="id1"></span><h3>Address already in use<a class="headerlink" href="#address-already-in-use" title="Link to this heading">¶</a></h3>
-<p>If another program is already using port 5000, you’ll see an <code class="docutils literal notranslate"><span class="pre">OSError</span></code>
-when the server tries to start. It may have one of the following
-messages:</p>
+
+  <section id="templates">
+<h1>Templates<a class="headerlink" href="#templates" title="Link to this heading">¶</a></h1>
+<p>Flask leverages Jinja2 as its template engine.  You are obviously free to use
+a different template engine, but you still have to install Jinja2 to run
+Flask itself.  This requirement is necessary to enable rich extensions.
+An extension can depend on Jinja2 being present.</p>
+<p>This section only gives a very quick introduction into how Jinja2
+is integrated into Flask.  If you want information on the template
+engine’s syntax itself, head over to the official <a class="reference external" href="https://jinja.palletsprojects.com/templates/">Jinja2 Template
+Documentation</a> for
+more information.</p>
+<section id="jinja-setup">
+<h2>Jinja Setup<a class="headerlink" href="#jinja-setup" title="Link to this heading">¶</a></h2>
+<p>Unless customized, Jinja2 is configured by Flask as follows:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">OSError:</span> <span class="pre">[Errno</span> <span class="pre">98]</span> <span class="pre">Address</span> <span class="pre">already</span> <span class="pre">in</span> <span class="pre">use</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">OSError:</span> <span class="pre">[WinError</span> <span class="pre">10013]</span> <span class="pre">An</span> <span class="pre">attempt</span> <span class="pre">was</span> <span class="pre">made</span> <span class="pre">to</span> <span class="pre">access</span> <span class="pre">a</span> <span class="pre">socket</span>
-<span class="pre">in</span> <span class="pre">a</span> <span class="pre">way</span> <span class="pre">forbidden</span> <span class="pre">by</span> <span class="pre">its</span> <span class="pre">access</span> <span class="pre">permissions</span></code></p></li>
+<li><p>autoescaping is enabled for all templates ending in <code class="docutils literal notranslate"><span class="pre">.html</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.htm</span></code>, <code class="docutils literal notranslate"><span class="pre">.xml</span></code>, <code class="docutils literal notranslate"><span class="pre">.xhtml</span></code>, as well as <code class="docutils literal notranslate"><span class="pre">.svg</span></code> when using
+<code class="xref py py-func docutils literal notranslate"><span class="pre">render_template()</span></code>.</p></li>
+<li><p>autoescaping is enabled for all strings when using
+<code class="xref py py-func docutils literal notranslate"><span class="pre">render_template_string()</span></code>.</p></li>
+<li><p>a template has the ability to opt in/out autoescaping with the
+<code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">autoescape</span> <span class="pre">%}</span></code> tag.</p></li>
+<li><p>Flask inserts a couple of global functions and helpers into the
+Jinja2 context, additionally to the values that are present by
+default.</p></li>
 </ul>
-<p>Either identify and stop the other program, or use
-<code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span> <span class="pre">--port</span> <span class="pre">5001</span></code> to pick a different port.</p>
-<p>You can use <code class="docutils literal notranslate"><span class="pre">netstat</span></code> or <code class="docutils literal notranslate"><span class="pre">lsof</span></code> to identify what process id is using
-a port, then use other operating system tools stop that process. The
-following example shows that process id 6847 is using port 5000.</p>
-<div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0"><code class="docutils literal notranslate"><span class="pre">netstat</span></code> (Linux)</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1"><code class="docutils literal notranslate"><span class="pre">lsof</span></code> (macOS / Linux)</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1"><code class="docutils literal notranslate"><span class="pre">netstat</span></code> (Windows)</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ netstat -nlp | grep 5000
-tcp 0 0 127.0.0.1:5000 0.0.0.0:* LISTEN 6847/python
-</pre></div>
-</div>
-</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ lsof -P -i :5000
-Python 6847 IPv4 TCP localhost:5000 (LISTEN)
-</pre></div>
-</div>
-</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt; netstat -ano | findstr 5000
-TCP 127.0.0.1:5000 0.0.0.0:0 LISTENING 6847
-</pre></div>
-</div>
-</div></div>
-<p>macOS Monterey and later automatically starts a service that uses port
-5000. You can choose to disable this service instead of using a different port by
-searching for “AirPlay Receiver” in System Preferences and toggling it off.</p>
 </section>
-<section id="deferred-errors-on-reload">
-<h3>Deferred Errors on Reload<a class="headerlink" href="#deferred-errors-on-reload" title="Link to this heading">¶</a></h3>
-<p>When using the <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> command with the reloader, the server will
-continue to run even if you introduce syntax errors or other
-initialization errors into the code. Accessing the site will show the
-interactive debugger for the error, rather than crashing the server.</p>
-<p>If a syntax error is already present when calling <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code>, it will
-fail immediately and show the traceback rather than waiting until the
-site is accessed. This is intended to make errors more visible initially
-while still allowing the server to handle errors on reload.</p>
-</section>
-</section>
-<section id="in-code">
-<h2>In Code<a class="headerlink" href="#in-code" title="Link to this heading">¶</a></h2>
-<p>The development server can also be started from Python with the <a class="reference internal" href="api.html#flask.Flask.run" title="flask.Flask.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Flask.run()</span></code></a>
-method. This method takes arguments similar to the CLI options to control the server.
-The main difference from the CLI command is that the server will crash if there are
-errors when reloading. <code class="docutils literal notranslate"><span class="pre">debug=True</span></code> can be passed to enable debug mode.</p>
-<p>Place the call in a main block, otherwise it will interfere when trying to import and
-run the application with a production server later.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<section id="standard-context">
+<h2>Standard Context<a class="headerlink" href="#standard-context" title="Link to this heading">¶</a></h2>
+<p>The following global variables are available within Jinja2 templates
+by default:</p>
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">config</span></span></dt>
+<dd><p>The current configuration object (<a class="reference internal" href="api.html#flask.Flask.config" title="flask.Flask.config"><code class="xref py py-data docutils literal notranslate"><span class="pre">flask.Flask.config</span></code></a>)</p>
+<details class="changelog">
+<summary>Changelog</summary><div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.10: </span>This is now always available, even in imported templates.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.6.</span></p>
+</div>
+</details></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">request</span></span></dt>
+<dd><p>The current request object (<a class="reference internal" href="api.html#flask.request" title="flask.request"><code class="xref py py-class docutils literal notranslate"><span class="pre">flask.request</span></code></a>).  This variable is
+unavailable if the template was rendered without an active request
+context.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">session</span></span></dt>
+<dd><p>The current session object (<a class="reference internal" href="api.html#flask.session" title="flask.session"><code class="xref py py-class docutils literal notranslate"><span class="pre">flask.session</span></code></a>).  This variable
+is unavailable if the template was rendered without an active request
+context.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">g</span></span></dt>
+<dd><p>The request-bound object for global variables (<a class="reference internal" href="api.html#flask.g" title="flask.g"><code class="xref py py-data docutils literal notranslate"><span class="pre">flask.g</span></code></a>).  This
+variable is unavailable if the template was rendered without an active
+request context.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">url_for</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>The <a class="reference internal" href="api.html#flask.url_for" title="flask.url_for"><code class="xref py py-func docutils literal notranslate"><span class="pre">flask.url_for()</span></code></a> function.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_flashed_messages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>The <a class="reference internal" href="api.html#flask.get_flashed_messages" title="flask.get_flashed_messages"><code class="xref py py-func docutils literal notranslate"><span class="pre">flask.get_flashed_messages()</span></code></a> function.</p>
+</dd></dl>
+
+<div class="admonition-the-jinja-context-behavior admonition">
+<p class="admonition-title">The Jinja Context Behavior</p>
+<p>These variables are added to the context of variables, they are not
+global variables.  The difference is that by default these will not
+show up in the context of imported templates.  This is partially caused
+by performance considerations, partially to keep things explicit.</p>
+<p>What does this mean for you?  If you have a macro you want to import,
+that needs to access the request object you have two possibilities:</p>
+<ol class="arabic simple">
+<li><p>you explicitly pass the request to the macro as parameter, or
+the attribute of the request object you are interested in.</p></li>
+<li><p>you import the macro “with context”.</p></li>
+</ol>
+<p>Importing with context looks like this:</p>
+<div class="highlight-jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">from</span> <span class="s1">&#39;_helpers.html&#39;</span> <span class="k">import</span> <span class="nv">my_macro</span> <span class="k">with context</span> <span class="cp">%}</span>
 </pre></div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ python hello.py
+</div>
+</section>
+<section id="controlling-autoescaping">
+<h2>Controlling Autoescaping<a class="headerlink" href="#controlling-autoescaping" title="Link to this heading">¶</a></h2>
+<p>Autoescaping is the concept of automatically escaping special characters
+for you.  Special characters in the sense of HTML (or XML, and thus XHTML)
+are <code class="docutils literal notranslate"><span class="pre">&amp;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> as well as <code class="docutils literal notranslate"><span class="pre">'</span></code>.  Because these characters
+carry specific meanings in documents on their own you have to replace them
+by so called “entities” if you want to use them for text.  Not doing so
+would not only cause user frustration by the inability to use these
+characters in text, but can also lead to security problems.  (see
+<a class="reference internal" href="web-security.html#security-xss"><span class="std std-ref">Cross-Site Scripting (XSS)</span></a>)</p>
+<p>Sometimes however you will need to disable autoescaping in templates.
+This can be the case if you want to explicitly inject HTML into pages, for
+example if they come from a system that generates secure HTML like a
+markdown to HTML converter.</p>
+<p>There are three ways to accomplish that:</p>
+<ul class="simple">
+<li><p>In the Python code, wrap the HTML string in a <code class="xref py py-class docutils literal notranslate"><span class="pre">Markup</span></code>
+object before passing it to the template.  This is in general the
+recommended way.</p></li>
+<li><p>Inside the template, use the <code class="docutils literal notranslate"><span class="pre">|safe</span></code> filter to explicitly mark a
+string as safe HTML (<code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">myvariable|safe</span> <span class="pre">}}</span></code>)</p></li>
+<li><p>Temporarily disable the autoescape system altogether.</p></li>
+</ul>
+<p>To disable the autoescape system in templates, you can use the <code class="docutils literal notranslate"><span class="pre">{%</span>
+<span class="pre">autoescape</span> <span class="pre">%}</span></code> block:</p>
+<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">autoescape</span> <span class="kp">false</span> <span class="cp">%}</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>autoescaping is disabled here
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">will_not_be_escaped</span> <span class="cp">}}</span>
+<span class="cp">{%</span> <span class="k">endautoescape</span> <span class="cp">%}</span>
 </pre></div>
 </div>
+<p>Whenever you do this, please be very cautious about the variables you are
+using in this block.</p>
+</section>
+<section id="registering-filters">
+<span id="id1"></span><h2>Registering Filters<a class="headerlink" href="#registering-filters" title="Link to this heading">¶</a></h2>
+<p>If you want to register your own filters in Jinja2 you have two ways to do
+that.  You can either put them by hand into the
+<a class="reference internal" href="api.html#flask.Flask.jinja_env" title="flask.Flask.jinja_env"><code class="xref py py-attr docutils literal notranslate"><span class="pre">jinja_env</span></code></a> of the application or use the
+<a class="reference internal" href="api.html#flask.Flask.template_filter" title="flask.Flask.template_filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">template_filter()</span></code></a> decorator.</p>
+<p>The two following examples work the same and both reverse an object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;reverse&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">reverse_filter</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">s</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">reverse_filter</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">s</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">app</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="s1">&#39;reverse&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reverse_filter</span>
+</pre></div>
+</div>
+<p>In case of the decorator the argument is optional if you want to use the
+function name as name of the filter.  Once registered, you can use the filter
+in your templates in the same way as Jinja2’s builtin filters, for example if
+you have a Python list in context called <code class="code docutils literal notranslate"><span class="pre">mylist</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">%</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">mylist</span> <span class="o">|</span> <span class="n">reverse</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">endfor</span> <span class="o">%</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="context-processors">
+<h2>Context Processors<a class="headerlink" href="#context-processors" title="Link to this heading">¶</a></h2>
+<p>To inject new variables automatically into the context of a template,
+context processors exist in Flask.  Context processors run before the
+template is rendered and have the ability to inject new values into the
+template context.  A context processor is a function that returns a
+dictionary.  The keys and values of this dictionary are then merged with
+the template context, for all templates in the app:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">context_processor</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">inject_user</span><span class="p">():</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The context processor above makes a variable called <code class="code docutils literal notranslate"><span class="pre">user</span></code> available in
+the template with the value of <code class="code docutils literal notranslate"><span class="pre">g.user</span></code>.  This example is not very
+interesting because <code class="code docutils literal notranslate"><span class="pre">g</span></code> is available in templates anyways, but it gives an
+idea how this works.</p>
+<p>Variables are not limited to values; a context processor can also make
+functions available to templates (since Python allows passing around
+functions):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">context_processor</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">utility_processor</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_price</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="n">currency</span><span class="o">=</span><span class="s2">&quot;€&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">amount</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}{</span><span class="n">currency</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">format_price</span><span class="o">=</span><span class="n">format_price</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The context processor above makes the <code class="code docutils literal notranslate"><span class="pre">format_price</span></code> function available to all
+templates:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{{</span> <span class="n">format_price</span><span class="p">(</span><span class="mf">0.33</span><span class="p">)</span> <span class="p">}}</span>
+</pre></div>
+</div>
+<p>You could also build <code class="code docutils literal notranslate"><span class="pre">format_price</span></code> as a template filter (see
+<a class="reference internal" href="#registering-filters"><span class="std std-ref">Registering Filters</span></a>), but this demonstrates how to pass functions in a
+context processor.</p>
+</section>
+<section id="streaming">
+<h2>Streaming<a class="headerlink" href="#streaming" title="Link to this heading">¶</a></h2>
+<p>It can be useful to not render the whole template as one complete
+string, instead render it as a stream, yielding smaller incremental
+strings. This can be used for streaming HTML in chunks to speed up
+initial page load, or to save memory when rendering a very large
+template.</p>
+<p>The Jinja2 template engine supports rendering a template piece
+by piece, returning an iterator of strings. Flask provides the
+<a class="reference internal" href="api.html#flask.stream_template" title="flask.stream_template"><code class="xref py py-func docutils literal notranslate"><span class="pre">stream_template()</span></code></a> and <a class="reference internal" href="api.html#flask.stream_template_string" title="flask.stream_template_string"><code class="xref py py-func docutils literal notranslate"><span class="pre">stream_template_string()</span></code></a>
+functions to make this easier to use.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">stream_template</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/timeline&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">timeline</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">stream_template</span><span class="p">(</span><span class="s2">&quot;timeline.html&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>These functions automatically apply the
+<a class="reference internal" href="api.html#flask.stream_with_context" title="flask.stream_with_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">stream_with_context()</span></code></a> wrapper if a request is active, so
+that it remains available in the template.</p>
 </section>
 </section>
 
@@ -140,22 +269,22 @@ run the application with a production server later.</p>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
 
   <h3>Contents</h3>
   <ul>
-<li><a class="reference internal" href="#">Development Server</a><ul>
-<li><a class="reference internal" href="#command-line">Command Line</a><ul>
-<li><a class="reference internal" href="#address-already-in-use">Address already in use</a></li>
-<li><a class="reference internal" href="#deferred-errors-on-reload">Deferred Errors on Reload</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#in-code">In Code</a></li>
+<li><a class="reference internal" href="#">Templates</a><ul>
+<li><a class="reference internal" href="#jinja-setup">Jinja Setup</a></li>
+<li><a class="reference internal" href="#standard-context">Standard Context</a></li>
+<li><a class="reference internal" href="#controlling-autoescaping">Controlling Autoescaping</a></li>
+<li><a class="reference internal" href="#registering-filters">Registering Filters</a></li>
+<li><a class="reference internal" href="#context-processors">Context Processors</a></li>
+<li><a class="reference internal" href="#streaming">Streaming</a></li>
 </ul>
 </li>
 </ul>
@@ -163,8 +292,8 @@ run the application with a production server later.</p>
 <ul>
   <li><a href="index.html">Overview</a>
     <ul>
-          <li>Previous: <a href="cli.html" title="previous chapter">Command Line Interface</a>
-          <li>Next: <a href="shell.html" title="next chapter">Working with the Shell</a>
+          <li>Previous: <a href="tutorial/next.html" title="previous chapter">Keep Developing!</a>
+          <li>Next: <a href="testing.html" title="next chapter">Testing Flask Applications</a>
     </ul>
   </li>
 </ul>

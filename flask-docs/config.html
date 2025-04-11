@@ -1,845 +1,103 @@
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="./">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Configuration Handling &#8212; Flask Documentation (3.2.x)</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
-    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
-    <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=a5c4661c" />
-    <script src="_static/documentation_options.js?v=56528222"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script data-project="flask" data-version="3.2.x" src="_static/describe_version.js?v=fa7f30d0"></script>
-    <script src="_static/tabs.js?v=3030b3cb"></script>
-    <link rel="icon" href="_static/shortcut-icon.png"/>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Signals" href="signals.html" />
-    <link rel="prev" title="Logging" href="logging.html" /> 
+    <title>Apache httpd &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
+    <script src="../_static/documentation_options.js?v=56528222"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Using async and await" href="../async-await.html" />
+    <link rel="prev" title="nginx" href="nginx.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
+          <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
+          <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="signals.html" title="Signals"
+          <a href="../async-await.html" title="Using async and await"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="logging.html" title="Logging"
+          <a href="nginx.html" title="nginx"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Flask Documentation (3.2.x)</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Configuration Handling</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Deploying to Production</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Apache httpd</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="configuration-handling">
-<h1>Configuration Handling<a class="headerlink" href="#configuration-handling" title="Link to this heading">¶</a></h1>
-<p>Applications need some kind of configuration.  There are different settings
-you might want to change depending on the application environment like
-toggling the debug mode, setting the secret key, and other such
-environment-specific things.</p>
-<p>The way Flask is designed usually requires the configuration to be
-available when the application starts up.  You can hard code the
-configuration in the code, which for many small applications is not
-actually that bad, but there are better ways.</p>
-<p>Independent of how you load your config, there is a config object
-available which holds the loaded configuration values:
-The <a class="reference internal" href="api.html#flask.Flask.config" title="flask.Flask.config"><code class="xref py py-attr docutils literal notranslate"><span class="pre">config</span></code></a> attribute of the <a class="reference internal" href="api.html#flask.Flask" title="flask.Flask"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flask</span></code></a>
-object.  This is the place where Flask itself puts certain configuration
-values and also where extensions can put their configuration values.  But
-this is also where you can have your own configuration.</p>
-<section id="configuration-basics">
-<h2>Configuration Basics<a class="headerlink" href="#configuration-basics" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference internal" href="api.html#flask.Flask.config" title="flask.Flask.config"><code class="xref py py-attr docutils literal notranslate"><span class="pre">config</span></code></a> is actually a subclass of a dictionary and
-can be modified just like any dictionary:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;TESTING&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+  <section id="apache-httpd">
+<h1>Apache httpd<a class="headerlink" href="#apache-httpd" title="Link to this heading">¶</a></h1>
+<p><a class="reference external" href="https://httpd.apache.org/">Apache httpd</a> is a fast, production level HTTP server. When serving
+your application with one of the WSGI servers listed in <a class="reference internal" href="index.html"><span class="doc">Deploying to Production</span></a>, it
+is often good or necessary to put a dedicated HTTP server in front of
+it. This “reverse proxy” can handle incoming requests, TLS, and other
+security and performance concerns better than the WSGI server.</p>
+<p>httpd can be installed using your system package manager, or a pre-built
+executable for Windows. Installing and running httpd itself is outside
+the scope of this doc. This page outlines the basics of configuring
+httpd to proxy your application. Be sure to read its documentation to
+understand what features are available.</p>
+<section id="domain-name">
+<h2>Domain Name<a class="headerlink" href="#domain-name" title="Link to this heading">¶</a></h2>
+<p>Acquiring and configuring a domain name is outside the scope of this
+doc. In general, you will buy a domain name from a registrar, pay for
+server space with a hosting provider, and then point your registrar
+at the hosting provider’s name servers.</p>
+<p>To simulate this, you can also edit your <code class="docutils literal notranslate"><span class="pre">hosts</span></code> file, located at
+<code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code> on Linux. Add a line that associates a name with the
+local IP.</p>
+<p>Modern Linux systems may be configured to treat any domain name that
+ends with <code class="docutils literal notranslate"><span class="pre">.localhost</span></code> like this without adding it to the <code class="docutils literal notranslate"><span class="pre">hosts</span></code>
+file.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="mf">127.0.0.1</span> <span class="n">hello</span><span class="o">.</span><span class="n">localhost</span>
 </pre></div>
 </div>
-<p>Certain configuration values are also forwarded to the
-<a class="reference internal" href="api.html#flask.Flask" title="flask.Flask"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Flask</span></code></a> object so you can read and write them from there:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">testing</span> <span class="o">=</span> <span class="kc">True</span>
-</pre></div>
-</div>
-<p>To update multiple keys at once you can use the <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict.update" title="(in Python v3.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dict.update()</span></code></a>
-method:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-    <span class="n">TESTING</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">SECRET_KEY</span><span class="o">=</span><span class="s1">&#39;192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf&#39;</span>
-<span class="p">)</span>
-</pre></div>
 </div>
 </section>
-<section id="debug-mode">
-<h2>Debug Mode<a class="headerlink" href="#debug-mode" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference internal" href="#DEBUG" title="DEBUG"><code class="xref py py-data docutils literal notranslate"><span class="pre">DEBUG</span></code></a> config value is special because it may behave inconsistently if
-changed after the app has begun setting up. In order to set debug mode reliably, use the
-<code class="docutils literal notranslate"><span class="pre">--debug</span></code> option on the <code class="docutils literal notranslate"><span class="pre">flask</span></code> or <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> command. <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> will use the
-interactive debugger and reloader by default in debug mode.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ flask --app hello run --debug
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
+<p>The httpd configuration is located at <code class="docutils literal notranslate"><span class="pre">/etc/httpd/conf/httpd.conf</span></code> on
+Linux. It may be different depending on your operating system. Check the
+docs and look for <code class="docutils literal notranslate"><span class="pre">httpd.conf</span></code>.</p>
+<p>Remove or comment out any existing <code class="docutils literal notranslate"><span class="pre">DocumentRoot</span></code> directive. Add the
+config lines below. We’ll assume the WSGI server is listening locally at
+<code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8000</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">/etc/httpd/conf/httpd.conf</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-apache notranslate"><div class="highlight"><pre><span></span><span class="nb">LoadModule</span><span class="w"> </span>proxy_module<span class="w"> </span>modules/mod_proxy.so
+<span class="nb">LoadModule</span><span class="w"> </span>proxy_http_module<span class="w"> </span>modules/mod_proxy_http.so
+<span class="nb">ProxyPass</span><span class="w"> </span>/<span class="w"> </span>http://127.0.0.1:8000/
+<span class="nb">RequestHeader</span><span class="w"> </span>set<span class="w"> </span>X-Forwarded-Proto<span class="w"> </span>http
+<span class="nb">RequestHeader</span><span class="w"> </span>set<span class="w"> </span>X-Forwarded-Prefix<span class="w"> </span>/
 </pre></div>
 </div>
-<p>Using the option is recommended. While it is possible to set <a class="reference internal" href="#DEBUG" title="DEBUG"><code class="xref py py-data docutils literal notranslate"><span class="pre">DEBUG</span></code></a> in your
-config or code, this is strongly discouraged. It can’t be read early by the
-<code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> command, and some systems or extensions may have already configured
-themselves based on a previous value.</p>
-</section>
-<section id="builtin-configuration-values">
-<h2>Builtin Configuration Values<a class="headerlink" href="#builtin-configuration-values" title="Link to this heading">¶</a></h2>
-<p>The following configuration values are used internally by Flask:</p>
-<dl class="py data">
-<dt class="sig sig-object py" id="DEBUG">
-<span class="sig-name descname"><span class="pre">DEBUG</span></span><a class="headerlink" href="#DEBUG" title="Link to this definition">¶</a></dt>
-<dd><p>Whether debug mode is enabled. When using <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> to start the development
-server, an interactive debugger will be shown for unhandled exceptions, and the
-server will be reloaded when code changes. The <a class="reference internal" href="api.html#flask.Flask.debug" title="flask.Flask.debug"><code class="xref py py-attr docutils literal notranslate"><span class="pre">debug</span></code></a> attribute
-maps to this config key. This is set with the <code class="docutils literal notranslate"><span class="pre">FLASK_DEBUG</span></code> environment variable.
-It may not behave as expected if set in code.</p>
-<p><strong>Do not enable debug mode when deploying in production.</strong></p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="TESTING">
-<span class="sig-name descname"><span class="pre">TESTING</span></span><a class="headerlink" href="#TESTING" title="Link to this definition">¶</a></dt>
-<dd><p>Enable testing mode. Exceptions are propagated rather than handled by the
-the app’s error handlers. Extensions may also change their behavior to
-facilitate easier testing. You should enable this in your own tests.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="PROPAGATE_EXCEPTIONS">
-<span class="sig-name descname"><span class="pre">PROPAGATE_EXCEPTIONS</span></span><a class="headerlink" href="#PROPAGATE_EXCEPTIONS" title="Link to this definition">¶</a></dt>
-<dd><p>Exceptions are re-raised rather than being handled by the app’s error
-handlers. If not set, this is implicitly true if <code class="docutils literal notranslate"><span class="pre">TESTING</span></code> or <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code>
-is enabled.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="TRAP_HTTP_EXCEPTIONS">
-<span class="sig-name descname"><span class="pre">TRAP_HTTP_EXCEPTIONS</span></span><a class="headerlink" href="#TRAP_HTTP_EXCEPTIONS" title="Link to this definition">¶</a></dt>
-<dd><p>If there is no handler for an <code class="docutils literal notranslate"><span class="pre">HTTPException</span></code>-type exception, re-raise it
-to be handled by the interactive debugger instead of returning it as a
-simple error response.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="TRAP_BAD_REQUEST_ERRORS">
-<span class="sig-name descname"><span class="pre">TRAP_BAD_REQUEST_ERRORS</span></span><a class="headerlink" href="#TRAP_BAD_REQUEST_ERRORS" title="Link to this definition">¶</a></dt>
-<dd><p>Trying to access a key that doesn’t exist from request dicts like <code class="docutils literal notranslate"><span class="pre">args</span></code>
-and <code class="docutils literal notranslate"><span class="pre">form</span></code> will return a 400 Bad Request error page. Enable this to treat
-the error as an unhandled exception instead so that you get the interactive
-debugger. This is a more specific version of <code class="docutils literal notranslate"><span class="pre">TRAP_HTTP_EXCEPTIONS</span></code>. If
-unset, it is enabled in debug mode.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="SECRET_KEY">
-<span class="sig-name descname"><span class="pre">SECRET_KEY</span></span><a class="headerlink" href="#SECRET_KEY" title="Link to this definition">¶</a></dt>
-<dd><p>A secret key that will be used for securely signing the session cookie
-and can be used for any other security related needs by extensions or your
-application. It should be a long random <code class="docutils literal notranslate"><span class="pre">bytes</span></code> or <code class="docutils literal notranslate"><span class="pre">str</span></code>. For
-example, copy the output of this to your config:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -c &#39;import secrets; print(secrets.token_hex())&#39;
-&#39;192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf&#39;
-</pre></div>
 </div>
-<p><strong>Do not reveal the secret key when posting questions or committing code.</strong></p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="SECRET_KEY_FALLBACKS">
-<span class="sig-name descname"><span class="pre">SECRET_KEY_FALLBACKS</span></span><a class="headerlink" href="#SECRET_KEY_FALLBACKS" title="Link to this definition">¶</a></dt>
-<dd><p>A list of old secret keys that can still be used for unsigning, most recent
-first. This allows a project to implement key rotation without invalidating
-active sessions or other recently-signed secrets.</p>
-<p>Keys should be removed after an appropriate period of time, as checking each
-additional key adds some overhead.</p>
-<p>Flask’s built-in secure cookie session supports this. Extensions that use
-<a class="reference internal" href="#SECRET_KEY" title="SECRET_KEY"><code class="xref py py-data docutils literal notranslate"><span class="pre">SECRET_KEY</span></code></a> may not support this yet.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-<details class="changelog">
-<summary>Changelog</summary><div class="versionadded">
-<p><span class="versionmodified added">Added in version 3.1.</span></p>
-</div>
-</details></dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="SESSION_COOKIE_NAME">
-<span class="sig-name descname"><span class="pre">SESSION_COOKIE_NAME</span></span><a class="headerlink" href="#SESSION_COOKIE_NAME" title="Link to this definition">¶</a></dt>
-<dd><p>The name of the session cookie. Can be changed in case you already have a
-cookie with the same name.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">'session'</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="SESSION_COOKIE_DOMAIN">
-<span class="sig-name descname"><span class="pre">SESSION_COOKIE_DOMAIN</span></span><a class="headerlink" href="#SESSION_COOKIE_DOMAIN" title="Link to this definition">¶</a></dt>
-<dd><p>The value of the <code class="docutils literal notranslate"><span class="pre">Domain</span></code> parameter on the session cookie. If not set, browsers
-will only send the cookie to the exact domain it was set from. Otherwise, they
-will send it to any subdomain of the given value as well.</p>
-<p>Not setting this value is more restricted and secure than setting it.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>If this is changed after the browser created a cookie is created with
-one setting, it may result in another being created. Browsers may send
-send both in an undefined order. In that case, you may want to change
-<a class="reference internal" href="#SESSION_COOKIE_NAME" title="SESSION_COOKIE_NAME"><code class="xref py py-data docutils literal notranslate"><span class="pre">SESSION_COOKIE_NAME</span></code></a> as well or otherwise invalidate old sessions.</p>
-</div>
-<details class="changelog">
-<summary>Changelog</summary><div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 2.3: </span>Not set by default, does not fall back to <code class="docutils literal notranslate"><span class="pre">SERVER_NAME</span></code>.</p>
-</div>
-</details></dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="SESSION_COOKIE_PATH">
-<span class="sig-name descname"><span class="pre">SESSION_COOKIE_PATH</span></span><a class="headerlink" href="#SESSION_COOKIE_PATH" title="Link to this definition">¶</a></dt>
-<dd><p>The path that the session cookie will be valid for. If not set, the cookie
-will be valid underneath <code class="docutils literal notranslate"><span class="pre">APPLICATION_ROOT</span></code> or <code class="docutils literal notranslate"><span class="pre">/</span></code> if that is not set.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="SESSION_COOKIE_HTTPONLY">
-<span class="sig-name descname"><span class="pre">SESSION_COOKIE_HTTPONLY</span></span><a class="headerlink" href="#SESSION_COOKIE_HTTPONLY" title="Link to this definition">¶</a></dt>
-<dd><p>Browsers will not allow JavaScript access to cookies marked as “HTTP only”
-for security.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="SESSION_COOKIE_SECURE">
-<span class="sig-name descname"><span class="pre">SESSION_COOKIE_SECURE</span></span><a class="headerlink" href="#SESSION_COOKIE_SECURE" title="Link to this definition">¶</a></dt>
-<dd><p>Browsers will only send cookies with requests over HTTPS if the cookie is
-marked “secure”. The application must be served over HTTPS for this to make
-sense.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="SESSION_COOKIE_PARTITIONED">
-<span class="sig-name descname"><span class="pre">SESSION_COOKIE_PARTITIONED</span></span><a class="headerlink" href="#SESSION_COOKIE_PARTITIONED" title="Link to this definition">¶</a></dt>
-<dd><p>Browsers will send cookies based on the top-level document’s domain, rather
-than only the domain of the document setting the cookie. This prevents third
-party cookies set in iframes from “leaking” between separate sites.</p>
-<p>Browsers are beginning to disallow non-partitioned third party cookies, so
-you need to mark your cookies partitioned if you expect them to work in such
-embedded situations.</p>
-<p>Enabling this implicitly enables <a class="reference internal" href="#SESSION_COOKIE_SECURE" title="SESSION_COOKIE_SECURE"><code class="xref py py-data docutils literal notranslate"><span class="pre">SESSION_COOKIE_SECURE</span></code></a> as well, as
-it is only valid when served over HTTPS.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
-<details class="changelog">
-<summary>Changelog</summary><div class="versionadded">
-<p><span class="versionmodified added">Added in version 3.1.</span></p>
-</div>
-</details></dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="SESSION_COOKIE_SAMESITE">
-<span class="sig-name descname"><span class="pre">SESSION_COOKIE_SAMESITE</span></span><a class="headerlink" href="#SESSION_COOKIE_SAMESITE" title="Link to this definition">¶</a></dt>
-<dd><p>Restrict how cookies are sent with requests from external sites. Can
-be set to <code class="docutils literal notranslate"><span class="pre">'Lax'</span></code> (recommended) or <code class="docutils literal notranslate"><span class="pre">'Strict'</span></code>.
-See <a class="reference internal" href="web-security.html#security-cookie"><span class="std std-ref">Set-Cookie options</span></a>.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-<details class="changelog">
-<summary>Changelog</summary><div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.0.</span></p>
-</div>
-</details></dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="PERMANENT_SESSION_LIFETIME">
-<span class="sig-name descname"><span class="pre">PERMANENT_SESSION_LIFETIME</span></span><a class="headerlink" href="#PERMANENT_SESSION_LIFETIME" title="Link to this definition">¶</a></dt>
-<dd><p>If <code class="docutils literal notranslate"><span class="pre">session.permanent</span></code> is true, the cookie’s expiration will be set this
-number of seconds in the future. Can either be a
-<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.timedelta</span></code></a> or an <code class="docutils literal notranslate"><span class="pre">int</span></code>.</p>
-<p>Flask’s default cookie implementation validates that the cryptographic
-signature is not older than this value.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">timedelta(days=31)</span></code> (<code class="docutils literal notranslate"><span class="pre">2678400</span></code> seconds)</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="SESSION_REFRESH_EACH_REQUEST">
-<span class="sig-name descname"><span class="pre">SESSION_REFRESH_EACH_REQUEST</span></span><a class="headerlink" href="#SESSION_REFRESH_EACH_REQUEST" title="Link to this definition">¶</a></dt>
-<dd><p>Control whether the cookie is sent with every response when
-<code class="docutils literal notranslate"><span class="pre">session.permanent</span></code> is true. Sending the cookie every time (the default)
-can more reliably keep the session from expiring, but uses more bandwidth.
-Non-permanent sessions are not affected.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="USE_X_SENDFILE">
-<span class="sig-name descname"><span class="pre">USE_X_SENDFILE</span></span><a class="headerlink" href="#USE_X_SENDFILE" title="Link to this definition">¶</a></dt>
-<dd><p>When serving files, set the <code class="docutils literal notranslate"><span class="pre">X-Sendfile</span></code> header instead of serving the
-data with Flask. Some web servers, such as Apache, recognize this and serve
-the data more efficiently. This only makes sense when using such a server.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="SEND_FILE_MAX_AGE_DEFAULT">
-<span class="sig-name descname"><span class="pre">SEND_FILE_MAX_AGE_DEFAULT</span></span><a class="headerlink" href="#SEND_FILE_MAX_AGE_DEFAULT" title="Link to this definition">¶</a></dt>
-<dd><p>When serving files, set the cache control max age to this number of
-seconds. Can be a <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.timedelta</span></code></a> or an <code class="docutils literal notranslate"><span class="pre">int</span></code>.
-Override this value on a per-file basis using
-<a class="reference internal" href="api.html#flask.Flask.get_send_file_max_age" title="flask.Flask.get_send_file_max_age"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_send_file_max_age()</span></code></a> on the application or
-blueprint.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">send_file</span></code> tells the browser to use conditional
-requests will be used instead of a timed cache, which is usually
-preferable.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="TRUSTED_HOSTS">
-<span class="sig-name descname"><span class="pre">TRUSTED_HOSTS</span></span><a class="headerlink" href="#TRUSTED_HOSTS" title="Link to this definition">¶</a></dt>
-<dd><p>Validate <a class="reference internal" href="api.html#flask.Request.host" title="flask.Request.host"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Request.host</span></code></a> and other attributes that use it against
-these trusted values. Raise a <a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/exceptions/#werkzeug.exceptions.SecurityError" title="(in Werkzeug v3.1.x)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">SecurityError</span></code></a> if
-the host is invalid, which results in a 400 error. If it is <code class="docutils literal notranslate"><span class="pre">None</span></code>, all
-hosts are valid. Each value is either an exact match, or can start with
-a dot <code class="docutils literal notranslate"><span class="pre">.</span></code> to match any subdomain.</p>
-<p>Validation is done during routing against this value. <code class="docutils literal notranslate"><span class="pre">before_request</span></code> and
-<code class="docutils literal notranslate"><span class="pre">after_request</span></code> callbacks will still be called.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-<details class="changelog">
-<summary>Changelog</summary><div class="versionadded">
-<p><span class="versionmodified added">Added in version 3.1.</span></p>
-</div>
-</details></dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="SERVER_NAME">
-<span class="sig-name descname"><span class="pre">SERVER_NAME</span></span><a class="headerlink" href="#SERVER_NAME" title="Link to this definition">¶</a></dt>
-<dd><p>Inform the application what host and port it is bound to.</p>
-<p>Must be set if <code class="docutils literal notranslate"><span class="pre">subdomain_matching</span></code> is enabled, to be able to extract the
-subdomain from the request.</p>
-<p>Must be set for <code class="docutils literal notranslate"><span class="pre">url_for</span></code> to generate external URLs outside of a
-request context.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-<details class="changelog">
-<summary>Changelog</summary><div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 3.1: </span>Does not restrict requests to only this domain, for both
-<code class="docutils literal notranslate"><span class="pre">subdomain_matching</span></code> and <code class="docutils literal notranslate"><span class="pre">host_matching</span></code>.</p>
-</div>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 2.3: </span>Does not affect <code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_DOMAIN</span></code>.</p>
-</div>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 1.0: </span>Does not implicitly enable <code class="docutils literal notranslate"><span class="pre">subdomain_matching</span></code>.</p>
-</div>
-</details></dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="APPLICATION_ROOT">
-<span class="sig-name descname"><span class="pre">APPLICATION_ROOT</span></span><a class="headerlink" href="#APPLICATION_ROOT" title="Link to this definition">¶</a></dt>
-<dd><p>Inform the application what path it is mounted under by the application /
-web server.  This is used for generating URLs outside the context of a
-request (inside a request, the dispatcher is responsible for setting
-<code class="docutils literal notranslate"><span class="pre">SCRIPT_NAME</span></code> instead; see <a class="reference internal" href="patterns/appdispatch.html"><span class="doc">Application Dispatching</span></a>
-for examples of dispatch configuration).</p>
-<p>Will be used for the session cookie path if <code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_PATH</span></code> is not
-set.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">'/'</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="PREFERRED_URL_SCHEME">
-<span class="sig-name descname"><span class="pre">PREFERRED_URL_SCHEME</span></span><a class="headerlink" href="#PREFERRED_URL_SCHEME" title="Link to this definition">¶</a></dt>
-<dd><p>Use this scheme for generating external URLs when not in a request context.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">'http'</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="MAX_CONTENT_LENGTH">
-<span class="sig-name descname"><span class="pre">MAX_CONTENT_LENGTH</span></span><a class="headerlink" href="#MAX_CONTENT_LENGTH" title="Link to this definition">¶</a></dt>
-<dd><p>The maximum number of bytes that will be read during this request. If
-this limit is exceeded, a 413 <a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/exceptions/#werkzeug.exceptions.RequestEntityTooLarge" title="(in Werkzeug v3.1.x)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">RequestEntityTooLarge</span></code></a>
-error is raised. If it is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, no limit is enforced at the
-Flask application level. However, if it is <code class="docutils literal notranslate"><span class="pre">None</span></code> and the request has no
-<code class="docutils literal notranslate"><span class="pre">Content-Length</span></code> header and the WSGI server does not indicate that it
-terminates the stream, then no data is read to avoid an infinite stream.</p>
-<p>Each request defaults to this config. It can be set on a specific
-<a class="reference internal" href="api.html#flask.Request.max_content_length" title="flask.Request.max_content_length"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Request.max_content_length</span></code></a> to apply the limit to that specific
-view. This should be set appropriately based on an application’s or view’s
-specific needs.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-<details class="changelog">
-<summary>Changelog</summary><div class="versionadded">
-<p><span class="versionmodified added">Added in version 0.6.</span></p>
-</div>
-</details></dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="MAX_FORM_MEMORY_SIZE">
-<span class="sig-name descname"><span class="pre">MAX_FORM_MEMORY_SIZE</span></span><a class="headerlink" href="#MAX_FORM_MEMORY_SIZE" title="Link to this definition">¶</a></dt>
-<dd><p>The maximum size in bytes any non-file form field may be in a
-<code class="docutils literal notranslate"><span class="pre">multipart/form-data</span></code> body. If this limit is exceeded, a 413
-<a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/exceptions/#werkzeug.exceptions.RequestEntityTooLarge" title="(in Werkzeug v3.1.x)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">RequestEntityTooLarge</span></code></a> error is raised. If it is
-set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, no limit is enforced at the Flask application level.</p>
-<p>Each request defaults to this config. It can be set on a specific
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">Request.max_form_memory_parts</span></code> to apply the limit to that specific
-view. This should be set appropriately based on an application’s or view’s
-specific needs.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">500_000</span></code></p>
-<details class="changelog">
-<summary>Changelog</summary><div class="versionadded">
-<p><span class="versionmodified added">Added in version 3.1.</span></p>
-</div>
-</details></dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="MAX_FORM_PARTS">
-<span class="sig-name descname"><span class="pre">MAX_FORM_PARTS</span></span><a class="headerlink" href="#MAX_FORM_PARTS" title="Link to this definition">¶</a></dt>
-<dd><p>The maximum number of fields that may be present in a
-<code class="docutils literal notranslate"><span class="pre">multipart/form-data</span></code> body. If this limit is exceeded, a 413
-<a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/exceptions/#werkzeug.exceptions.RequestEntityTooLarge" title="(in Werkzeug v3.1.x)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">RequestEntityTooLarge</span></code></a> error is raised. If it
-is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, no limit is enforced at the Flask application level.</p>
-<p>Each request defaults to this config. It can be set on a specific
-<a class="reference internal" href="api.html#flask.Request.max_form_parts" title="flask.Request.max_form_parts"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Request.max_form_parts</span></code></a> to apply the limit to that specific view.
-This should be set appropriately based on an application’s or view’s
-specific needs.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">1_000</span></code></p>
-<details class="changelog">
-<summary>Changelog</summary><div class="versionadded">
-<p><span class="versionmodified added">Added in version 3.1.</span></p>
-</div>
-</details></dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="TEMPLATES_AUTO_RELOAD">
-<span class="sig-name descname"><span class="pre">TEMPLATES_AUTO_RELOAD</span></span><a class="headerlink" href="#TEMPLATES_AUTO_RELOAD" title="Link to this definition">¶</a></dt>
-<dd><p>Reload templates when they are changed. If not set, it will be enabled in
-debug mode.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="EXPLAIN_TEMPLATE_LOADING">
-<span class="sig-name descname"><span class="pre">EXPLAIN_TEMPLATE_LOADING</span></span><a class="headerlink" href="#EXPLAIN_TEMPLATE_LOADING" title="Link to this definition">¶</a></dt>
-<dd><p>Log debugging information tracing how a template file was loaded. This can
-be useful to figure out why a template was not loaded or the wrong file
-appears to be loaded.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="MAX_COOKIE_SIZE">
-<span class="sig-name descname"><span class="pre">MAX_COOKIE_SIZE</span></span><a class="headerlink" href="#MAX_COOKIE_SIZE" title="Link to this definition">¶</a></dt>
-<dd><p>Warn if cookie headers are larger than this many bytes. Defaults to
-<code class="docutils literal notranslate"><span class="pre">4093</span></code>. Larger cookies may be silently ignored by browsers. Set to
-<code class="docutils literal notranslate"><span class="pre">0</span></code> to disable the warning.</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="PROVIDE_AUTOMATIC_OPTIONS">
-<span class="sig-name descname"><span class="pre">PROVIDE_AUTOMATIC_OPTIONS</span></span><a class="headerlink" href="#PROVIDE_AUTOMATIC_OPTIONS" title="Link to this definition">¶</a></dt>
-<dd><p>Set to <code class="docutils literal notranslate"><span class="pre">False</span></code> to disable the automatic addition of OPTIONS
-responses. This can be overridden per route by altering the
-<code class="docutils literal notranslate"><span class="pre">provide_automatic_options</span></code> attribute.</p>
-</dd></dl>
-
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 3.10: </span>Added <a class="reference internal" href="#PROVIDE_AUTOMATIC_OPTIONS" title="PROVIDE_AUTOMATIC_OPTIONS"><code class="xref py py-data docutils literal notranslate"><span class="pre">PROVIDE_AUTOMATIC_OPTIONS</span></code></a> to control the default
-addition of autogenerated OPTIONS responses.</p>
-</div>
-<details class="changelog">
-<summary>Changelog</summary><div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 2.3: </span><code class="docutils literal notranslate"><span class="pre">JSON_AS_ASCII</span></code>, <code class="docutils literal notranslate"><span class="pre">JSON_SORT_KEYS</span></code>, <code class="docutils literal notranslate"><span class="pre">JSONIFY_MIMETYPE</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">JSONIFY_PRETTYPRINT_REGULAR</span></code> were removed. The default <code class="docutils literal notranslate"><span class="pre">app.json</span></code> provider has
-equivalent attributes instead.</p>
-</div>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 2.3: </span><code class="docutils literal notranslate"><span class="pre">ENV</span></code> was removed.</p>
-</div>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 2.2: </span>Removed <code class="docutils literal notranslate"><span class="pre">PRESERVE_CONTEXT_ON_EXCEPTION</span></code>.</p>
-</div>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 1.0: </span><code class="docutils literal notranslate"><span class="pre">LOGGER_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">LOGGER_HANDLER_POLICY</span></code> were removed. See
-<a class="reference internal" href="logging.html"><span class="doc">Logging</span></a> for information about configuration.</p>
-<p>Added <code class="xref py py-data docutils literal notranslate"><span class="pre">ENV</span></code> to reflect the <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">FLASK_ENV</span></code> environment
-variable.</p>
-<p>Added <a class="reference internal" href="#SESSION_COOKIE_SAMESITE" title="SESSION_COOKIE_SAMESITE"><code class="xref py py-data docutils literal notranslate"><span class="pre">SESSION_COOKIE_SAMESITE</span></code></a> to control the session
-cookie’s <code class="docutils literal notranslate"><span class="pre">SameSite</span></code> option.</p>
-<p>Added <a class="reference internal" href="#MAX_COOKIE_SIZE" title="MAX_COOKIE_SIZE"><code class="xref py py-data docutils literal notranslate"><span class="pre">MAX_COOKIE_SIZE</span></code></a> to control a warning from Werkzeug.</p>
-</div>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 0.11: </span><code class="docutils literal notranslate"><span class="pre">SESSION_REFRESH_EACH_REQUEST</span></code>, <code class="docutils literal notranslate"><span class="pre">TEMPLATES_AUTO_RELOAD</span></code>,
-<code class="docutils literal notranslate"><span class="pre">LOGGER_HANDLER_POLICY</span></code>, <code class="docutils literal notranslate"><span class="pre">EXPLAIN_TEMPLATE_LOADING</span></code></p>
-</div>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 0.10: </span><code class="docutils literal notranslate"><span class="pre">JSON_AS_ASCII</span></code>, <code class="docutils literal notranslate"><span class="pre">JSON_SORT_KEYS</span></code>, <code class="docutils literal notranslate"><span class="pre">JSONIFY_PRETTYPRINT_REGULAR</span></code></p>
-</div>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 0.9: </span><code class="docutils literal notranslate"><span class="pre">PREFERRED_URL_SCHEME</span></code></p>
-</div>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 0.8: </span><code class="docutils literal notranslate"><span class="pre">TRAP_BAD_REQUEST_ERRORS</span></code>, <code class="docutils literal notranslate"><span class="pre">TRAP_HTTP_EXCEPTIONS</span></code>,
-<code class="docutils literal notranslate"><span class="pre">APPLICATION_ROOT</span></code>, <code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_DOMAIN</span></code>,
-<code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_PATH</span></code>, <code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_HTTPONLY</span></code>,
-<code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_SECURE</span></code></p>
-</div>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 0.7: </span><code class="docutils literal notranslate"><span class="pre">PROPAGATE_EXCEPTIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">PRESERVE_CONTEXT_ON_EXCEPTION</span></code></p>
-</div>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 0.6: </span><code class="docutils literal notranslate"><span class="pre">MAX_CONTENT_LENGTH</span></code></p>
-</div>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 0.5: </span><code class="docutils literal notranslate"><span class="pre">SERVER_NAME</span></code></p>
-</div>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 0.4: </span><code class="docutils literal notranslate"><span class="pre">LOGGER_NAME</span></code></p>
-</div>
-</details></section>
-<section id="configuring-from-python-files">
-<h2>Configuring from Python Files<a class="headerlink" href="#configuring-from-python-files" title="Link to this heading">¶</a></h2>
-<p>Configuration becomes more useful if you can store it in a separate file, ideally
-located outside the actual application package. You can deploy your application, then
-separately configure it for the specific deployment.</p>
-<p>A common pattern is this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s1">&#39;yourapplication.default_settings&#39;</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_envvar</span><span class="p">(</span><span class="s1">&#39;YOURAPPLICATION_SETTINGS&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This first loads the configuration from the
-<code class="code docutils literal notranslate"><span class="pre">yourapplication.default_settings</span></code> module and then overrides the values
-with the contents of the file the <span class="target" id="index-1"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">YOURAPPLICATION_SETTINGS</span></code>
-environment variable points to.  This environment variable can be set
-in the shell before starting the server:</p>
-<div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-QmFzaA==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-0-QmFzaA==" name="QmFzaA==" role="tab" tabindex="0">Bash</button><button aria-controls="panel-0-RmlzaA==" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-RmlzaA==" name="RmlzaA==" role="tab" tabindex="-1">Fish</button><button aria-controls="panel-0-Q01E" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-Q01E" name="Q01E" role="tab" tabindex="-1">CMD</button><button aria-controls="panel-0-UG93ZXJzaGVsbA==" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-UG93ZXJzaGVsbA==" name="UG93ZXJzaGVsbA==" role="tab" tabindex="-1">Powershell</button></div><div aria-labelledby="tab-0-QmFzaA==" class="sphinx-tabs-panel group-tab" id="panel-0-QmFzaA==" name="QmFzaA==" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ export YOURAPPLICATION_SETTINGS=/path/to/settings.cfg
-$ flask run
- * Running on http://127.0.0.1:5000/
-</pre></div>
-</div>
-</div><div aria-labelledby="tab-0-RmlzaA==" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-RmlzaA==" name="RmlzaA==" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ set -x YOURAPPLICATION_SETTINGS /path/to/settings.cfg
-$ flask run
- * Running on http://127.0.0.1:5000/
-</pre></div>
-</div>
-</div><div aria-labelledby="tab-0-Q01E" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-Q01E" name="Q01E" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt; set YOURAPPLICATION_SETTINGS=\path\to\settings.cfg
-&gt; flask run
- * Running on http://127.0.0.1:5000/
-</pre></div>
-</div>
-</div><div aria-labelledby="tab-0-UG93ZXJzaGVsbA==" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-UG93ZXJzaGVsbA==" name="UG93ZXJzaGVsbA==" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt; $env:YOURAPPLICATION_SETTINGS = &quot;\path\to\settings.cfg&quot;
-&gt; flask run
- * Running on http://127.0.0.1:5000/
-</pre></div>
-</div>
-</div></div>
-<p>The configuration files themselves are actual Python files.  Only values
-in uppercase are actually stored in the config object later on.  So make
-sure to use uppercase letters for your config keys.</p>
-<p>Here is an example of a configuration file:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example configuration</span>
-<span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="s1">&#39;192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf&#39;</span>
-</pre></div>
-</div>
-<p>Make sure to load the configuration very early on, so that extensions have
-the ability to access the configuration when starting up.  There are other
-methods on the config object as well to load from individual files.  For a
-complete reference, read the <a class="reference internal" href="api.html#flask.Config" title="flask.Config"><code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></a> object’s
-documentation.</p>
-</section>
-<section id="configuring-from-data-files">
-<h2>Configuring from Data Files<a class="headerlink" href="#configuring-from-data-files" title="Link to this heading">¶</a></h2>
-<p>It is also possible to load configuration from a file in a format of
-your choice using <a class="reference internal" href="api.html#flask.Config.from_file" title="flask.Config.from_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_file()</span></code></a>. For example to load
-from a TOML file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">tomllib</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;config.toml&quot;</span><span class="p">,</span> <span class="n">load</span><span class="o">=</span><span class="n">tomllib</span><span class="o">.</span><span class="n">load</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Or from a JSON file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;config.json&quot;</span><span class="p">,</span> <span class="n">load</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="configuring-from-environment-variables">
-<h2>Configuring from Environment Variables<a class="headerlink" href="#configuring-from-environment-variables" title="Link to this heading">¶</a></h2>
-<p>In addition to pointing to configuration files using environment
-variables, you may find it useful (or necessary) to control your
-configuration values directly from the environment. Flask can be
-instructed to load all environment variables starting with a specific
-prefix into the config using <a class="reference internal" href="api.html#flask.Config.from_prefixed_env" title="flask.Config.from_prefixed_env"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_prefixed_env()</span></code></a>.</p>
-<p>Environment variables can be set in the shell before starting the
-server:</p>
-<div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-QmFzaA==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-1-QmFzaA==" name="QmFzaA==" role="tab" tabindex="0">Bash</button><button aria-controls="panel-1-RmlzaA==" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-RmlzaA==" name="RmlzaA==" role="tab" tabindex="-1">Fish</button><button aria-controls="panel-1-Q01E" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-Q01E" name="Q01E" role="tab" tabindex="-1">CMD</button><button aria-controls="panel-1-UG93ZXJzaGVsbA==" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-UG93ZXJzaGVsbA==" name="UG93ZXJzaGVsbA==" role="tab" tabindex="-1">Powershell</button></div><div aria-labelledby="tab-1-QmFzaA==" class="sphinx-tabs-panel group-tab" id="panel-1-QmFzaA==" name="QmFzaA==" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ export FLASK_SECRET_KEY=&quot;5f352379324c22463451387a0aec5d2f&quot;
-$ export FLASK_MAIL_ENABLED=false
-$ flask run
- * Running on http://127.0.0.1:5000/
-</pre></div>
-</div>
-</div><div aria-labelledby="tab-1-RmlzaA==" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-RmlzaA==" name="RmlzaA==" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ set -x FLASK_SECRET_KEY &quot;5f352379324c22463451387a0aec5d2f&quot;
-$ set -x FLASK_MAIL_ENABLED false
-$ flask run
- * Running on http://127.0.0.1:5000/
-</pre></div>
-</div>
-</div><div aria-labelledby="tab-1-Q01E" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-Q01E" name="Q01E" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt; set FLASK_SECRET_KEY=&quot;5f352379324c22463451387a0aec5d2f&quot;
-&gt; set FLASK_MAIL_ENABLED=false
-&gt; flask run
- * Running on http://127.0.0.1:5000/
-</pre></div>
-</div>
-</div><div aria-labelledby="tab-1-UG93ZXJzaGVsbA==" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-UG93ZXJzaGVsbA==" name="UG93ZXJzaGVsbA==" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt; $env:FLASK_SECRET_KEY = &quot;5f352379324c22463451387a0aec5d2f&quot;
-&gt; $env:FLASK_MAIL_ENABLED = &quot;false&quot;
-&gt; flask run
- * Running on http://127.0.0.1:5000/
-</pre></div>
-</div>
-</div></div>
-<p>The variables can then be loaded and accessed via the config with a key
-equal to the environment variable name without the prefix i.e.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_prefixed_env</span><span class="p">()</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;SECRET_KEY&quot;</span><span class="p">]</span>  <span class="c1"># Is &quot;5f352379324c22463451387a0aec5d2f&quot;</span>
-</pre></div>
-</div>
-<p>The prefix is <code class="docutils literal notranslate"><span class="pre">FLASK_</span></code> by default. This is configurable via the
-<code class="docutils literal notranslate"><span class="pre">prefix</span></code> argument of <a class="reference internal" href="api.html#flask.Config.from_prefixed_env" title="flask.Config.from_prefixed_env"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_prefixed_env()</span></code></a>.</p>
-<p>Values will be parsed to attempt to convert them to a more specific type
-than strings. By default <a class="reference external" href="https://docs.python.org/3/library/json.html#json.loads" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">json.loads()</span></code></a> is used, so any valid JSON
-value is possible, including lists and dicts. This is configurable via
-the <code class="docutils literal notranslate"><span class="pre">loads</span></code> argument of <a class="reference internal" href="api.html#flask.Config.from_prefixed_env" title="flask.Config.from_prefixed_env"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_prefixed_env()</span></code></a>.</p>
-<p>When adding a boolean value with the default JSON parsing, only “true”
-and “false”, lowercase, are valid values. Keep in mind that any
-non-empty string is considered <code class="docutils literal notranslate"><span class="pre">True</span></code> by Python.</p>
-<p>It is possible to set keys in nested dictionaries by separating the
-keys with double underscore (<code class="docutils literal notranslate"><span class="pre">__</span></code>). Any intermediate keys that don’t
-exist on the parent dict will be initialized to an empty dict.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ export FLASK_MYAPI__credentials__username=user123
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;MYAPI&quot;</span><span class="p">][</span><span class="s2">&quot;credentials&quot;</span><span class="p">][</span><span class="s2">&quot;username&quot;</span><span class="p">]</span>  <span class="c1"># Is &quot;user123&quot;</span>
-</pre></div>
-</div>
-<p>On Windows, environment variable keys are always uppercase, therefore
-the above example would end up as <code class="docutils literal notranslate"><span class="pre">MYAPI__CREDENTIALS__USERNAME</span></code>.</p>
-<p>For even more config loading features, including merging and
-case-insensitive Windows support, try a dedicated library such as
-<a class="reference external" href="https://www.dynaconf.com/">Dynaconf</a>, which includes integration with Flask.</p>
-</section>
-<section id="configuration-best-practices">
-<h2>Configuration Best Practices<a class="headerlink" href="#configuration-best-practices" title="Link to this heading">¶</a></h2>
-<p>The downside with the approach mentioned earlier is that it makes testing
-a little harder.  There is no single 100% solution for this problem in
-general, but there are a couple of things you can keep in mind to improve
-that experience:</p>
-<ol class="arabic simple">
-<li><p>Create your application in a function and register blueprints on it.
-That way you can create multiple instances of your application with
-different configurations attached which makes unit testing a lot
-easier.  You can use this to pass in configuration as needed.</p></li>
-<li><p>Do not write code that needs the configuration at import time.  If you
-limit yourself to request-only accesses to the configuration you can
-reconfigure the object later on as needed.</p></li>
-<li><p>Make sure to load the configuration very early on, so that
-extensions can access the configuration when calling <code class="docutils literal notranslate"><span class="pre">init_app</span></code>.</p></li>
-</ol>
-</section>
-<section id="development-production">
-<span id="config-dev-prod"></span><h2>Development / Production<a class="headerlink" href="#development-production" title="Link to this heading">¶</a></h2>
-<p>Most applications need more than one configuration.  There should be at
-least separate configurations for the production server and the one used
-during development.  The easiest way to handle this is to use a default
-configuration that is always loaded and part of the version control, and a
-separate configuration that overrides the values as necessary as mentioned
-in the example above:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s1">&#39;yourapplication.default_settings&#39;</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_envvar</span><span class="p">(</span><span class="s1">&#39;YOURAPPLICATION_SETTINGS&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Then you just have to add a separate <code class="file docutils literal notranslate"><span class="pre">config.py</span></code> file and export
-<code class="docutils literal notranslate"><span class="pre">YOURAPPLICATION_SETTINGS=/path/to/config.py</span></code> and you are done.  However
-there are alternative ways as well.  For example you could use imports or
-subclassing.</p>
-<p>What is very popular in the Django world is to make the import explicit in
-the config file by adding <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">yourapplication.default_settings</span>
-<span class="pre">import</span> <span class="pre">*</span></code> to the top of the file and then overriding the changes by hand.
-You could also inspect an environment variable like
-<code class="docutils literal notranslate"><span class="pre">YOURAPPLICATION_MODE</span></code> and set that to <code class="code docutils literal notranslate"><span class="pre">production</span></code>, <code class="code docutils literal notranslate"><span class="pre">development</span></code> etc
-and import different hard-coded files based on that.</p>
-<p>An interesting pattern is also to use classes and inheritance for
-configuration:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="n">TESTING</span> <span class="o">=</span> <span class="kc">False</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">ProductionConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
-    <span class="n">DATABASE_URI</span> <span class="o">=</span> <span class="s1">&#39;mysql://user@localhost/foo&#39;</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">DevelopmentConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
-    <span class="n">DATABASE_URI</span> <span class="o">=</span> <span class="s2">&quot;sqlite:////tmp/foo.db&quot;</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">TestingConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
-    <span class="n">DATABASE_URI</span> <span class="o">=</span> <span class="s1">&#39;sqlite:///:memory:&#39;</span>
-    <span class="n">TESTING</span> <span class="o">=</span> <span class="kc">True</span>
-</pre></div>
-</div>
-<p>To enable such a config you just have to call into
-<a class="reference internal" href="api.html#flask.Config.from_object" title="flask.Config.from_object"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_object()</span></code></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s1">&#39;configmodule.ProductionConfig&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Note that <a class="reference internal" href="api.html#flask.Config.from_object" title="flask.Config.from_object"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_object()</span></code></a> does not instantiate the class
-object. If you need to instantiate the class, such as to access a property,
-then you must do so before calling <a class="reference internal" href="api.html#flask.Config.from_object" title="flask.Config.from_object"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_object()</span></code></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">configmodule</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProductionConfig</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="n">ProductionConfig</span><span class="p">())</span>
-
-<span class="c1"># Alternatively, import via string:</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">werkzeug.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_string</span>
-<span class="n">cfg</span> <span class="o">=</span> <span class="n">import_string</span><span class="p">(</span><span class="s1">&#39;configmodule.ProductionConfig&#39;</span><span class="p">)()</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Instantiating the configuration object allows you to use <code class="docutils literal notranslate"><span class="pre">&#64;property</span></code> in
-your configuration classes:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base config, uses staging database server.&quot;&quot;&quot;</span>
-    <span class="n">TESTING</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">DB_SERVER</span> <span class="o">=</span> <span class="s1">&#39;192.168.1.56&#39;</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">DATABASE_URI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># Note: all caps</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;mysql://user@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">DB_SERVER</span><span class="si">}</span><span class="s2">/foo&quot;</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">ProductionConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Uses production database server.&quot;&quot;&quot;</span>
-    <span class="n">DB_SERVER</span> <span class="o">=</span> <span class="s1">&#39;192.168.19.32&#39;</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">DevelopmentConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
-    <span class="n">DB_SERVER</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">TestingConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
-    <span class="n">DB_SERVER</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span>
-    <span class="n">DATABASE_URI</span> <span class="o">=</span> <span class="s1">&#39;sqlite:///:memory:&#39;</span>
-</pre></div>
-</div>
-<p>There are many different ways and it’s up to you how you want to manage
-your configuration files.  However here a list of good recommendations:</p>
-<ul class="simple">
-<li><p>Keep a default configuration in version control.  Either populate the
-config with this default configuration or import it in your own
-configuration files before overriding values.</p></li>
-<li><p>Use an environment variable to switch between the configurations.
-This can be done from outside the Python interpreter and makes
-development and deployment much easier because you can quickly and
-easily switch between different configs without having to touch the
-code at all.  If you are working often on different projects you can
-even create your own script for sourcing that activates a virtualenv
-and exports the development configuration for you.</p></li>
-<li><p>Use a tool like <a class="reference external" href="https://www.fabfile.org/">fabric</a> to push code and configuration separately
-to the production server(s).</p></li>
-</ul>
-</section>
-<section id="instance-folders">
-<span id="id1"></span><h2>Instance Folders<a class="headerlink" href="#instance-folders" title="Link to this heading">¶</a></h2>
-<details class="changelog">
-<summary>Changelog</summary><div class="versionadded">
-<p><span class="versionmodified added">Added in version 0.8.</span></p>
-</div>
-</details><p>Flask 0.8 introduces instance folders.  Flask for a long time made it
-possible to refer to paths relative to the application’s folder directly
-(via <code class="xref py py-attr docutils literal notranslate"><span class="pre">Flask.root_path</span></code>).  This was also how many developers loaded
-configurations stored next to the application.  Unfortunately however this
-only works well if applications are not packages in which case the root
-path refers to the contents of the package.</p>
-<p>With Flask 0.8 a new attribute was introduced:
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">Flask.instance_path</span></code>.  It refers to a new concept called the
-“instance folder”.  The instance folder is designed to not be under
-version control and be deployment specific.  It’s the perfect place to
-drop things that either change at runtime or configuration files.</p>
-<p>You can either explicitly provide the path of the instance folder when
-creating the Flask application or you can let Flask autodetect the
-instance folder.  For explicit configuration use the <code class="code docutils literal notranslate"><span class="pre">instance_path</span></code>
-parameter:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">instance_path</span><span class="o">=</span><span class="s1">&#39;/path/to/instance/folder&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Please keep in mind that this path <em>must</em> be absolute when provided.</p>
-<p>If the <code class="code docutils literal notranslate"><span class="pre">instance_path</span></code> parameter is not provided the following default
-locations are used:</p>
-<ul>
-<li><p>Uninstalled module:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">myapp</span><span class="o">.</span><span class="n">py</span>
-<span class="o">/</span><span class="n">instance</span>
-</pre></div>
-</div>
-</li>
-<li><p>Uninstalled package:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">myapp</span>
-    <span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
-<span class="o">/</span><span class="n">instance</span>
-</pre></div>
-</div>
-</li>
-<li><p>Installed module or package:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$PREFIX/lib/pythonX.Y/site-packages/myapp
-$PREFIX/var/myapp-instance
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">$PREFIX</span></code> is the prefix of your Python installation.  This can be
-<code class="docutils literal notranslate"><span class="pre">/usr</span></code> or the path to your virtualenv.  You can print the value of
-<code class="docutils literal notranslate"><span class="pre">sys.prefix</span></code> to see what the prefix is set to.</p>
-</li>
-</ul>
-<p>Since the config object provided loading of configuration files from
-relative filenames we made it possible to change the loading via filenames
-to be relative to the instance path if wanted.  The behavior of relative
-paths in config files can be flipped between “relative to the application
-root” (the default) to “relative to instance folder” via the
-<code class="code docutils literal notranslate"><span class="pre">instance_relative_config</span></code> switch to the application constructor:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">instance_relative_config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Here is a full example of how to configure Flask to preload the config
-from a module and then override the config from a file in the instance
-folder if it exists:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">instance_relative_config</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s1">&#39;yourapplication.default_settings&#39;</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_pyfile</span><span class="p">(</span><span class="s1">&#39;application.cfg&#39;</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The path to the instance folder can be found via the
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">Flask.instance_path</span></code>.  Flask also provides a shortcut to open a
-file from the instance folder with <code class="xref py py-meth docutils literal notranslate"><span class="pre">Flask.open_instance_resource()</span></code>.</p>
-<p>Example usage for both:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">instance_path</span><span class="p">,</span> <span class="s1">&#39;application.cfg&#39;</span><span class="p">)</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-
-<span class="c1"># or via open_instance_resource:</span>
-<span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">open_instance_resource</span><span class="p">(</span><span class="s1">&#39;application.cfg&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</pre></div>
-</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">LoadModule</span></code> lines might already exist. If so, make sure they are
+uncommented instead of adding them manually.</p>
+<p>Then <a class="reference internal" href="proxy_fix.html"><span class="doc">Tell Flask it is Behind a Proxy</span></a> so that your application uses the <code class="docutils literal notranslate"><span class="pre">X-Forwarded</span></code>
+headers. <code class="docutils literal notranslate"><span class="pre">X-Forwarded-For</span></code> and <code class="docutils literal notranslate"><span class="pre">X-Forwarded-Host</span></code> are automatically
+set by <code class="docutils literal notranslate"><span class="pre">ProxyPass</span></code>.</p>
 </section>
 </section>
 
@@ -851,72 +109,37 @@ file from the instance folder with <code class="xref py py-meth docutils literal
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
-            <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/flask-vertical.png" alt="Logo of Flask"/>
+
+
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
 
   <h3>Contents</h3>
   <ul>
-<li><a class="reference internal" href="#">Configuration Handling</a><ul>
-<li><a class="reference internal" href="#configuration-basics">Configuration Basics</a></li>
-<li><a class="reference internal" href="#debug-mode">Debug Mode</a></li>
-<li><a class="reference internal" href="#builtin-configuration-values">Builtin Configuration Values</a><ul>
-<li><a class="reference internal" href="#DEBUG"><code class="docutils literal notranslate"><span class="pre">DEBUG</span></code></a></li>
-<li><a class="reference internal" href="#TESTING"><code class="docutils literal notranslate"><span class="pre">TESTING</span></code></a></li>
-<li><a class="reference internal" href="#PROPAGATE_EXCEPTIONS"><code class="docutils literal notranslate"><span class="pre">PROPAGATE_EXCEPTIONS</span></code></a></li>
-<li><a class="reference internal" href="#TRAP_HTTP_EXCEPTIONS"><code class="docutils literal notranslate"><span class="pre">TRAP_HTTP_EXCEPTIONS</span></code></a></li>
-<li><a class="reference internal" href="#TRAP_BAD_REQUEST_ERRORS"><code class="docutils literal notranslate"><span class="pre">TRAP_BAD_REQUEST_ERRORS</span></code></a></li>
-<li><a class="reference internal" href="#SECRET_KEY"><code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code></a></li>
-<li><a class="reference internal" href="#SECRET_KEY_FALLBACKS"><code class="docutils literal notranslate"><span class="pre">SECRET_KEY_FALLBACKS</span></code></a></li>
-<li><a class="reference internal" href="#SESSION_COOKIE_NAME"><code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_NAME</span></code></a></li>
-<li><a class="reference internal" href="#SESSION_COOKIE_DOMAIN"><code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_DOMAIN</span></code></a></li>
-<li><a class="reference internal" href="#SESSION_COOKIE_PATH"><code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_PATH</span></code></a></li>
-<li><a class="reference internal" href="#SESSION_COOKIE_HTTPONLY"><code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_HTTPONLY</span></code></a></li>
-<li><a class="reference internal" href="#SESSION_COOKIE_SECURE"><code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_SECURE</span></code></a></li>
-<li><a class="reference internal" href="#SESSION_COOKIE_PARTITIONED"><code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_PARTITIONED</span></code></a></li>
-<li><a class="reference internal" href="#SESSION_COOKIE_SAMESITE"><code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_SAMESITE</span></code></a></li>
-<li><a class="reference internal" href="#PERMANENT_SESSION_LIFETIME"><code class="docutils literal notranslate"><span class="pre">PERMANENT_SESSION_LIFETIME</span></code></a></li>
-<li><a class="reference internal" href="#SESSION_REFRESH_EACH_REQUEST"><code class="docutils literal notranslate"><span class="pre">SESSION_REFRESH_EACH_REQUEST</span></code></a></li>
-<li><a class="reference internal" href="#USE_X_SENDFILE"><code class="docutils literal notranslate"><span class="pre">USE_X_SENDFILE</span></code></a></li>
-<li><a class="reference internal" href="#SEND_FILE_MAX_AGE_DEFAULT"><code class="docutils literal notranslate"><span class="pre">SEND_FILE_MAX_AGE_DEFAULT</span></code></a></li>
-<li><a class="reference internal" href="#TRUSTED_HOSTS"><code class="docutils literal notranslate"><span class="pre">TRUSTED_HOSTS</span></code></a></li>
-<li><a class="reference internal" href="#SERVER_NAME"><code class="docutils literal notranslate"><span class="pre">SERVER_NAME</span></code></a></li>
-<li><a class="reference internal" href="#APPLICATION_ROOT"><code class="docutils literal notranslate"><span class="pre">APPLICATION_ROOT</span></code></a></li>
-<li><a class="reference internal" href="#PREFERRED_URL_SCHEME"><code class="docutils literal notranslate"><span class="pre">PREFERRED_URL_SCHEME</span></code></a></li>
-<li><a class="reference internal" href="#MAX_CONTENT_LENGTH"><code class="docutils literal notranslate"><span class="pre">MAX_CONTENT_LENGTH</span></code></a></li>
-<li><a class="reference internal" href="#MAX_FORM_MEMORY_SIZE"><code class="docutils literal notranslate"><span class="pre">MAX_FORM_MEMORY_SIZE</span></code></a></li>
-<li><a class="reference internal" href="#MAX_FORM_PARTS"><code class="docutils literal notranslate"><span class="pre">MAX_FORM_PARTS</span></code></a></li>
-<li><a class="reference internal" href="#TEMPLATES_AUTO_RELOAD"><code class="docutils literal notranslate"><span class="pre">TEMPLATES_AUTO_RELOAD</span></code></a></li>
-<li><a class="reference internal" href="#EXPLAIN_TEMPLATE_LOADING"><code class="docutils literal notranslate"><span class="pre">EXPLAIN_TEMPLATE_LOADING</span></code></a></li>
-<li><a class="reference internal" href="#MAX_COOKIE_SIZE"><code class="docutils literal notranslate"><span class="pre">MAX_COOKIE_SIZE</span></code></a></li>
-<li><a class="reference internal" href="#PROVIDE_AUTOMATIC_OPTIONS"><code class="docutils literal notranslate"><span class="pre">PROVIDE_AUTOMATIC_OPTIONS</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#configuring-from-python-files">Configuring from Python Files</a></li>
-<li><a class="reference internal" href="#configuring-from-data-files">Configuring from Data Files</a></li>
-<li><a class="reference internal" href="#configuring-from-environment-variables">Configuring from Environment Variables</a></li>
-<li><a class="reference internal" href="#configuration-best-practices">Configuration Best Practices</a></li>
-<li><a class="reference internal" href="#development-production">Development / Production</a></li>
-<li><a class="reference internal" href="#instance-folders">Instance Folders</a></li>
+<li><a class="reference internal" href="#">Apache httpd</a><ul>
+<li><a class="reference internal" href="#domain-name">Domain Name</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
 </ul>
 </li>
 </ul>
 <h3>Navigation</h3>
 <ul>
-  <li><a href="index.html">Overview</a>
+  <li><a href="../index.html">Overview</a>
     <ul>
-          <li>Previous: <a href="logging.html" title="previous chapter">Logging</a>
-          <li>Next: <a href="signals.html" title="next chapter">Signals</a>
+      <li><a href="index.html">Deploying to Production</a>
+        <ul>
+          <li>Previous: <a href="nginx.html" title="previous chapter">nginx</a>
+          <li>Next: <a href="../async-await.html" title="next chapter">Using <code class="docutils literal notranslate"><span class="pre">async</span></code> and <code class="docutils literal notranslate"><span class="pre">await</span></code></a></ul>
+      </li>
     </ul>
   </li>
 </ul>
 <search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
+    <form class="search" action="../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>

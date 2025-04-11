@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>gevent &#8212; Flask Documentation (3.2.x)</title>
+    <title>mod_wsgi &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="eventlet" href="eventlet.html" />
-    <link rel="prev" title="uWSGI" href="uwsgi.html" /> 
+    <link rel="next" title="uWSGI" href="uwsgi.html" />
+    <link rel="prev" title="Waitress" href="waitress.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,83 +28,98 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="eventlet.html" title="eventlet"
+          <a href="uwsgi.html" title="uWSGI"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="uwsgi.html" title="uWSGI"
+          <a href="waitress.html" title="Waitress"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Deploying to Production</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">gevent</a></li> 
+        <li class="nav-item nav-item-this"><a href="">mod_wsgi</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="gevent">
-<h1>gevent<a class="headerlink" href="#gevent" title="Link to this heading">¶</a></h1>
-<p>Prefer using <a class="reference internal" href="gunicorn.html"><span class="doc">Gunicorn</span></a> or <a class="reference internal" href="uwsgi.html"><span class="doc">uWSGI</span></a> with gevent workers rather
-than using <a class="reference external" href="https://www.gevent.org/">gevent</a> directly. Gunicorn and uWSGI provide much more
-configurable and production-tested servers.</p>
-<p><a class="reference external" href="https://www.gevent.org/">gevent</a> allows writing asynchronous, coroutine-based code that looks
-like standard synchronous Python. It uses <a class="reference external" href="https://greenlet.readthedocs.io/en/latest/">greenlet</a> to enable task
-switching without writing <code class="docutils literal notranslate"><span class="pre">async/await</span></code> or using <code class="docutils literal notranslate"><span class="pre">asyncio</span></code>.</p>
-<p><a class="reference internal" href="eventlet.html"><span class="doc">eventlet</span></a> is another library that does the same thing. Certain
-dependencies you have, or other considerations, may affect which of the
-two you choose to use.</p>
-<p>gevent provides a WSGI server that can handle many connections at once
-instead of one per worker process. You must actually use gevent in your
-own code to see any benefit to using the server.</p>
+
+  <section id="mod-wsgi">
+<h1>mod_wsgi<a class="headerlink" href="#mod-wsgi" title="Link to this heading">¶</a></h1>
+<p><a class="reference external" href="https://modwsgi.readthedocs.io/">mod_wsgi</a> is a WSGI server integrated with the <a class="reference external" href="https://httpd.apache.org/">Apache httpd</a> server.
+The modern <a class="reference external" href="https://pypi.org/project/mod-wsgi/">mod_wsgi-express</a> command makes it easy to configure and
+start the server without needing to write Apache httpd configuration.</p>
+<ul class="simple">
+<li><p>Tightly integrated with Apache httpd.</p></li>
+<li><p>Supports Windows directly.</p></li>
+<li><p>Requires a compiler and the Apache development headers to install.</p></li>
+<li><p>Does not require a reverse proxy setup.</p></li>
+</ul>
+<p>This page outlines the basics of running mod_wsgi-express, not the more
+complex installation and configuration with httpd. Be sure to read the
+<a class="reference external" href="https://pypi.org/project/mod-wsgi/">mod_wsgi-express</a>, <a class="reference external" href="https://modwsgi.readthedocs.io/">mod_wsgi</a>, and <a class="reference external" href="https://httpd.apache.org/">Apache httpd</a> documentation to
+understand what features are available.</p>
 <section id="installing">
 <h2>Installing<a class="headerlink" href="#installing" title="Link to this heading">¶</a></h2>
-<p>When using gevent, greenlet&gt;=1.0 is required, otherwise context locals
-such as <code class="docutils literal notranslate"><span class="pre">request</span></code> will not work as expected. When using PyPy,
-PyPy&gt;=7.3.7 is required.</p>
-<p>Create a virtualenv, install your application, then install <code class="docutils literal notranslate"><span class="pre">gevent</span></code>.</p>
+<p>Installing mod_wsgi requires a compiler and the Apache server and
+development headers installed. You will get an error if they are not.
+How to install them depends on the OS and package manager that you use.</p>
+<p>Create a virtualenv, install your application, then install
+<code class="docutils literal notranslate"><span class="pre">mod_wsgi</span></code>.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cd hello-app
 $ python -m venv .venv
 $ . .venv/bin/activate
 $ pip install .  # install your application
-$ pip install gevent
+$ pip install mod_wsgi
 </pre></div>
 </div>
 </section>
 <section id="running">
 <h2>Running<a class="headerlink" href="#running" title="Link to this heading">¶</a></h2>
-<p>To use gevent to serve your application, write a script that imports its
-<code class="docutils literal notranslate"><span class="pre">WSGIServer</span></code>, as well as your app or app factory.</p>
+<p>The only argument to <code class="docutils literal notranslate"><span class="pre">mod_wsgi-express</span></code> specifies a script containing
+your Flask application, which must be called <code class="docutils literal notranslate"><span class="pre">application</span></code>. You can
+write a small script to import your app with this name, or to create it
+if using the app factory pattern.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">wsgi.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gevent.pywsgi</span><span class="w"> </span><span class="kn">import</span> <span class="n">WSGIServer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">hello</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hello</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
-<span class="n">http_server</span> <span class="o">=</span> <span class="n">WSGIServer</span><span class="p">((</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">),</span> <span class="n">app</span><span class="p">)</span>
-<span class="n">http_server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+<span class="n">application</span> <span class="o">=</span> <span class="n">app</span>
 </pre></div>
 </div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ python wsgi.py
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">wsgi.py</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hello</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+
+<span class="n">application</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>No output is shown when the server starts.</p>
+</div>
+<p>Now run the <code class="docutils literal notranslate"><span class="pre">mod_wsgi-express</span> <span class="pre">start-server</span></code> command.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ mod_wsgi-express start-server wsgi.py --processes 4
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--processes</span></code> option specifies the number of worker processes to
+run; a starting value could be <code class="docutils literal notranslate"><span class="pre">CPU</span> <span class="pre">*</span> <span class="pre">2</span></code>.</p>
+<p>Logs for each request aren’t show in the terminal. If an error occurs,
+its information is written to the error log file shown when starting the
+server.</p>
 </section>
 <section id="binding-externally">
 <h2>Binding Externally<a class="headerlink" href="#binding-externally" title="Link to this heading">¶</a></h2>
-<p>gevent should not be run as root because it would cause your
-application code to run as root, which is not secure. However, this
-means it will not be possible to bind to port 80 or 443. Instead, a
-reverse proxy such as <a class="reference internal" href="nginx.html"><span class="doc">nginx</span></a> or <a class="reference internal" href="apache-httpd.html"><span class="doc">Apache httpd</span></a> should be used
-in front of gevent.</p>
-<p>You can bind to all external IPs on a non-privileged port by using
-<code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code> in the server arguments shown in the previous section. Don’t
-do this when using a reverse proxy setup, otherwise it will be possible
-to bypass the proxy.</p>
-<p><code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code> is not a valid address to navigate to, you’d use a specific
-IP address in your browser.</p>
+<p>Unlike the other WSGI servers in these docs, mod_wsgi can be run as
+root to bind to privileged ports like 80 and 443. However, it must be
+configured to drop permissions to a different user and group for the
+worker processes.</p>
+<p>For example, if you created a <code class="docutils literal notranslate"><span class="pre">hello</span></code> user and group, you should
+install your virtualenv and application as that user, then tell
+mod_wsgi to drop to that user after starting.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sudo /home/hello/.venv/bin/mod_wsgi-express start-server \
+    /home/hello/wsgi.py \
+    --user hello --group hello --port 80 --processes 4
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -116,16 +131,16 @@ IP address in your browser.</p>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
 
   <h3>Contents</h3>
   <ul>
-<li><a class="reference internal" href="#">gevent</a><ul>
+<li><a class="reference internal" href="#">mod_wsgi</a><ul>
 <li><a class="reference internal" href="#installing">Installing</a></li>
 <li><a class="reference internal" href="#running">Running</a></li>
 <li><a class="reference internal" href="#binding-externally">Binding Externally</a></li>
@@ -138,8 +153,8 @@ IP address in your browser.</p>
     <ul>
       <li><a href="index.html">Deploying to Production</a>
         <ul>
-          <li>Previous: <a href="uwsgi.html" title="previous chapter">uWSGI</a>
-          <li>Next: <a href="eventlet.html" title="next chapter">eventlet</a></ul>
+          <li>Previous: <a href="waitress.html" title="previous chapter">Waitress</a>
+          <li>Next: <a href="uwsgi.html" title="next chapter">uWSGI</a></ul>
       </li>
     </ul>
   </li>

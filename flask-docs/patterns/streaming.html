@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Streaming Contents &#8212; Flask Documentation (3.2.x)</title>
+    <title>Using URL Processors &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Deferred Request Callbacks" href="deferredcallbacks.html" />
-    <link rel="prev" title="Adding a favicon" href="favicon.html" /> 
+    <link rel="next" title="Using SQLite 3 with Flask" href="sqlite3.html" />
+    <link rel="prev" title="Application Dispatching" href="appdispatch.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,93 +28,145 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="deferredcallbacks.html" title="Deferred Request Callbacks"
+          <a href="sqlite3.html" title="Using SQLite 3 with Flask"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="favicon.html" title="Adding a favicon"
+          <a href="appdispatch.html" title="Application Dispatching"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Patterns for Flask</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Streaming Contents</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Using URL Processors</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="streaming-contents">
-<h1>Streaming Contents<a class="headerlink" href="#streaming-contents" title="Link to this heading">¶</a></h1>
-<p>Sometimes you want to send an enormous amount of data to the client, much
-more than you want to keep in memory.  When you are generating the data on
-the fly though, how do you send that back to the client without the
-roundtrip to the filesystem?</p>
-<p>The answer is by using generators and direct responses.</p>
-<section id="basic-usage">
-<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading">¶</a></h2>
-<p>This is a basic view function that generates a lot of CSV data on the fly.
-The trick is to have an inner function that uses a generator to generate
-data and to then invoke that function and pass it to a response object:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/large.csv&#39;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">generate_large_csv</span><span class="p">():</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">iter_all_rows</span><span class="p">():</span>
-            <span class="k">yield</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="k">return</span> <span class="n">generate</span><span class="p">(),</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/csv&quot;</span><span class="p">}</span>
-</pre></div>
-</div>
-<p>Each <code class="docutils literal notranslate"><span class="pre">yield</span></code> expression is directly sent to the browser.  Note though
-that some WSGI middlewares might break streaming, so be careful there in
-debug environments with profilers and other things you might have enabled.</p>
-</section>
-<section id="streaming-from-templates">
-<h2>Streaming from Templates<a class="headerlink" href="#streaming-from-templates" title="Link to this heading">¶</a></h2>
-<p>The Jinja2 template engine supports rendering a template piece by
-piece, returning an iterator of strings. Flask provides the
-<a class="reference internal" href="../api.html#flask.stream_template" title="flask.stream_template"><code class="xref py py-func docutils literal notranslate"><span class="pre">stream_template()</span></code></a> and <a class="reference internal" href="../api.html#flask.stream_template_string" title="flask.stream_template_string"><code class="xref py py-func docutils literal notranslate"><span class="pre">stream_template_string()</span></code></a>
-functions to make this easier to use.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">stream_template</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/timeline&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">timeline</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">stream_template</span><span class="p">(</span><span class="s2">&quot;timeline.html&quot;</span><span class="p">)</span>
-</pre></div>
+  <section id="using-url-processors">
+<h1>Using URL Processors<a class="headerlink" href="#using-url-processors" title="Link to this heading">¶</a></h1>
+<details class="changelog">
+<summary>Changelog</summary><div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.7.</span></p>
 </div>
-<p>The parts yielded by the render stream tend to match statement blocks in
-the template.</p>
-</section>
-<section id="streaming-with-context">
-<h2>Streaming with Context<a class="headerlink" href="#streaming-with-context" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference internal" href="../api.html#flask.request" title="flask.request"><code class="xref py py-data docutils literal notranslate"><span class="pre">request</span></code></a> will not be active while the generator is
-running, because the view has already returned at that point. If you try
-to access <code class="docutils literal notranslate"><span class="pre">request</span></code>, you’ll get a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>.</p>
-<p>If your generator function relies on data in <code class="docutils literal notranslate"><span class="pre">request</span></code>, use the
-<a class="reference internal" href="../api.html#flask.stream_with_context" title="flask.stream_with_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">stream_with_context()</span></code></a> wrapper. This will keep the request
-context active during the generator.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">stream_with_context</span><span class="p">,</span> <span class="n">request</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">markupsafe</span><span class="w"> </span><span class="kn">import</span> <span class="n">escape</span>
+</details><p>Flask 0.7 introduces the concept of URL processors.  The idea is that you
+might have a bunch of resources with common parts in the URL that you
+don’t always explicitly want to provide.  For instance you might have a
+bunch of URLs that have the language code in it but you don’t want to have
+to handle it in every single function yourself.</p>
+<p>URL processors are especially helpful when combined with blueprints.  We
+will handle both application specific URL processors here as well as
+blueprint specifics.</p>
+<section id="internationalized-application-urls">
+<h2>Internationalized Application URLs<a class="headerlink" href="#internationalized-application-urls" title="Link to this heading">¶</a></h2>
+<p>Consider an application like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">g</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/stream&#39;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">streamed_response</span><span class="p">():</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">():</span>
-        <span class="k">yield</span> <span class="s1">&#39;&lt;p&gt;Hello &#39;</span>
-        <span class="k">yield</span> <span class="n">escape</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
-        <span class="k">yield</span> <span class="s1">&#39;!&lt;/p&gt;&#39;</span>
-    <span class="k">return</span> <span class="n">stream_with_context</span><span class="p">(</span><span class="n">generate</span><span class="p">())</span>
-</pre></div>
-</div>
-<p>It can also be used as a decorator.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@stream_with_context</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">():</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;lang_code&gt;/&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">lang_code</span><span class="p">):</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">lang_code</span> <span class="o">=</span> <span class="n">lang_code</span>
     <span class="o">...</span>
 
-<span class="k">return</span> <span class="n">generate</span><span class="p">()</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;lang_code&gt;/about&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">about</span><span class="p">(</span><span class="n">lang_code</span><span class="p">):</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">lang_code</span> <span class="o">=</span> <span class="n">lang_code</span>
+    <span class="o">...</span>
 </pre></div>
 </div>
-<p>The <a class="reference internal" href="../api.html#flask.stream_template" title="flask.stream_template"><code class="xref py py-func docutils literal notranslate"><span class="pre">stream_template()</span></code></a> and
-<a class="reference internal" href="../api.html#flask.stream_template_string" title="flask.stream_template_string"><code class="xref py py-func docutils literal notranslate"><span class="pre">stream_template_string()</span></code></a> functions automatically
-use <a class="reference internal" href="../api.html#flask.stream_with_context" title="flask.stream_with_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">stream_with_context()</span></code></a> if a request is active.</p>
+<p>This is an awful lot of repetition as you have to handle the language code
+setting on the <a class="reference internal" href="../api.html#flask.g" title="flask.g"><code class="xref py py-data docutils literal notranslate"><span class="pre">g</span></code></a> object yourself in every single function.
+Sure, a decorator could be used to simplify this, but if you want to
+generate URLs from one function to another you would have to still provide
+the language code explicitly which can be annoying.</p>
+<p>For the latter, this is where <a class="reference internal" href="../api.html#flask.Flask.url_defaults" title="flask.Flask.url_defaults"><code class="xref py py-func docutils literal notranslate"><span class="pre">url_defaults()</span></code></a> functions
+come in.  They can automatically inject values into a call to
+<a class="reference internal" href="../api.html#flask.url_for" title="flask.url_for"><code class="xref py py-func docutils literal notranslate"><span class="pre">url_for()</span></code></a>.  The code below checks if the
+language code is not yet in the dictionary of URL values and if the
+endpoint wants a value named <code class="docutils literal notranslate"><span class="pre">'lang_code'</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">url_defaults</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_language_code</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s1">&#39;lang_code&#39;</span> <span class="ow">in</span> <span class="n">values</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">g</span><span class="o">.</span><span class="n">lang_code</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="n">app</span><span class="o">.</span><span class="n">url_map</span><span class="o">.</span><span class="n">is_endpoint_expecting</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="s1">&#39;lang_code&#39;</span><span class="p">):</span>
+        <span class="n">values</span><span class="p">[</span><span class="s1">&#39;lang_code&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">lang_code</span>
+</pre></div>
+</div>
+<p>The method <a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/routing/#werkzeug.routing.Map.is_endpoint_expecting" title="(in Werkzeug v3.1.x)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_endpoint_expecting()</span></code></a> of the URL
+map can be used to figure out if it would make sense to provide a language
+code for the given endpoint.</p>
+<p>The reverse of that function are
+<a class="reference internal" href="../api.html#flask.Flask.url_value_preprocessor" title="flask.Flask.url_value_preprocessor"><code class="xref py py-meth docutils literal notranslate"><span class="pre">url_value_preprocessor()</span></code></a>s.  They are executed right
+after the request was matched and can execute code based on the URL
+values.  The idea is that they pull information out of the values
+dictionary and put it somewhere else:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">url_value_preprocessor</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pull_lang_code</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">lang_code</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;lang_code&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>That way you no longer have to do the <code class="code docutils literal notranslate"><span class="pre">lang_code</span></code> assignment to
+<a class="reference internal" href="../api.html#flask.g" title="flask.g"><code class="xref py py-data docutils literal notranslate"><span class="pre">g</span></code></a> in every function.  You can further improve that by
+writing your own decorator that prefixes URLs with the language code, but
+the more beautiful solution is using a blueprint.  Once the
+<code class="docutils literal notranslate"><span class="pre">'lang_code'</span></code> is popped from the values dictionary and it will no longer
+be forwarded to the view function reducing the code to this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">g</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">url_defaults</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_language_code</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s1">&#39;lang_code&#39;</span> <span class="ow">in</span> <span class="n">values</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">g</span><span class="o">.</span><span class="n">lang_code</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="n">app</span><span class="o">.</span><span class="n">url_map</span><span class="o">.</span><span class="n">is_endpoint_expecting</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="s1">&#39;lang_code&#39;</span><span class="p">):</span>
+        <span class="n">values</span><span class="p">[</span><span class="s1">&#39;lang_code&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">lang_code</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">url_value_preprocessor</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pull_lang_code</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">lang_code</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;lang_code&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;lang_code&gt;/&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
+    <span class="o">...</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;lang_code&gt;/about&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">about</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="internationalized-blueprint-urls">
+<h2>Internationalized Blueprint URLs<a class="headerlink" href="#internationalized-blueprint-urls" title="Link to this heading">¶</a></h2>
+<p>Because blueprints can automatically prefix all URLs with a common string
+it’s easy to automatically do that for every function.  Furthermore
+blueprints can have per-blueprint URL processors which removes a whole lot
+of logic from the <a class="reference internal" href="../api.html#flask.Flask.url_defaults" title="flask.Flask.url_defaults"><code class="xref py py-meth docutils literal notranslate"><span class="pre">url_defaults()</span></code></a> function because it no
+longer has to check if the URL is really interested in a <code class="docutils literal notranslate"><span class="pre">'lang_code'</span></code>
+parameter:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">g</span>
+
+<span class="n">bp</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;frontend&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/&lt;lang_code&gt;&#39;</span><span class="p">)</span>
+
+<span class="nd">@bp</span><span class="o">.</span><span class="n">url_defaults</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_language_code</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="n">values</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;lang_code&#39;</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">lang_code</span><span class="p">)</span>
+
+<span class="nd">@bp</span><span class="o">.</span><span class="n">url_value_preprocessor</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pull_lang_code</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">lang_code</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;lang_code&#39;</span><span class="p">)</span>
+
+<span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
+    <span class="o">...</span>
+
+<span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/about&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">about</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -126,19 +178,18 @@ use <a class="reference internal" href="../api.html#flask.stream_with_context" t
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
 
   <h3>Contents</h3>
   <ul>
-<li><a class="reference internal" href="#">Streaming Contents</a><ul>
-<li><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
-<li><a class="reference internal" href="#streaming-from-templates">Streaming from Templates</a></li>
-<li><a class="reference internal" href="#streaming-with-context">Streaming with Context</a></li>
+<li><a class="reference internal" href="#">Using URL Processors</a><ul>
+<li><a class="reference internal" href="#internationalized-application-urls">Internationalized Application URLs</a></li>
+<li><a class="reference internal" href="#internationalized-blueprint-urls">Internationalized Blueprint URLs</a></li>
 </ul>
 </li>
 </ul>
@@ -148,8 +199,8 @@ use <a class="reference internal" href="../api.html#flask.stream_with_context" t
     <ul>
       <li><a href="index.html">Patterns for Flask</a>
         <ul>
-          <li>Previous: <a href="favicon.html" title="previous chapter">Adding a favicon</a>
-          <li>Next: <a href="deferredcallbacks.html" title="next chapter">Deferred Request Callbacks</a></ul>
+          <li>Previous: <a href="appdispatch.html" title="previous chapter">Application Dispatching</a>
+          <li>Next: <a href="sqlite3.html" title="next chapter">Using SQLite 3 with Flask</a></ul>
       </li>
     </ul>
   </li>

@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Apache httpd &#8212; Flask Documentation (3.2.x)</title>
+    <title>gevent &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Using async and await" href="../async-await.html" />
-    <link rel="prev" title="nginx" href="nginx.html" /> 
+    <link rel="next" title="eventlet" href="eventlet.html" />
+    <link rel="prev" title="uWSGI" href="uwsgi.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,76 +28,83 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../async-await.html" title="Using async and await"
+          <a href="eventlet.html" title="eventlet"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="nginx.html" title="nginx"
+          <a href="uwsgi.html" title="uWSGI"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Deploying to Production</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Apache httpd</a></li> 
+        <li class="nav-item nav-item-this"><a href="">gevent</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="apache-httpd">
-<h1>Apache httpd<a class="headerlink" href="#apache-httpd" title="Link to this heading">¶</a></h1>
-<p><a class="reference external" href="https://httpd.apache.org/">Apache httpd</a> is a fast, production level HTTP server. When serving
-your application with one of the WSGI servers listed in <a class="reference internal" href="index.html"><span class="doc">Deploying to Production</span></a>, it
-is often good or necessary to put a dedicated HTTP server in front of
-it. This “reverse proxy” can handle incoming requests, TLS, and other
-security and performance concerns better than the WSGI server.</p>
-<p>httpd can be installed using your system package manager, or a pre-built
-executable for Windows. Installing and running httpd itself is outside
-the scope of this doc. This page outlines the basics of configuring
-httpd to proxy your application. Be sure to read its documentation to
-understand what features are available.</p>
-<section id="domain-name">
-<h2>Domain Name<a class="headerlink" href="#domain-name" title="Link to this heading">¶</a></h2>
-<p>Acquiring and configuring a domain name is outside the scope of this
-doc. In general, you will buy a domain name from a registrar, pay for
-server space with a hosting provider, and then point your registrar
-at the hosting provider’s name servers.</p>
-<p>To simulate this, you can also edit your <code class="docutils literal notranslate"><span class="pre">hosts</span></code> file, located at
-<code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code> on Linux. Add a line that associates a name with the
-local IP.</p>
-<p>Modern Linux systems may be configured to treat any domain name that
-ends with <code class="docutils literal notranslate"><span class="pre">.localhost</span></code> like this without adding it to the <code class="docutils literal notranslate"><span class="pre">hosts</span></code>
-file.</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="mf">127.0.0.1</span> <span class="n">hello</span><span class="o">.</span><span class="n">localhost</span>
+
+  <section id="gevent">
+<h1>gevent<a class="headerlink" href="#gevent" title="Link to this heading">¶</a></h1>
+<p>Prefer using <a class="reference internal" href="gunicorn.html"><span class="doc">Gunicorn</span></a> or <a class="reference internal" href="uwsgi.html"><span class="doc">uWSGI</span></a> with gevent workers rather
+than using <a class="reference external" href="https://www.gevent.org/">gevent</a> directly. Gunicorn and uWSGI provide much more
+configurable and production-tested servers.</p>
+<p><a class="reference external" href="https://www.gevent.org/">gevent</a> allows writing asynchronous, coroutine-based code that looks
+like standard synchronous Python. It uses <a class="reference external" href="https://greenlet.readthedocs.io/en/latest/">greenlet</a> to enable task
+switching without writing <code class="docutils literal notranslate"><span class="pre">async/await</span></code> or using <code class="docutils literal notranslate"><span class="pre">asyncio</span></code>.</p>
+<p><a class="reference internal" href="eventlet.html"><span class="doc">eventlet</span></a> is another library that does the same thing. Certain
+dependencies you have, or other considerations, may affect which of the
+two you choose to use.</p>
+<p>gevent provides a WSGI server that can handle many connections at once
+instead of one per worker process. You must actually use gevent in your
+own code to see any benefit to using the server.</p>
+<section id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Link to this heading">¶</a></h2>
+<p>When using gevent, greenlet&gt;=1.0 is required, otherwise context locals
+such as <code class="docutils literal notranslate"><span class="pre">request</span></code> will not work as expected. When using PyPy,
+PyPy&gt;=7.3.7 is required.</p>
+<p>Create a virtualenv, install your application, then install <code class="docutils literal notranslate"><span class="pre">gevent</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cd hello-app
+$ python -m venv .venv
+$ . .venv/bin/activate
+$ pip install .  # install your application
+$ pip install gevent
 </pre></div>
-</div>
 </div>
 </section>
-<section id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
-<p>The httpd configuration is located at <code class="docutils literal notranslate"><span class="pre">/etc/httpd/conf/httpd.conf</span></code> on
-Linux. It may be different depending on your operating system. Check the
-docs and look for <code class="docutils literal notranslate"><span class="pre">httpd.conf</span></code>.</p>
-<p>Remove or comment out any existing <code class="docutils literal notranslate"><span class="pre">DocumentRoot</span></code> directive. Add the
-config lines below. We’ll assume the WSGI server is listening locally at
-<code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8000</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">/etc/httpd/conf/httpd.conf</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
-<div class="highlight-apache notranslate"><div class="highlight"><pre><span></span><span class="nb">LoadModule</span><span class="w"> </span>proxy_module<span class="w"> </span>modules/mod_proxy.so
-<span class="nb">LoadModule</span><span class="w"> </span>proxy_http_module<span class="w"> </span>modules/mod_proxy_http.so
-<span class="nb">ProxyPass</span><span class="w"> </span>/<span class="w"> </span>http://127.0.0.1:8000/
-<span class="nb">RequestHeader</span><span class="w"> </span>set<span class="w"> </span>X-Forwarded-Proto<span class="w"> </span>http
-<span class="nb">RequestHeader</span><span class="w"> </span>set<span class="w"> </span>X-Forwarded-Prefix<span class="w"> </span>/
+<section id="running">
+<h2>Running<a class="headerlink" href="#running" title="Link to this heading">¶</a></h2>
+<p>To use gevent to serve your application, write a script that imports its
+<code class="docutils literal notranslate"><span class="pre">WSGIServer</span></code>, as well as your app or app factory.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">wsgi.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gevent.pywsgi</span><span class="w"> </span><span class="kn">import</span> <span class="n">WSGIServer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hello</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+<span class="n">http_server</span> <span class="o">=</span> <span class="n">WSGIServer</span><span class="p">((</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">),</span> <span class="n">app</span><span class="p">)</span>
+<span class="n">http_server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">LoadModule</span></code> lines might already exist. If so, make sure they are
-uncommented instead of adding them manually.</p>
-<p>Then <a class="reference internal" href="proxy_fix.html"><span class="doc">Tell Flask it is Behind a Proxy</span></a> so that your application uses the <code class="docutils literal notranslate"><span class="pre">X-Forwarded</span></code>
-headers. <code class="docutils literal notranslate"><span class="pre">X-Forwarded-For</span></code> and <code class="docutils literal notranslate"><span class="pre">X-Forwarded-Host</span></code> are automatically
-set by <code class="docutils literal notranslate"><span class="pre">ProxyPass</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ python wsgi.py
+</pre></div>
+</div>
+<p>No output is shown when the server starts.</p>
+</section>
+<section id="binding-externally">
+<h2>Binding Externally<a class="headerlink" href="#binding-externally" title="Link to this heading">¶</a></h2>
+<p>gevent should not be run as root because it would cause your
+application code to run as root, which is not secure. However, this
+means it will not be possible to bind to port 80 or 443. Instead, a
+reverse proxy such as <a class="reference internal" href="nginx.html"><span class="doc">nginx</span></a> or <a class="reference internal" href="apache-httpd.html"><span class="doc">Apache httpd</span></a> should be used
+in front of gevent.</p>
+<p>You can bind to all external IPs on a non-privileged port by using
+<code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code> in the server arguments shown in the previous section. Don’t
+do this when using a reverse proxy setup, otherwise it will be possible
+to bypass the proxy.</p>
+<p><code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code> is not a valid address to navigate to, you’d use a specific
+IP address in your browser.</p>
 </section>
 </section>
 
@@ -109,18 +116,19 @@ set by <code class="docutils literal notranslate"><span class="pre">ProxyPass</s
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
 
   <h3>Contents</h3>
   <ul>
-<li><a class="reference internal" href="#">Apache httpd</a><ul>
-<li><a class="reference internal" href="#domain-name">Domain Name</a></li>
-<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#">gevent</a><ul>
+<li><a class="reference internal" href="#installing">Installing</a></li>
+<li><a class="reference internal" href="#running">Running</a></li>
+<li><a class="reference internal" href="#binding-externally">Binding Externally</a></li>
 </ul>
 </li>
 </ul>
@@ -130,8 +138,8 @@ set by <code class="docutils literal notranslate"><span class="pre">ProxyPass</s
     <ul>
       <li><a href="index.html">Deploying to Production</a>
         <ul>
-          <li>Previous: <a href="nginx.html" title="previous chapter">nginx</a>
-          <li>Next: <a href="../async-await.html" title="next chapter">Using <code class="docutils literal notranslate"><span class="pre">async</span></code> and <code class="docutils literal notranslate"><span class="pre">await</span></code></a></ul>
+          <li>Previous: <a href="uwsgi.html" title="previous chapter">uWSGI</a>
+          <li>Next: <a href="eventlet.html" title="next chapter">eventlet</a></ul>
       </li>
     </ul>
   </li>

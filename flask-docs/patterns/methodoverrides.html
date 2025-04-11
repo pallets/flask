@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Adding HTTP Method Overrides &#8212; Flask Documentation (3.2.x)</title>
+    <title>Request Content Checksums &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Request Content Checksums" href="requestchecksum.html" />
-    <link rel="prev" title="Deferred Request Callbacks" href="deferredcallbacks.html" /> 
+    <link rel="next" title="Background Tasks with Celery" href="celery.html" />
+    <link rel="prev" title="Adding HTTP Method Overrides" href="methodoverrides.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,60 +28,72 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="requestchecksum.html" title="Request Content Checksums"
+          <a href="celery.html" title="Background Tasks with Celery"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="deferredcallbacks.html" title="Deferred Request Callbacks"
+          <a href="methodoverrides.html" title="Adding HTTP Method Overrides"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Patterns for Flask</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Adding HTTP Method Overrides</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Request Content Checksums</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="adding-http-method-overrides">
-<h1>Adding HTTP Method Overrides<a class="headerlink" href="#adding-http-method-overrides" title="Link to this heading">¶</a></h1>
-<p>Some HTTP proxies do not support arbitrary HTTP methods or newer HTTP
-methods (such as PATCH). In that case it’s possible to “proxy” HTTP
-methods through another HTTP method in total violation of the protocol.</p>
-<p>The way this works is by letting the client do an HTTP POST request and
-set the <code class="docutils literal notranslate"><span class="pre">X-HTTP-Method-Override</span></code> header. Then the method is replaced
-with the header value before being passed to Flask.</p>
-<p>This can be accomplished with an HTTP middleware:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">HTTPMethodOverrideMiddleware</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="n">allowed_methods</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span>
-        <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;HEAD&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;DELETE&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;PUT&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;PATCH&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;OPTIONS&#39;</span>
-    <span class="p">])</span>
-    <span class="n">bodyless_methods</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;HEAD&#39;</span><span class="p">,</span> <span class="s1">&#39;OPTIONS&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">])</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+  <section id="request-content-checksums">
+<h1>Request Content Checksums<a class="headerlink" href="#request-content-checksums" title="Link to this heading">¶</a></h1>
+<p>Various pieces of code can consume the request data and preprocess it.
+For instance JSON data ends up on the request object already read and
+processed, form data ends up there as well but goes through a different
+code path.  This seems inconvenient when you want to calculate the
+checksum of the incoming request data.  This is necessary sometimes for
+some APIs.</p>
+<p>Fortunately this is however very simple to change by wrapping the input
+stream.</p>
+<p>The following example calculates the SHA1 checksum of the incoming data as
+it gets read and stores it in the WSGI environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
-        <span class="n">method</span> <span class="o">=</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;HTTP_X_HTTP_METHOD_OVERRIDE&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_methods</span><span class="p">:</span>
-            <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;REQUEST_METHOD&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">method</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bodyless_methods</span><span class="p">:</span>
-            <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;CONTENT_LENGTH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ChecksumCalcStream</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stream</span> <span class="o">=</span> <span class="n">stream</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rv</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">readline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size_hint</span><span class="p">):</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="n">size_hint</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rv</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_checksum</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">environ</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">ChecksumCalcStream</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s1">&#39;wsgi.input&#39;</span><span class="p">])</span>
+    <span class="n">env</span><span class="p">[</span><span class="s1">&#39;wsgi.input&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stream</span>
+    <span class="k">return</span> <span class="n">stream</span><span class="o">.</span><span class="n">_hash</span>
 </pre></div>
 </div>
-<p>To use this with Flask, wrap the app object with the middleware:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">wsgi_app</span> <span class="o">=</span> <span class="n">HTTPMethodOverrideMiddleware</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">wsgi_app</span><span class="p">)</span>
+<p>To use this, all you need to do is to hook the calculating stream in
+before the request starts consuming data.  (Eg: be careful accessing
+<code class="docutils literal notranslate"><span class="pre">request.form</span></code> or anything of that nature.  <code class="docutils literal notranslate"><span class="pre">before_request_handlers</span></code>
+for instance should be careful not to access it).</p>
+<p>Example usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/special-api&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">special_api</span><span class="p">():</span>
+    <span class="nb">hash</span> <span class="o">=</span> <span class="n">generate_checksum</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+    <span class="c1"># Accessing this parses the input stream</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span>
+    <span class="c1"># At this point the hash is fully constructed.</span>
+    <span class="n">checksum</span> <span class="o">=</span> <span class="nb">hash</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Hash was: </span><span class="si">{</span><span class="n">checksum</span><span class="si">}</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 </section>
@@ -94,20 +106,20 @@ with the header value before being passed to Flask.</p>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
 <h3>Navigation</h3>
 <ul>
   <li><a href="../index.html">Overview</a>
     <ul>
       <li><a href="index.html">Patterns for Flask</a>
         <ul>
-          <li>Previous: <a href="deferredcallbacks.html" title="previous chapter">Deferred Request Callbacks</a>
-          <li>Next: <a href="requestchecksum.html" title="next chapter">Request Content Checksums</a></ul>
+          <li>Previous: <a href="methodoverrides.html" title="previous chapter">Adding HTTP Method Overrides</a>
+          <li>Next: <a href="celery.html" title="next chapter">Background Tasks with Celery</a></ul>
       </li>
     </ul>
   </li>

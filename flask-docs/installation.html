@@ -5,20 +5,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Installation &#8212; Flask Documentation (3.2.x)</title>
+    <title>Logging &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
-    <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=a5c4661c" />
     <script src="_static/documentation_options.js?v=56528222"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script data-project="flask" data-version="3.2.x" src="_static/describe_version.js?v=fa7f30d0"></script>
-    <script src="_static/tabs.js?v=3030b3cb"></script>
     <link rel="icon" href="_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Quickstart" href="quickstart.html" />
-    <link rel="prev" title="Welcome to Flask" href="index.html" /> 
+    <link rel="next" title="Configuration Handling" href="config.html" />
+    <link rel="prev" title="Debugging Application Errors" href="debugging.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -30,117 +28,186 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="quickstart.html" title="Quickstart"
+          <a href="config.html" title="Configuration Handling"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to Flask"
+          <a href="debugging.html" title="Debugging Application Errors"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Flask Documentation (3.2.x)</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Installation</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Logging</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
-<section id="python-version">
-<h2>Python Version<a class="headerlink" href="#python-version" title="Link to this heading">¶</a></h2>
-<p>We recommend using the latest version of Python. Flask supports Python 3.9 and newer.</p>
-</section>
-<section id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
-<p>These distributions will be installed automatically when installing Flask.</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://palletsprojects.com/p/werkzeug/">Werkzeug</a> implements WSGI, the standard Python interface between
-applications and servers.</p></li>
-<li><p><a class="reference external" href="https://palletsprojects.com/p/jinja/">Jinja</a> is a template language that renders the pages your application
-serves.</p></li>
-<li><p><a class="reference external" href="https://palletsprojects.com/p/markupsafe/">MarkupSafe</a> comes with Jinja. It escapes untrusted input when rendering
-templates to avoid injection attacks.</p></li>
-<li><p><a class="reference external" href="https://palletsprojects.com/p/itsdangerous/">ItsDangerous</a> securely signs data to ensure its integrity. This is used
-to protect Flask’s session cookie.</p></li>
-<li><p><a class="reference external" href="https://palletsprojects.com/p/click/">Click</a> is a framework for writing command line applications. It provides
-the <code class="docutils literal notranslate"><span class="pre">flask</span></code> command and allows adding custom management commands.</p></li>
-<li><p><a class="reference external" href="https://blinker.readthedocs.io/">Blinker</a> provides support for <a class="reference internal" href="signals.html"><span class="doc">Signals</span></a>.</p></li>
-</ul>
-<section id="optional-dependencies">
-<h3>Optional dependencies<a class="headerlink" href="#optional-dependencies" title="Link to this heading">¶</a></h3>
-<p>These distributions will not be installed automatically. Flask will detect and
-use them if you install them.</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/theskumar/python-dotenv#readme">python-dotenv</a> enables support for <a class="reference internal" href="cli.html#dotenv"><span class="std std-ref">Environment Variables From dotenv</span></a> when running <code class="docutils literal notranslate"><span class="pre">flask</span></code>
-commands.</p></li>
-<li><p><a class="reference external" href="https://pythonhosted.org/watchdog/">Watchdog</a> provides a faster, more efficient reloader for the development
-server.</p></li>
-</ul>
-</section>
-<section id="greenlet">
-<h3>greenlet<a class="headerlink" href="#greenlet" title="Link to this heading">¶</a></h3>
-<p>You may choose to use gevent or eventlet with your application. In this
-case, greenlet&gt;=1.0 is required. When using PyPy, PyPy&gt;=7.3.7 is
-required.</p>
-<p>These are not minimum supported versions, they only indicate the first
-versions that added necessary features. You should use the latest
-versions of each.</p>
-</section>
-</section>
-<section id="virtual-environments">
-<h2>Virtual environments<a class="headerlink" href="#virtual-environments" title="Link to this heading">¶</a></h2>
-<p>Use a virtual environment to manage the dependencies for your project, both in
-development and in production.</p>
-<p>What problem does a virtual environment solve? The more Python projects you
-have, the more likely it is that you need to work with different versions of
-Python libraries, or even Python itself. Newer versions of libraries for one
-project can break compatibility in another project.</p>
-<p>Virtual environments are independent groups of Python libraries, one for each
-project. Packages installed for one project will not affect other projects or
-the operating system’s packages.</p>
-<p>Python comes bundled with the <a class="reference external" href="https://docs.python.org/3/library/venv.html#module-venv" title="(in Python v3.13)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">venv</span></code></a> module to create virtual
-environments.</p>
-<section id="create-an-environment">
-<span id="install-create-env"></span><h3>Create an environment<a class="headerlink" href="#create-an-environment" title="Link to this heading">¶</a></h3>
-<p>Create a project folder and a <code class="file docutils literal notranslate"><span class="pre">.venv</span></code> folder within:</p>
-<div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-bWFjT1MvTGludXg=" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-0-bWFjT1MvTGludXg=" name="bWFjT1MvTGludXg=" role="tab" tabindex="0">macOS/Linux</button><button aria-controls="panel-0-V2luZG93cw==" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-V2luZG93cw==" name="V2luZG93cw==" role="tab" tabindex="-1">Windows</button></div><div aria-labelledby="tab-0-bWFjT1MvTGludXg=" class="sphinx-tabs-panel group-tab" id="panel-0-bWFjT1MvTGludXg=" name="bWFjT1MvTGludXg=" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ mkdir myproject
-$ cd myproject
-$ python3 -m venv .venv
+
+  <section id="logging">
+<h1>Logging<a class="headerlink" href="#logging" title="Link to this heading">¶</a></h1>
+<p>Flask uses standard Python <a class="reference external" href="https://docs.python.org/3/library/logging.html#module-logging" title="(in Python v3.13)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">logging</span></code></a>. Messages about your Flask
+application are logged with <a class="reference internal" href="api.html#flask.Flask.logger" title="flask.Flask.logger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.logger</span></code></a>,
+which takes the same name as <a class="reference internal" href="api.html#flask.Flask.name" title="flask.Flask.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">app.name</span></code></a>. This
+logger can also be used to log your own messages.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">():</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">get_user</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">check_password</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]):</span>
+        <span class="n">login_user</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> logged in successfully&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> failed to log in&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span>
 </pre></div>
 </div>
-</div><div aria-labelledby="tab-0-V2luZG93cw==" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-V2luZG93cw==" name="V2luZG93cw==" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt; mkdir myproject
-&gt; cd myproject
-&gt; py -3 -m venv .venv
+<p>If you don’t configure logging, Python’s default log level is usually
+‘warning’. Nothing below the configured level will be visible.</p>
+<section id="basic-configuration">
+<h2>Basic Configuration<a class="headerlink" href="#basic-configuration" title="Link to this heading">¶</a></h2>
+<p>When you want to configure logging for your project, you should do it as soon
+as possible when the program starts. If <a class="reference internal" href="api.html#flask.Flask.logger" title="flask.Flask.logger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.logger</span></code></a>
+is accessed before logging is configured, it will add a default handler. If
+possible, configure logging before creating the application object.</p>
+<p>This example uses <a class="reference external" href="https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dictConfig()</span></code></a> to create a logging
+configuration similar to Flask’s default, except for all logs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">logging.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">dictConfig</span>
+
+<span class="n">dictConfig</span><span class="p">({</span>
+    <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s1">&#39;formatters&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s1">&#39;[</span><span class="si">%(asctime)s</span><span class="s1">] </span><span class="si">%(levelname)s</span><span class="s1"> in </span><span class="si">%(module)s</span><span class="s1">: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="p">}},</span>
+    <span class="s1">&#39;handlers&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;wsgi&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;logging.StreamHandler&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;stream&#39;</span><span class="p">:</span> <span class="s1">&#39;ext://flask.logging.wsgi_errors_stream&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;formatter&#39;</span><span class="p">:</span> <span class="s1">&#39;default&#39;</span>
+    <span class="p">}},</span>
+    <span class="s1">&#39;root&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="s1">&#39;INFO&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;handlers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;wsgi&#39;</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </pre></div>
 </div>
-</div></div>
+<section id="default-configuration">
+<h3>Default Configuration<a class="headerlink" href="#default-configuration" title="Link to this heading">¶</a></h3>
+<p>If you do not configure logging yourself, Flask will add a
+<a class="reference external" href="https://docs.python.org/3/library/logging.handlers.html#logging.StreamHandler" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StreamHandler</span></code></a> to <a class="reference internal" href="api.html#flask.Flask.logger" title="flask.Flask.logger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.logger</span></code></a>
+automatically. During requests, it will write to the stream specified by the
+WSGI server in <code class="docutils literal notranslate"><span class="pre">environ['wsgi.errors']</span></code> (which is usually
+<a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.stderr" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">sys.stderr</span></code></a>). Outside a request, it will log to <a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.stderr" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">sys.stderr</span></code></a>.</p>
 </section>
-<section id="activate-the-environment">
-<span id="install-activate-env"></span><h3>Activate the environment<a class="headerlink" href="#activate-the-environment" title="Link to this heading">¶</a></h3>
-<p>Before you work on your project, activate the corresponding environment:</p>
-<div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-bWFjT1MvTGludXg=" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-1-bWFjT1MvTGludXg=" name="bWFjT1MvTGludXg=" role="tab" tabindex="0">macOS/Linux</button><button aria-controls="panel-1-V2luZG93cw==" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-V2luZG93cw==" name="V2luZG93cw==" role="tab" tabindex="-1">Windows</button></div><div aria-labelledby="tab-1-bWFjT1MvTGludXg=" class="sphinx-tabs-panel group-tab" id="panel-1-bWFjT1MvTGludXg=" name="bWFjT1MvTGludXg=" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ . .venv/bin/activate
+<section id="removing-the-default-handler">
+<h3>Removing the Default Handler<a class="headerlink" href="#removing-the-default-handler" title="Link to this heading">¶</a></h3>
+<p>If you configured logging after accessing
+<a class="reference internal" href="api.html#flask.Flask.logger" title="flask.Flask.logger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.logger</span></code></a>, and need to remove the default
+handler, you can import and remove it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_handler</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">default_handler</span><span class="p">)</span>
 </pre></div>
 </div>
-</div><div aria-labelledby="tab-1-V2luZG93cw==" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-V2luZG93cw==" name="V2luZG93cw==" role="tabpanel" tabindex="0"><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt; .venv\Scripts\activate
-</pre></div>
-</div>
-</div></div>
-<p>Your shell prompt will change to show the name of the activated
-environment.</p>
 </section>
 </section>
-<section id="install-flask">
-<h2>Install Flask<a class="headerlink" href="#install-flask" title="Link to this heading">¶</a></h2>
-<p>Within the activated environment, use the following command to install
-Flask:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>Flask
+<section id="email-errors-to-admins">
+<h2>Email Errors to Admins<a class="headerlink" href="#email-errors-to-admins" title="Link to this heading">¶</a></h2>
+<p>When running the application on a remote server for production, you probably
+won’t be looking at the log messages very often. The WSGI server will probably
+send log messages to a file, and you’ll only check that file if a user tells
+you something went wrong.</p>
+<p>To be proactive about discovering and fixing bugs, you can configure a
+<a class="reference external" href="https://docs.python.org/3/library/logging.handlers.html#logging.handlers.SMTPHandler" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.handlers.SMTPHandler</span></code></a> to send an email when errors and higher
+are logged.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">SMTPHandler</span>
+
+<span class="n">mail_handler</span> <span class="o">=</span> <span class="n">SMTPHandler</span><span class="p">(</span>
+    <span class="n">mailhost</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
+    <span class="n">fromaddr</span><span class="o">=</span><span class="s1">&#39;server-error@example.com&#39;</span><span class="p">,</span>
+    <span class="n">toaddrs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;admin@example.com&#39;</span><span class="p">],</span>
+    <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;Application Error&#39;</span>
+<span class="p">)</span>
+<span class="n">mail_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+<span class="n">mail_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
+    <span class="s1">&#39;[</span><span class="si">%(asctime)s</span><span class="s1">] </span><span class="si">%(levelname)s</span><span class="s1"> in </span><span class="si">%(module)s</span><span class="s1">: </span><span class="si">%(message)s</span><span class="s1">&#39;</span>
+<span class="p">))</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">app</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">mail_handler</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Flask is now installed. Check out the <a class="reference internal" href="quickstart.html"><span class="doc">Quickstart</span></a> or go to the
-<a class="reference internal" href="index.html"><span class="doc">Documentation Overview</span></a>.</p>
+<p>This requires that you have an SMTP server set up on the same server. See the
+Python docs for more information about configuring the handler.</p>
+</section>
+<section id="injecting-request-information">
+<h2>Injecting Request Information<a class="headerlink" href="#injecting-request-information" title="Link to this heading">¶</a></h2>
+<p>Seeing more information about the request, such as the IP address, may help
+debugging some errors. You can subclass <a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Formatter" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a> to inject
+your own fields that can be used in messages. You can change the formatter for
+Flask’s default handler, the mail handler defined above, or any other
+handler.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">has_request_context</span><span class="p">,</span> <span class="n">request</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_handler</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RequestFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">has_request_context</span><span class="p">():</span>
+            <span class="n">record</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span>
+            <span class="n">record</span><span class="o">.</span><span class="n">remote_addr</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">remote_addr</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">record</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">record</span><span class="o">.</span><span class="n">remote_addr</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+<span class="n">formatter</span> <span class="o">=</span> <span class="n">RequestFormatter</span><span class="p">(</span>
+    <span class="s1">&#39;[</span><span class="si">%(asctime)s</span><span class="s1">] </span><span class="si">%(remote_addr)s</span><span class="s1"> requested </span><span class="si">%(url)s</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="s1">&#39;</span><span class="si">%(levelname)s</span><span class="s1"> in </span><span class="si">%(module)s</span><span class="s1">: </span><span class="si">%(message)s</span><span class="s1">&#39;</span>
+<span class="p">)</span>
+<span class="n">default_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+<span class="n">mail_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="other-libraries">
+<h2>Other Libraries<a class="headerlink" href="#other-libraries" title="Link to this heading">¶</a></h2>
+<p>Other libraries may use logging extensively, and you want to see relevant
+messages from those logs too. The simplest way to do this is to add handlers
+to the root logger instead of only the app logger.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_handler</span>
+
+<span class="n">root</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+<span class="n">root</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">default_handler</span><span class="p">)</span>
+<span class="n">root</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">mail_handler</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Depending on your project, it may be more useful to configure each logger you
+care about separately, instead of configuring only the root logger.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="p">(</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;sqlalchemy&#39;</span><span class="p">),</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;other_package&#39;</span><span class="p">),</span>
+<span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">default_handler</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">mail_handler</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="werkzeug">
+<h3>Werkzeug<a class="headerlink" href="#werkzeug" title="Link to this heading">¶</a></h3>
+<p>Werkzeug logs basic request/response information to the <code class="docutils literal notranslate"><span class="pre">'werkzeug'</span></code> logger.
+If the root logger has no handlers configured, Werkzeug adds a
+<a class="reference external" href="https://docs.python.org/3/library/logging.handlers.html#logging.StreamHandler" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StreamHandler</span></code></a> to its logger.</p>
+</section>
+<section id="flask-extensions">
+<h3>Flask Extensions<a class="headerlink" href="#flask-extensions" title="Link to this heading">¶</a></h3>
+<p>Depending on the situation, an extension may choose to log to
+<a class="reference internal" href="api.html#flask.Flask.logger" title="flask.Flask.logger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.logger</span></code></a> or its own named logger. Consult each
+extension’s documentation for details.</p>
+</section>
 </section>
 </section>
 
@@ -152,28 +219,28 @@ Flask:</p>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
 
   <h3>Contents</h3>
   <ul>
-<li><a class="reference internal" href="#">Installation</a><ul>
-<li><a class="reference internal" href="#python-version">Python Version</a></li>
-<li><a class="reference internal" href="#dependencies">Dependencies</a><ul>
-<li><a class="reference internal" href="#optional-dependencies">Optional dependencies</a></li>
-<li><a class="reference internal" href="#greenlet">greenlet</a></li>
+<li><a class="reference internal" href="#">Logging</a><ul>
+<li><a class="reference internal" href="#basic-configuration">Basic Configuration</a><ul>
+<li><a class="reference internal" href="#default-configuration">Default Configuration</a></li>
+<li><a class="reference internal" href="#removing-the-default-handler">Removing the Default Handler</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#virtual-environments">Virtual environments</a><ul>
-<li><a class="reference internal" href="#create-an-environment">Create an environment</a></li>
-<li><a class="reference internal" href="#activate-the-environment">Activate the environment</a></li>
+<li><a class="reference internal" href="#email-errors-to-admins">Email Errors to Admins</a></li>
+<li><a class="reference internal" href="#injecting-request-information">Injecting Request Information</a></li>
+<li><a class="reference internal" href="#other-libraries">Other Libraries</a><ul>
+<li><a class="reference internal" href="#werkzeug">Werkzeug</a></li>
+<li><a class="reference internal" href="#flask-extensions">Flask Extensions</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#install-flask">Install Flask</a></li>
 </ul>
 </li>
 </ul>
@@ -181,8 +248,8 @@ Flask:</p>
 <ul>
   <li><a href="index.html">Overview</a>
     <ul>
-          <li>Previous: <a href="index.html" title="previous chapter">Welcome to Flask</a>
-          <li>Next: <a href="quickstart.html" title="next chapter">Quickstart</a>
+          <li>Previous: <a href="debugging.html" title="previous chapter">Debugging Application Errors</a>
+          <li>Next: <a href="config.html" title="next chapter">Configuration Handling</a>
     </ul>
   </li>
 </ul>

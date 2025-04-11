@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Deploying to Production &#8212; Flask Documentation (3.2.x)</title>
+    <title>Tell Flask it is Behind a Proxy &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Gunicorn" href="gunicorn.html" />
-    <link rel="prev" title="Security Considerations" href="../web-security.html" /> 
+    <link rel="next" title="nginx" href="nginx.html" />
+    <link rel="prev" title="ASGI" href="asgi.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,91 +28,49 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="gunicorn.html" title="Gunicorn"
+          <a href="nginx.html" title="nginx"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../web-security.html" title="Security Considerations"
+          <a href="asgi.html" title="ASGI"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Deploying to Production</a></li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Deploying to Production</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tell Flask it is Behind a Proxy</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="deploying-to-production">
-<h1>Deploying to Production<a class="headerlink" href="#deploying-to-production" title="Link to this heading">¶</a></h1>
-<p>After developing your application, you’ll want to make it available
-publicly to other users. When you’re developing locally, you’re probably
-using the built-in development server, debugger, and reloader. These
-should not be used in production. Instead, you should use a dedicated
-WSGI server or hosting platform, some of which will be described here.</p>
-<p>“Production” means “not development”, which applies whether you’re
-serving your application publicly to millions of users or privately /
-locally to a single user. <strong>Do not use the development server when
-deploying to production. It is intended for use only during local
-development. It is not designed to be particularly secure, stable, or
-efficient.</strong></p>
-<section id="self-hosted-options">
-<h2>Self-Hosted Options<a class="headerlink" href="#self-hosted-options" title="Link to this heading">¶</a></h2>
-<p>Flask is a WSGI <em>application</em>. A WSGI <em>server</em> is used to run the
-application, converting incoming HTTP requests to the standard WSGI
-environ, and converting outgoing WSGI responses to HTTP responses.</p>
-<p>The primary goal of these docs is to familiarize you with the concepts
-involved in running a WSGI application using a production WSGI server
-and HTTP server. There are many WSGI servers and HTTP servers, with many
-configuration possibilities. The pages below discuss the most common
-servers, and show the basics of running each one. The next section
-discusses platforms that can manage this for you.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="gunicorn.html">Gunicorn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="waitress.html">Waitress</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mod_wsgi.html">mod_wsgi</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uwsgi.html">uWSGI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gevent.html">gevent</a></li>
-<li class="toctree-l1"><a class="reference internal" href="eventlet.html">eventlet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="asgi.html">ASGI</a></li>
-</ul>
+
+  <section id="tell-flask-it-is-behind-a-proxy">
+<h1>Tell Flask it is Behind a Proxy<a class="headerlink" href="#tell-flask-it-is-behind-a-proxy" title="Link to this heading">¶</a></h1>
+<p>When using a reverse proxy, or many Python hosting platforms, the proxy
+will intercept and forward all external requests to the local WSGI
+server.</p>
+<p>From the WSGI server and Flask application’s perspectives, requests are
+now coming from the HTTP server to the local address, rather than from
+the remote address to the external server address.</p>
+<p>HTTP servers should set <code class="docutils literal notranslate"><span class="pre">X-Forwarded-</span></code> headers to pass on the real
+values to the application. The application can then be told to trust and
+use those values by wrapping it with the
+<a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/middleware/proxy_fix/" title="(in Werkzeug v3.1.x)"><span>X-Forwarded-For Proxy Fix</span></a> middleware provided by Werkzeug.</p>
+<p>This middleware should only be used if the application is actually
+behind a proxy, and should be configured with the number of proxies that
+are chained in front of it. Not all proxies set all the headers. Since
+incoming headers can be faked, you must set how many proxies are setting
+each header so the middleware knows what to trust.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">werkzeug.middleware.proxy_fix</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProxyFix</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">wsgi_app</span> <span class="o">=</span> <span class="n">ProxyFix</span><span class="p">(</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">wsgi_app</span><span class="p">,</span> <span class="n">x_for</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">x_proto</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">x_host</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">x_prefix</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
 </div>
-<p>WSGI servers have HTTP servers built-in. However, a dedicated HTTP
-server may be safer, more efficient, or more capable. Putting an HTTP
-server in front of the WSGI server is called a “reverse proxy.”</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="proxy_fix.html">Tell Flask it is Behind a Proxy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="nginx.html">nginx</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apache-httpd.html">Apache httpd</a></li>
-</ul>
-</div>
-<p>This list is not exhaustive, and you should evaluate these and other
-servers based on your application’s needs. Different servers will have
-different capabilities, configuration, and support.</p>
-</section>
-<section id="hosting-platforms">
-<h2>Hosting Platforms<a class="headerlink" href="#hosting-platforms" title="Link to this heading">¶</a></h2>
-<p>There are many services available for hosting web applications without
-needing to maintain your own server, networking, domain, etc. Some
-services may have a free tier up to a certain time or bandwidth. Many of
-these services use one of the WSGI servers described above, or a similar
-interface. The links below are for some of the most common platforms,
-which have instructions for Flask, WSGI, or Python.</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://help.pythonanywhere.com/pages/Flask/">PythonAnywhere</a></p></li>
-<li><p><a class="reference external" href="https://cloud.google.com/appengine/docs/standard/python3/building-app">Google App Engine</a></p></li>
-<li><p><a class="reference external" href="https://cloud.google.com/run/docs/quickstarts/build-and-deploy/deploy-python-service">Google Cloud Run</a></p></li>
-<li><p><a class="reference external" href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-flask.html">AWS Elastic Beanstalk</a></p></li>
-<li><p><a class="reference external" href="https://docs.microsoft.com/en-us/azure/app-service/quickstart-python">Microsoft Azure</a></p></li>
-</ul>
-<p>This list is not exhaustive, and you should evaluate these and other
-services based on your application’s needs. Different services will have
-different capabilities, configuration, pricing, and support.</p>
-<p>You’ll probably need to <a class="reference internal" href="proxy_fix.html"><span class="doc">Tell Flask it is Behind a Proxy</span></a> when using most hosting
-platforms.</p>
-</section>
+<p>Remember, only apply this middleware if you are behind a proxy, and set
+the correct number of proxies that set each header. It can be a security
+issue if you get this configuration wrong.</p>
 </section>
 
 
@@ -123,29 +81,21 @@ platforms.</p>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
 
-  <h3>Contents</h3>
-  <ul>
-<li><a class="reference internal" href="#">Deploying to Production</a><ul>
-<li><a class="reference internal" href="#self-hosted-options">Self-Hosted Options</a><ul>
-</ul>
-</li>
-<li><a class="reference internal" href="#hosting-platforms">Hosting Platforms</a></li>
-</ul>
-</li>
-</ul>
 <h3>Navigation</h3>
 <ul>
   <li><a href="../index.html">Overview</a>
     <ul>
-          <li>Previous: <a href="../web-security.html" title="previous chapter">Security Considerations</a>
-          <li>Next: <a href="gunicorn.html" title="next chapter">Gunicorn</a>
+      <li><a href="index.html">Deploying to Production</a>
+        <ul>
+          <li>Previous: <a href="asgi.html" title="previous chapter">ASGI</a>
+          <li>Next: <a href="nginx.html" title="next chapter">nginx</a></ul>
+      </li>
     </ul>
   </li>
 </ul>

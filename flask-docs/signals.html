@@ -1,194 +1,364 @@
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="./">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Signals &#8212; Flask Documentation (3.2.x)</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
-    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
-    <script src="_static/documentation_options.js?v=56528222"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script data-project="flask" data-version="3.2.x" src="_static/describe_version.js?v=fa7f30d0"></script>
-    <link rel="icon" href="_static/shortcut-icon.png"/>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Class-based Views" href="views.html" />
-    <link rel="prev" title="Configuration Handling" href="config.html" /> 
+    <title>Blog Blueprint &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
+    <script src="../_static/documentation_options.js?v=56528222"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Make the Project Installable" href="install.html" />
+    <link rel="prev" title="Static Files" href="static.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
+          <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
+          <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="views.html" title="Class-based Views"
+          <a href="install.html" title="Make the Project Installable"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="config.html" title="Configuration Handling"
+          <a href="static.html" title="Static Files"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Flask Documentation (3.2.x)</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Signals</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Tutorial</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Blog Blueprint</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="signals">
-<h1>Signals<a class="headerlink" href="#signals" title="Link to this heading">¶</a></h1>
-<p>Signals are a lightweight way to notify subscribers of certain events during the
-lifecycle of the application and each request. When an event occurs, it emits the
-signal, which calls each subscriber.</p>
-<p>Signals are implemented by the <a class="reference external" href="https://pypi.org/project/blinker/">Blinker</a> library. See its documentation for detailed
-information. Flask provides some built-in signals. Extensions may provide their own.</p>
-<p>Many signals mirror Flask’s decorator-based callbacks with similar names. For example,
-the <a class="reference internal" href="api.html#flask.request_started" title="flask.request_started"><code class="xref py py-data docutils literal notranslate"><span class="pre">request_started</span></code></a> signal is similar to the <a class="reference internal" href="api.html#flask.Flask.before_request" title="flask.Flask.before_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">before_request()</span></code></a>
-decorator. The advantage of signals over handlers is that they can be subscribed to
-temporarily, and can’t directly affect the application. This is useful for testing,
-metrics, auditing, and more. For example, if you want to know what templates were
-rendered at what parts of what requests, there is a signal that will notify you of that
-information.</p>
-<section id="core-signals">
-<h2>Core Signals<a class="headerlink" href="#core-signals" title="Link to this heading">¶</a></h2>
-<p>See <a class="reference internal" href="api.html#core-signals-list"><span class="std std-ref">Signals</span></a> for a list of all built-in signals. The <a class="reference internal" href="lifecycle.html"><span class="doc">Application Structure and Lifecycle</span></a>
-page also describes the order that signals and decorators execute.</p>
-</section>
-<section id="subscribing-to-signals">
-<h2>Subscribing to Signals<a class="headerlink" href="#subscribing-to-signals" title="Link to this heading">¶</a></h2>
-<p>To subscribe to a signal, you can use the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">connect()</span></code> method of a signal.  The first
-argument is the function that should be called when the signal is emitted,
-the optional second argument specifies a sender.  To unsubscribe from a
-signal, you can use the <code class="xref py py-meth docutils literal notranslate"><span class="pre">disconnect()</span></code> method.</p>
-<p>For all core Flask signals, the sender is the application that issued the
-signal.  When you subscribe to a signal, be sure to also provide a sender
-unless you really want to listen for signals from all applications.  This is
-especially true if you are developing an extension.</p>
-<p>For example, here is a helper context manager that can be used in a unit test
-to determine which templates were rendered and what variables were passed
-to the template:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">template_rendered</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
 
-<span class="nd">@contextmanager</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">captured_templates</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
-    <span class="n">recorded</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">record</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
-        <span class="n">recorded</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">))</span>
-    <span class="n">template_rendered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="n">recorded</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">template_rendered</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This can now easily be paired with a test client:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">captured_templates</span><span class="p">(</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">templates</span><span class="p">:</span>
-    <span class="n">rv</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">test_client</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">rv</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">templates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-    <span class="n">template</span><span class="p">,</span> <span class="n">context</span> <span class="o">=</span> <span class="n">templates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">template</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;index.html&#39;</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">10</span>
-</pre></div>
-</div>
-<p>Make sure to subscribe with an extra <code class="docutils literal notranslate"><span class="pre">**extra</span></code> argument so that your
-calls don’t fail if Flask introduces new arguments to the signals.</p>
-<p>All the template rendering in the code issued by the application <code class="code docutils literal notranslate"><span class="pre">app</span></code>
-in the body of the <code class="docutils literal notranslate"><span class="pre">with</span></code> block will now be recorded in the <code class="code docutils literal notranslate"><span class="pre">templates</span></code>
-variable.  Whenever a template is rendered, the template object as well as
-context are appended to it.</p>
-<p>Additionally there is a convenient helper method
-(<code class="xref py py-meth docutils literal notranslate"><span class="pre">connected_to()</span></code>)  that allows you to
-temporarily subscribe a function to a signal with a context manager on
-its own.  Because the return value of the context manager cannot be
-specified that way, you have to pass the list in as an argument:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">template_rendered</span>
+  <section id="blog-blueprint">
+<h1>Blog Blueprint<a class="headerlink" href="#blog-blueprint" title="Link to this heading">¶</a></h1>
+<p>You’ll use the same techniques you learned about when writing the
+authentication blueprint to write the blog blueprint. The blog should
+list all posts, allow logged in users to create posts, and allow the
+author of a post to edit or delete it.</p>
+<p>As you implement each view, keep the development server running. As you
+save your changes, try going to the URL in your browser and testing them
+out.</p>
+<section id="the-blueprint">
+<h2>The Blueprint<a class="headerlink" href="#the-blueprint" title="Link to this heading">¶</a></h2>
+<p>Define the blueprint and register it in the application factory.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/blog.py</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Blueprint</span><span class="p">,</span> <span class="n">flash</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">url_for</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">werkzeug.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">abort</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">captured_templates</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">recorded</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">record</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-        <span class="n">recorded</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">template_rendered</span><span class="o">.</span><span class="n">connected_to</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The example above would then look like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">templates</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">with</span> <span class="n">captured_templates</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">templates</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
-    <span class="o">...</span>
-    <span class="n">template</span><span class="p">,</span> <span class="n">context</span> <span class="o">=</span> <span class="n">templates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-</div>
-</section>
-<section id="creating-signals">
-<h2>Creating Signals<a class="headerlink" href="#creating-signals" title="Link to this heading">¶</a></h2>
-<p>If you want to use signals in your own application, you can use the
-blinker library directly.  The most common use case are named signals in a
-custom <a class="reference external" href="https://blinker.readthedocs.io/en/stable/#blinker.Namespace" title="(in Blinker v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>.  This is what is recommended
-most of the time:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">blinker</span><span class="w"> </span><span class="kn">import</span> <span class="n">Namespace</span>
-<span class="n">my_signals</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Now you can create new signals like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model_saved</span> <span class="o">=</span> <span class="n">my_signals</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="s1">&#39;model-saved&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The name for the signal here makes it unique and also simplifies
-debugging.  You can access the name of the signal with the
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code> attribute.</p>
-</section>
-<section id="sending-signals">
-<span id="signals-sending"></span><h2>Sending Signals<a class="headerlink" href="#sending-signals" title="Link to this heading">¶</a></h2>
-<p>If you want to emit a signal, you can do so by calling the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">send()</span></code> method.  It accepts a sender as first
-argument and optionally some keyword arguments that are forwarded to the
-signal subscribers:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="o">...</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flaskr.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">login_required</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flaskr.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_db</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">model_saved</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<span class="n">bp</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;blog&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Try to always pick a good sender.  If you have a class that is emitting a
-signal, pass <code class="docutils literal notranslate"><span class="pre">self</span></code> as sender.  If you are emitting a signal from a random
-function, you can pass <code class="docutils literal notranslate"><span class="pre">current_app._get_current_object()</span></code> as sender.</p>
-<div class="admonition-passing-proxies-as-senders admonition">
-<p class="admonition-title">Passing Proxies as Senders</p>
-<p>Never pass <a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a> as sender to a signal.  Use
-<code class="docutils literal notranslate"><span class="pre">current_app._get_current_object()</span></code> instead.  The reason for this is
-that <a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a> is a proxy and not the real application
-object.</p>
 </div>
-</section>
-<section id="signals-and-flask-s-request-context">
-<h2>Signals and Flask’s Request Context<a class="headerlink" href="#signals-and-flask-s-request-context" title="Link to this heading">¶</a></h2>
-<p>Signals fully support <a class="reference internal" href="reqcontext.html"><span class="doc">The Request Context</span></a> when receiving signals.
-Context-local variables are consistently available between
-<a class="reference internal" href="api.html#flask.request_started" title="flask.request_started"><code class="xref py py-data docutils literal notranslate"><span class="pre">request_started</span></code></a> and <a class="reference internal" href="api.html#flask.request_finished" title="flask.request_finished"><code class="xref py py-data docutils literal notranslate"><span class="pre">request_finished</span></code></a>, so you can
-rely on <a class="reference internal" href="api.html#flask.g" title="flask.g"><code class="xref py py-class docutils literal notranslate"><span class="pre">flask.g</span></code></a> and others as needed.  Note the limitations described
-in <a class="reference internal" href="#signals-sending"><span class="std std-ref">Sending Signals</span></a> and the <a class="reference internal" href="api.html#flask.request_tearing_down" title="flask.request_tearing_down"><code class="xref py py-data docutils literal notranslate"><span class="pre">request_tearing_down</span></code></a> signal.</p>
-</section>
-<section id="decorator-based-signal-subscriptions">
-<h2>Decorator Based Signal Subscriptions<a class="headerlink" href="#decorator-based-signal-subscriptions" title="Link to this heading">¶</a></h2>
-<p>You can also easily subscribe to signals by using the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">connect_via()</span></code> decorator:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">template_rendered</span>
+<p>Import and register the blueprint from the factory using
+<a class="reference internal" href="../api.html#flask.Flask.register_blueprint" title="flask.Flask.register_blueprint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.register_blueprint()</span></code></a>. Place the
+new code at the end of the factory function before returning the app.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/__init__.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">():</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="c1"># existing code omitted</span>
 
-<span class="nd">@template_rendered</span><span class="o">.</span><span class="n">connect_via</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">when_template_rendered</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Template </span><span class="si">{</span><span class="n">template</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> is rendered with </span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">blog</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">blog</span><span class="o">.</span><span class="n">bp</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">app</span>
 </pre></div>
 </div>
+</div>
+<p>Unlike the auth blueprint, the blog blueprint does not have a
+<code class="docutils literal notranslate"><span class="pre">url_prefix</span></code>. So the <code class="docutils literal notranslate"><span class="pre">index</span></code> view will be at <code class="docutils literal notranslate"><span class="pre">/</span></code>, the <code class="docutils literal notranslate"><span class="pre">create</span></code>
+view at <code class="docutils literal notranslate"><span class="pre">/create</span></code>, and so on. The blog is the main feature of Flaskr,
+so it makes sense that the blog index will be the main index.</p>
+<p>However, the endpoint for the <code class="docutils literal notranslate"><span class="pre">index</span></code> view defined below will be
+<code class="docutils literal notranslate"><span class="pre">blog.index</span></code>. Some of the authentication views referred to a plain
+<code class="docutils literal notranslate"><span class="pre">index</span></code> endpoint. <a class="reference internal" href="../api.html#flask.Flask.add_url_rule" title="flask.Flask.add_url_rule"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.add_url_rule()</span></code></a>
+associates the endpoint name <code class="docutils literal notranslate"><span class="pre">'index'</span></code> with the <code class="docutils literal notranslate"><span class="pre">/</span></code> url so that
+<code class="docutils literal notranslate"><span class="pre">url_for('index')</span></code> or <code class="docutils literal notranslate"><span class="pre">url_for('blog.index')</span></code> will both work,
+generating the same <code class="docutils literal notranslate"><span class="pre">/</span></code> URL either way.</p>
+<p>In another application you might give the blog blueprint a
+<code class="docutils literal notranslate"><span class="pre">url_prefix</span></code> and define a separate <code class="docutils literal notranslate"><span class="pre">index</span></code> view in the application
+factory, similar to the <code class="docutils literal notranslate"><span class="pre">hello</span></code> view. Then the <code class="docutils literal notranslate"><span class="pre">index</span></code> and
+<code class="docutils literal notranslate"><span class="pre">blog.index</span></code> endpoints and URLs would be different.</p>
+</section>
+<section id="index">
+<h2>Index<a class="headerlink" href="#index" title="Link to this heading">¶</a></h2>
+<p>The index will show all of the posts, most recent first. A <code class="docutils literal notranslate"><span class="pre">JOIN</span></code> is
+used so that the author information from the <code class="docutils literal notranslate"><span class="pre">user</span></code> table is
+available in the result.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/blog.py</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+    <span class="n">posts</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="s1">&#39;SELECT p.id, title, body, created, author_id, username&#39;</span>
+        <span class="s1">&#39; FROM post p JOIN user u ON p.author_id = u.id&#39;</span>
+        <span class="s1">&#39; ORDER BY created DESC&#39;</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;blog/index.html&#39;</span><span class="p">,</span> <span class="n">posts</span><span class="o">=</span><span class="n">posts</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/templates/blog/index.html</span></code></span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">extends</span> <span class="s1">&#39;base.html&#39;</span> <span class="cp">%}</span>
+
+<span class="cp">{%</span> <span class="k">block</span> <span class="nv">header</span> <span class="cp">%}</span>
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="cp">{%</span> <span class="k">block</span> <span class="nv">title</span> <span class="cp">%}</span>Posts<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+  <span class="cp">{%</span> <span class="k">if</span> <span class="nv">g.user</span> <span class="cp">%}</span>
+    <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;action&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">url_for</span><span class="o">(</span><span class="s1">&#39;blog.create&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="s">&quot;</span><span class="p">&gt;</span>New<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+  <span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+
+<span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
+  <span class="cp">{%</span> <span class="k">for</span> <span class="nv">post</span> <span class="k">in</span> <span class="nv">posts</span> <span class="cp">%}</span>
+    <span class="p">&lt;</span><span class="nt">article</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;post&quot;</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">header</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">post</span><span class="o">[</span><span class="s1">&#39;title&#39;</span><span class="o">]</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;about&quot;</span><span class="p">&gt;</span>by <span class="cp">{{</span> <span class="nv">post</span><span class="o">[</span><span class="s1">&#39;username&#39;</span><span class="o">]</span> <span class="cp">}}</span> on <span class="cp">{{</span> <span class="nv">post</span><span class="o">[</span><span class="s1">&#39;created&#39;</span><span class="o">]</span><span class="nv">.strftime</span><span class="o">(</span><span class="s1">&#39;%Y-%m-%d&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="cp">{%</span> <span class="k">if</span> <span class="nv">g.user</span><span class="o">[</span><span class="s1">&#39;id&#39;</span><span class="o">]</span> <span class="o">==</span> <span class="nv">post</span><span class="o">[</span><span class="s1">&#39;author_id&#39;</span><span class="o">]</span> <span class="cp">%}</span>
+          <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;action&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">url_for</span><span class="o">(</span><span class="s1">&#39;blog.update&#39;</span><span class="o">,</span> <span class="nv">id</span><span class="o">=</span><span class="nv">post</span><span class="o">[</span><span class="s1">&#39;id&#39;</span><span class="o">])</span> <span class="cp">}}</span><span class="s">&quot;</span><span class="p">&gt;</span>Edit<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+        <span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
+      <span class="p">&lt;/</span><span class="nt">header</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;body&quot;</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">post</span><span class="o">[</span><span class="s1">&#39;body&#39;</span><span class="o">]</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">article</span><span class="p">&gt;</span>
+    <span class="cp">{%</span> <span class="k">if</span> <span class="k">not</span> <span class="nb">loop</span><span class="nv">.last</span> <span class="cp">%}</span>
+      <span class="p">&lt;</span><span class="nt">hr</span><span class="p">&gt;</span>
+    <span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
+  <span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+</div>
+<p>When a user is logged in, the <code class="docutils literal notranslate"><span class="pre">header</span></code> block adds a link to the
+<code class="docutils literal notranslate"><span class="pre">create</span></code> view. When the user is the author of a post, they’ll see an
+“Edit” link to the <code class="docutils literal notranslate"><span class="pre">update</span></code> view for that post. <code class="docutils literal notranslate"><span class="pre">loop.last</span></code> is a
+special variable available inside <a class="reference external" href="https://jinja.palletsprojects.com/templates/#for">Jinja for loops</a>. It’s used to
+display a line after each post except the last one, to visually separate
+them.</p>
+</section>
+<section id="create">
+<h2>Create<a class="headerlink" href="#create" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">create</span></code> view works the same as the auth <code class="docutils literal notranslate"><span class="pre">register</span></code> view. Either
+the form is displayed, or the posted data is validated and the post is
+added to the database or an error is shown.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">login_required</span></code> decorator you wrote earlier is used on the blog
+views. A user must be logged in to visit these views, otherwise they
+will be redirected to the login page.</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/blog.py</span></code></span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/create&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">))</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;body&#39;</span><span class="p">]</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">title</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;Title is required.&#39;</span>
+
+        <span class="k">if</span> <span class="n">error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                <span class="s1">&#39;INSERT INTO post (title, body, author_id)&#39;</span>
+                <span class="s1">&#39; VALUES (?, ?, ?)&#39;</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+            <span class="p">)</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;blog.index&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;blog/create.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/templates/blog/create.html</span></code></span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">extends</span> <span class="s1">&#39;base.html&#39;</span> <span class="cp">%}</span>
+
+<span class="cp">{%</span> <span class="k">block</span> <span class="nv">header</span> <span class="cp">%}</span>
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="cp">{%</span> <span class="k">block</span> <span class="nv">title</span> <span class="cp">%}</span>New Post<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+
+<span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
+  <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;post&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;title&quot;</span><span class="p">&gt;</span>Title<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;title&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;title&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">request.form</span><span class="o">[</span><span class="s1">&#39;title&#39;</span><span class="o">]</span> <span class="cp">}}</span><span class="s">&quot;</span> <span class="na">required</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;body&quot;</span><span class="p">&gt;</span>Body<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">textarea</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;body&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;body&quot;</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">request.form</span><span class="o">[</span><span class="s1">&#39;body&#39;</span><span class="o">]</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">textarea</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;Save&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="update">
+<h2>Update<a class="headerlink" href="#update" title="Link to this heading">¶</a></h2>
+<p>Both the <code class="docutils literal notranslate"><span class="pre">update</span></code> and <code class="docutils literal notranslate"><span class="pre">delete</span></code> views will need to fetch a <code class="docutils literal notranslate"><span class="pre">post</span></code>
+by <code class="docutils literal notranslate"><span class="pre">id</span></code> and check if the author matches the logged in user. To avoid
+duplicating code, you can write a function to get the <code class="docutils literal notranslate"><span class="pre">post</span></code> and call
+it from each view.</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/blog.py</span></code></span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_post</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">check_author</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="s1">&#39;SELECT p.id, title, body, created, author_id, username&#39;</span>
+        <span class="s1">&#39; FROM post p JOIN user u ON p.author_id = u.id&#39;</span>
+        <span class="s1">&#39; WHERE p.id = ?&#39;</span><span class="p">,</span>
+        <span class="p">(</span><span class="nb">id</span><span class="p">,)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">post</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Post id </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2"> doesn&#39;t exist.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">check_author</span> <span class="ow">and</span> <span class="n">post</span><span class="p">[</span><span class="s1">&#39;author_id&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">post</span>
+</pre></div>
+</div>
+</div>
+<p><a class="reference internal" href="../api.html#flask.abort" title="flask.abort"><code class="xref py py-func docutils literal notranslate"><span class="pre">abort()</span></code></a> will raise a special exception that returns an HTTP status
+code. It takes an optional message to show with the error, otherwise a
+default message is used. <code class="docutils literal notranslate"><span class="pre">404</span></code> means “Not Found”, and <code class="docutils literal notranslate"><span class="pre">403</span></code> means
+“Forbidden”. (<code class="docutils literal notranslate"><span class="pre">401</span></code> means “Unauthorized”, but you redirect to the
+login page instead of returning that status.)</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">check_author</span></code> argument is defined so that the function can be
+used to get a <code class="docutils literal notranslate"><span class="pre">post</span></code> without checking the author. This would be useful
+if you wrote a view to show an individual post on a page, where the user
+doesn’t matter because they’re not modifying the post.</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/blog.py</span></code></span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:id&gt;/update&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">))</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="n">get_post</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;body&#39;</span><span class="p">]</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">title</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;Title is required.&#39;</span>
+
+        <span class="k">if</span> <span class="n">error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                <span class="s1">&#39;UPDATE post SET title = ?, body = ?&#39;</span>
+                <span class="s1">&#39; WHERE id = ?&#39;</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;blog.index&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;blog/update.html&#39;</span><span class="p">,</span> <span class="n">post</span><span class="o">=</span><span class="n">post</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Unlike the views you’ve written so far, the <code class="docutils literal notranslate"><span class="pre">update</span></code> function takes
+an argument, <code class="docutils literal notranslate"><span class="pre">id</span></code>. That corresponds to the <code class="docutils literal notranslate"><span class="pre">&lt;int:id&gt;</span></code> in the route.
+A real URL will look like <code class="docutils literal notranslate"><span class="pre">/1/update</span></code>. Flask will capture the <code class="docutils literal notranslate"><span class="pre">1</span></code>,
+ensure it’s an <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, and pass it as the <code class="docutils literal notranslate"><span class="pre">id</span></code> argument. If you
+don’t specify <code class="docutils literal notranslate"><span class="pre">int:</span></code> and instead do <code class="docutils literal notranslate"><span class="pre">&lt;id&gt;</span></code>, it will be a string.
+To generate a URL to the update page, <a class="reference internal" href="../api.html#flask.url_for" title="flask.url_for"><code class="xref py py-func docutils literal notranslate"><span class="pre">url_for()</span></code></a> needs to be passed
+the <code class="docutils literal notranslate"><span class="pre">id</span></code> so it knows what to fill in:
+<code class="docutils literal notranslate"><span class="pre">url_for('blog.update',</span> <span class="pre">id=post['id'])</span></code>. This is also in the
+<code class="docutils literal notranslate"><span class="pre">index.html</span></code> file above.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">create</span></code> and <code class="docutils literal notranslate"><span class="pre">update</span></code> views look very similar. The main
+difference is that the <code class="docutils literal notranslate"><span class="pre">update</span></code> view uses a <code class="docutils literal notranslate"><span class="pre">post</span></code> object and an
+<code class="docutils literal notranslate"><span class="pre">UPDATE</span></code> query instead of an <code class="docutils literal notranslate"><span class="pre">INSERT</span></code>. With some clever refactoring,
+you could use one view and template for both actions, but for the
+tutorial it’s clearer to keep them separate.</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/templates/blog/update.html</span></code></span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
+<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">extends</span> <span class="s1">&#39;base.html&#39;</span> <span class="cp">%}</span>
+
+<span class="cp">{%</span> <span class="k">block</span> <span class="nv">header</span> <span class="cp">%}</span>
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="cp">{%</span> <span class="k">block</span> <span class="nv">title</span> <span class="cp">%}</span>Edit &quot;<span class="cp">{{</span> <span class="nv">post</span><span class="o">[</span><span class="s1">&#39;title&#39;</span><span class="o">]</span> <span class="cp">}}</span>&quot;<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+
+<span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
+  <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;post&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;title&quot;</span><span class="p">&gt;</span>Title<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;title&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;title&quot;</span>
+      <span class="na">value</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">request.form</span><span class="o">[</span><span class="s1">&#39;title&#39;</span><span class="o">]</span> <span class="k">or</span> <span class="nv">post</span><span class="o">[</span><span class="s1">&#39;title&#39;</span><span class="o">]</span> <span class="cp">}}</span><span class="s">&quot;</span> <span class="na">required</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;body&quot;</span><span class="p">&gt;</span>Body<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">textarea</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;body&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;body&quot;</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">request.form</span><span class="o">[</span><span class="s1">&#39;body&#39;</span><span class="o">]</span> <span class="k">or</span> <span class="nv">post</span><span class="o">[</span><span class="s1">&#39;body&#39;</span><span class="o">]</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">textarea</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;Save&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">hr</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">url_for</span><span class="o">(</span><span class="s1">&#39;blog.delete&#39;</span><span class="o">,</span> <span class="nv">id</span><span class="o">=</span><span class="nv">post</span><span class="o">[</span><span class="s1">&#39;id&#39;</span><span class="o">])</span> <span class="cp">}}</span><span class="s">&quot;</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;post&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">input</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;danger&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;Delete&quot;</span> <span class="na">onclick</span><span class="o">=</span><span class="s">&quot;return confirm(&#39;Are you sure?&#39;);&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+</div>
+<p>This template has two forms. The first posts the edited data to the
+current page (<code class="docutils literal notranslate"><span class="pre">/&lt;id&gt;/update</span></code>). The other form contains only a button
+and specifies an <code class="docutils literal notranslate"><span class="pre">action</span></code> attribute that posts to the delete view
+instead. The button uses some JavaScript to show a confirmation dialog
+before submitting.</p>
+<p>The pattern <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">request.form['title']</span> <span class="pre">or</span> <span class="pre">post['title']</span> <span class="pre">}}</span></code> is used to
+choose what data appears in the form. When the form hasn’t been
+submitted, the original <code class="docutils literal notranslate"><span class="pre">post</span></code> data appears, but if invalid form data
+was posted you want to display that so the user can fix the error, so
+<code class="docutils literal notranslate"><span class="pre">request.form</span></code> is used instead. <a class="reference internal" href="../api.html#flask.request" title="flask.request"><code class="xref py py-data docutils literal notranslate"><span class="pre">request</span></code></a> is another variable
+that’s automatically available in templates.</p>
+</section>
+<section id="delete">
+<h2>Delete<a class="headerlink" href="#delete" title="Link to this heading">¶</a></h2>
+<p>The delete view doesn’t have its own template, the delete button is part
+of <code class="docutils literal notranslate"><span class="pre">update.html</span></code> and posts to the <code class="docutils literal notranslate"><span class="pre">/&lt;id&gt;/delete</span></code> URL. Since there
+is no template, it will only handle the <code class="docutils literal notranslate"><span class="pre">POST</span></code> method and then redirect
+to the <code class="docutils literal notranslate"><span class="pre">index</span></code> view.</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/blog.py</span></code></span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:id&gt;/delete&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,))</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">get_post</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;DELETE FROM post WHERE id = ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nb">id</span><span class="p">,))</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;blog.index&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<p>Congratulations, you’ve now finished writing your application! Take some
+time to try out everything in the browser. However, there’s still more
+to do before the project is complete.</p>
+<p>Continue to <a class="reference internal" href="install.html"><span class="doc">Make the Project Installable</span></a>.</p>
 </section>
 </section>
 
@@ -200,38 +370,40 @@ in <a class="reference internal" href="#signals-sending"><span class="std std-re
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
-            <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/flask-vertical.png" alt="Logo of Flask"/>
+
+
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
 
   <h3>Contents</h3>
   <ul>
-<li><a class="reference internal" href="#">Signals</a><ul>
-<li><a class="reference internal" href="#core-signals">Core Signals</a></li>
-<li><a class="reference internal" href="#subscribing-to-signals">Subscribing to Signals</a></li>
-<li><a class="reference internal" href="#creating-signals">Creating Signals</a></li>
-<li><a class="reference internal" href="#sending-signals">Sending Signals</a></li>
-<li><a class="reference internal" href="#signals-and-flask-s-request-context">Signals and Flask’s Request Context</a></li>
-<li><a class="reference internal" href="#decorator-based-signal-subscriptions">Decorator Based Signal Subscriptions</a></li>
+<li><a class="reference internal" href="#">Blog Blueprint</a><ul>
+<li><a class="reference internal" href="#the-blueprint">The Blueprint</a></li>
+<li><a class="reference internal" href="#index">Index</a></li>
+<li><a class="reference internal" href="#create">Create</a></li>
+<li><a class="reference internal" href="#update">Update</a></li>
+<li><a class="reference internal" href="#delete">Delete</a></li>
 </ul>
 </li>
 </ul>
 <h3>Navigation</h3>
 <ul>
-  <li><a href="index.html">Overview</a>
+  <li><a href="../index.html">Overview</a>
     <ul>
-          <li>Previous: <a href="config.html" title="previous chapter">Configuration Handling</a>
-          <li>Next: <a href="views.html" title="next chapter">Class-based Views</a>
+      <li><a href="index.html">Tutorial</a>
+        <ul>
+          <li>Previous: <a href="static.html" title="previous chapter">Static Files</a>
+          <li>Next: <a href="install.html" title="next chapter">Make the Project Installable</a></ul>
+      </li>
     </ul>
   </li>
 </ul>
 <search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
+    <form class="search" action="../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>

@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Static Files &#8212; Flask Documentation (3.2.x)</title>
+    <title>Blueprints and Views &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Blog Blueprint" href="blog.html" />
-    <link rel="prev" title="Templates" href="templates.html" /> 
+    <link rel="next" title="Templates" href="templates.html" />
+    <link rel="prev" title="Define and Access the Database" href="database.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,80 +28,298 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="blog.html" title="Blog Blueprint"
+          <a href="templates.html" title="Templates"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="templates.html" title="Templates"
+          <a href="database.html" title="Define and Access the Database"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Tutorial</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Static Files</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Blueprints and Views</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="static-files">
-<h1>Static Files<a class="headerlink" href="#static-files" title="Link to this heading">¶</a></h1>
-<p>The authentication views and templates work, but they look very plain
-right now. Some <a class="reference external" href="https://developer.mozilla.org/docs/Web/CSS">CSS</a> can be added to add style to the HTML layout you
-constructed. The style won’t change, so it’s a <em>static</em> file rather than
-a template.</p>
-<p>Flask automatically adds a <code class="docutils literal notranslate"><span class="pre">static</span></code> view that takes a path relative
-to the <code class="docutils literal notranslate"><span class="pre">flaskr/static</span></code> directory and serves it. The <code class="docutils literal notranslate"><span class="pre">base.html</span></code>
-template already has a link to the <code class="docutils literal notranslate"><span class="pre">style.css</span></code> file:</p>
-<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{{</span> <span class="nv">url_for</span><span class="o">(</span><span class="s1">&#39;static&#39;</span><span class="o">,</span> <span class="nv">filename</span><span class="o">=</span><span class="s1">&#39;style.css&#39;</span><span class="o">)</span> <span class="cp">}}</span>
-</pre></div>
-</div>
-<p>Besides CSS, other types of static files might be files with JavaScript
-functions, or a logo image. They are all placed under the
-<code class="docutils literal notranslate"><span class="pre">flaskr/static</span></code> directory and referenced with
-<code class="docutils literal notranslate"><span class="pre">url_for('static',</span> <span class="pre">filename='...')</span></code>.</p>
-<p>This tutorial isn’t focused on how to write CSS, so you can just copy
-the following into the <code class="docutils literal notranslate"><span class="pre">flaskr/static/style.css</span></code> file:</p>
+
+  <section id="blueprints-and-views">
+<h1>Blueprints and Views<a class="headerlink" href="#blueprints-and-views" title="Link to this heading">¶</a></h1>
+<p>A view function is the code you write to respond to requests to your
+application. Flask uses patterns to match the incoming request URL to
+the view that should handle it. The view returns data that Flask turns
+into an outgoing response. Flask can also go the other direction and
+generate a URL to a view based on its name and arguments.</p>
+<section id="create-a-blueprint">
+<h2>Create a Blueprint<a class="headerlink" href="#create-a-blueprint" title="Link to this heading">¶</a></h2>
+<p>A <a class="reference internal" href="../api.html#flask.Blueprint" title="flask.Blueprint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Blueprint</span></code></a> is a way to organize a group of related views and
+other code. Rather than registering views and other code directly with
+an application, they are registered with a blueprint. Then the blueprint
+is registered with the application when it is available in the factory
+function.</p>
+<p>Flaskr will have two blueprints, one for authentication functions and
+one for the blog posts functions. The code for each blueprint will go
+in a separate module. Since the blog needs to know about authentication,
+you’ll write the authentication one first.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/static/style.css</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
-<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="nt">html</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="kc">sans-serif</span><span class="p">;</span><span class="w"> </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="mh">#eee</span><span class="p">;</span><span class="w"> </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="nt">body</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">max-width</span><span class="p">:</span><span class="w"> </span><span class="mi">960</span><span class="kt">px</span><span class="p">;</span><span class="w"> </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span><span class="w"> </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="kc">white</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="nt">h1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="kc">serif</span><span class="p">;</span><span class="w"> </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="mh">#377ba8</span><span class="p">;</span><span class="w"> </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="nt">a</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="mh">#377ba8</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="nt">hr</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">border</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span><span class="w"> </span><span class="k">border-top</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">px</span><span class="w"> </span><span class="kc">solid</span><span class="w"> </span><span class="kc">lightgray</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="nt">nav</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="kc">lightgray</span><span class="p">;</span><span class="w"> </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span><span class="w"> </span><span class="k">align-items</span><span class="p">:</span><span class="w"> </span><span class="kc">center</span><span class="p">;</span><span class="w"> </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mf">0.5</span><span class="kt">rem</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="nt">nav</span><span class="w"> </span><span class="nt">h1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">flex</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span><span class="w"> </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="nt">nav</span><span class="w"> </span><span class="nt">h1</span><span class="w"> </span><span class="nt">a</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">text-decoration</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span><span class="w"> </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mf">0.25</span><span class="kt">rem</span><span class="w"> </span><span class="mf">0.5</span><span class="kt">rem</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="nt">nav</span><span class="w"> </span><span class="nt">ul</span><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span><span class="w"> </span><span class="k">list-style</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span><span class="w"> </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="nt">nav</span><span class="w"> </span><span class="nt">ul</span><span class="w"> </span><span class="nt">li</span><span class="w"> </span><span class="nt">a</span><span class="o">,</span><span class="w"> </span><span class="nt">nav</span><span class="w"> </span><span class="nt">ul</span><span class="w"> </span><span class="nt">li</span><span class="w"> </span><span class="nt">span</span><span class="o">,</span><span class="w"> </span><span class="nt">header</span><span class="w"> </span><span class="p">.</span><span class="nc">action</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">block</span><span class="p">;</span><span class="w"> </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="kt">rem</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nt">header</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">border-bottom</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">px</span><span class="w"> </span><span class="kc">solid</span><span class="w"> </span><span class="kc">lightgray</span><span class="p">;</span><span class="w"> </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span><span class="w"> </span><span class="k">align-items</span><span class="p">:</span><span class="w"> </span><span class="kc">flex-end</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nt">header</span><span class="w"> </span><span class="nt">h1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">flex</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span><span class="w"> </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mf">0.25</span><span class="kt">rem</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="p">.</span><span class="nc">flash</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">em</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="mh">#cae6f6</span><span class="p">;</span><span class="w"> </span><span class="k">border</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">px</span><span class="w"> </span><span class="kc">solid</span><span class="w"> </span><span class="mh">#377ba8</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="p">.</span><span class="nc">post</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nt">header</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span><span class="w"> </span><span class="k">align-items</span><span class="p">:</span><span class="w"> </span><span class="kc">flex-end</span><span class="p">;</span><span class="w"> </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mf">0.85</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="p">.</span><span class="nc">post</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nt">header</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nt">div</span><span class="p">:</span><span class="nd">first-of-type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">flex</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="p">.</span><span class="nc">post</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nt">header</span><span class="w"> </span><span class="nt">h1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mf">1.5</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="k">margin-bottom</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="p">.</span><span class="nc">post</span><span class="w"> </span><span class="p">.</span><span class="nc">about</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="kc">slategray</span><span class="p">;</span><span class="w"> </span><span class="k">font-style</span><span class="p">:</span><span class="w"> </span><span class="kc">italic</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="p">.</span><span class="nc">post</span><span class="w"> </span><span class="p">.</span><span class="nc">body</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">white-space</span><span class="p">:</span><span class="w"> </span><span class="kc">pre-line</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="p">.</span><span class="nc">content</span><span class="p">:</span><span class="nd">last-child</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">margin-bottom</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="nt">form</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">em</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span><span class="w"> </span><span class="k">flex-direction</span><span class="p">:</span><span class="w"> </span><span class="kc">column</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="nt">label</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">font-weight</span><span class="p">:</span><span class="w"> </span><span class="kc">bold</span><span class="p">;</span><span class="w"> </span><span class="k">margin-bottom</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="nt">input</span><span class="o">,</span><span class="w"> </span><span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="nt">textarea</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">margin-bottom</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="nt">textarea</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">min-height</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="k">resize</span><span class="p">:</span><span class="w"> </span><span class="kc">vertical</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="nt">input</span><span class="p">.</span><span class="nc">danger</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="mh">#cc2f2e</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="nt">input</span><span class="o">[</span><span class="nt">type</span><span class="o">=</span><span class="nt">submit</span><span class="o">]</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">align-self</span><span class="p">:</span><span class="w"> </span><span class="kc">start</span><span class="p">;</span><span class="w"> </span><span class="k">min-width</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/auth.py</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Blueprint</span><span class="p">,</span> <span class="n">flash</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">url_for</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">werkzeug.security</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_password_hash</span><span class="p">,</span> <span class="n">generate_password_hash</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">flaskr.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_db</span>
+
+<span class="n">bp</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;auth&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/auth&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>You can find a less compact version of <code class="docutils literal notranslate"><span class="pre">style.css</span></code> in the
-<a class="reference external" href="https://github.com/pallets/flask/tree/main/examples/tutorial/flaskr/static/style.css">example code</a>.</p>
-<p>Go to <a class="reference external" href="http://127.0.0.1:5000/auth/login">http://127.0.0.1:5000/auth/login</a> and the page should look like the
-screenshot below.</p>
-<img alt="screenshot of login page" class="screenshot align-center" src="../_images/flaskr_login.png" />
-<p>You can read more about CSS from <a class="reference external" href="https://developer.mozilla.org/docs/Web/CSS">Mozilla’s documentation</a>. If
-you change a static file, refresh the browser page. If the change
-doesn’t show up, try clearing your browser’s cache.</p>
-<p>Continue to <a class="reference internal" href="blog.html"><span class="doc">Blog Blueprint</span></a>.</p>
+<p>This creates a <a class="reference internal" href="../api.html#flask.Blueprint" title="flask.Blueprint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Blueprint</span></code></a> named <code class="docutils literal notranslate"><span class="pre">'auth'</span></code>. Like the application
+object, the blueprint needs to know where it’s defined, so <code class="docutils literal notranslate"><span class="pre">__name__</span></code>
+is passed as the second argument. The <code class="docutils literal notranslate"><span class="pre">url_prefix</span></code> will be prepended
+to all the URLs associated with the blueprint.</p>
+<p>Import and register the blueprint from the factory using
+<a class="reference internal" href="../api.html#flask.Flask.register_blueprint" title="flask.Flask.register_blueprint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app.register_blueprint()</span></code></a>. Place the
+new code at the end of the factory function before returning the app.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/__init__.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">():</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="c1"># existing code omitted</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">auth</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">auth</span><span class="o">.</span><span class="n">bp</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">app</span>
+</pre></div>
+</div>
+</div>
+<p>The authentication blueprint will have views to register new users and
+to log in and log out.</p>
+</section>
+<section id="the-first-view-register">
+<h2>The First View: Register<a class="headerlink" href="#the-first-view-register" title="Link to this heading">¶</a></h2>
+<p>When the user visits the <code class="docutils literal notranslate"><span class="pre">/auth/register</span></code> URL, the <code class="docutils literal notranslate"><span class="pre">register</span></code> view
+will return <a class="reference external" href="https://developer.mozilla.org/docs/Web/HTML">HTML</a> with a form for them to fill out. When they submit
+the form, it will validate their input and either show the form again
+with an error message or create the new user and go to the login page.</p>
+<p>For now you will just write the view code. On the next page, you’ll
+write templates to generate the HTML form.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/auth.py</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/register&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">username</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;Username is required.&#39;</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">password</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;Password is required.&#39;</span>
+
+        <span class="k">if</span> <span class="n">error</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                    <span class="s2">&quot;INSERT INTO user (username, password) VALUES (?, ?)&quot;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">generate_password_hash</span><span class="p">(</span><span class="n">password</span><span class="p">)),</span>
+                <span class="p">)</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">db</span><span class="o">.</span><span class="n">IntegrityError</span><span class="p">:</span>
+                <span class="n">error</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;User </span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2"> is already registered.&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;auth.login&quot;</span><span class="p">))</span>
+
+        <span class="n">flash</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;auth/register.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Here’s what the <code class="docutils literal notranslate"><span class="pre">register</span></code> view function is doing:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="../api.html#flask.Blueprint.route" title="flask.Blueprint.route"><code class="xref py py-meth docutils literal notranslate"><span class="pre">&#64;bp.route</span></code></a> associates the URL <code class="docutils literal notranslate"><span class="pre">/register</span></code>
+with the <code class="docutils literal notranslate"><span class="pre">register</span></code> view function. When Flask receives a request
+to <code class="docutils literal notranslate"><span class="pre">/auth/register</span></code>, it will call the <code class="docutils literal notranslate"><span class="pre">register</span></code> view and use
+the return value as the response.</p></li>
+<li><p>If the user submitted the form,
+<a class="reference internal" href="../api.html#flask.Request.method" title="flask.Request.method"><code class="xref py py-attr docutils literal notranslate"><span class="pre">request.method</span></code></a> will be <code class="docutils literal notranslate"><span class="pre">'POST'</span></code>. In this
+case, start validating the input.</p></li>
+<li><p><a class="reference internal" href="../api.html#flask.Request.form" title="flask.Request.form"><code class="xref py py-attr docutils literal notranslate"><span class="pre">request.form</span></code></a> is a special type of
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> mapping submitted form keys and values. The user will
+input their <code class="docutils literal notranslate"><span class="pre">username</span></code> and <code class="docutils literal notranslate"><span class="pre">password</span></code>.</p></li>
+<li><p>Validate that <code class="docutils literal notranslate"><span class="pre">username</span></code> and <code class="docutils literal notranslate"><span class="pre">password</span></code> are not empty.</p></li>
+<li><p>If validation succeeds, insert the new user data into the database.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.execute" title="(in Python v3.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">db.execute</span></code></a> takes a SQL
+query with <code class="docutils literal notranslate"><span class="pre">?</span></code> placeholders for any user input, and a tuple of
+values to replace the placeholders with. The database library
+will take care of escaping the values so you are not vulnerable
+to a <em>SQL injection attack</em>.</p></li>
+<li><p>For security, passwords should never be stored in the database
+directly. Instead,
+<a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/utils/#werkzeug.security.generate_password_hash" title="(in Werkzeug v3.1.x)"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_password_hash()</span></code></a> is used to
+securely hash the password, and that hash is stored. Since this
+query modifies data,
+<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.commit" title="(in Python v3.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">db.commit()</span></code></a> needs to be
+called afterwards to save the changes.</p></li>
+<li><p>An <a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.IntegrityError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">sqlite3.IntegrityError</span></code></a> will occur if the username
+already exists, which should be shown to the user as another
+validation error.</p></li>
+</ul>
+</li>
+<li><p>After storing the user, they are redirected to the login page.
+<a class="reference internal" href="../api.html#flask.url_for" title="flask.url_for"><code class="xref py py-func docutils literal notranslate"><span class="pre">url_for()</span></code></a> generates the URL for the login view based on its
+name. This is preferable to writing the URL directly as it allows
+you to change the URL later without changing all code that links to
+it. <a class="reference internal" href="../api.html#flask.redirect" title="flask.redirect"><code class="xref py py-func docutils literal notranslate"><span class="pre">redirect()</span></code></a> generates a redirect response to the generated
+URL.</p></li>
+<li><p>If validation fails, the error is shown to the user. <a class="reference internal" href="../api.html#flask.flash" title="flask.flash"><code class="xref py py-func docutils literal notranslate"><span class="pre">flash()</span></code></a>
+stores messages that can be retrieved when rendering the template.</p></li>
+<li><p>When the user initially navigates to <code class="docutils literal notranslate"><span class="pre">auth/register</span></code>, or
+there was a validation error, an HTML page with the registration
+form should be shown. <a class="reference internal" href="../api.html#flask.render_template" title="flask.render_template"><code class="xref py py-func docutils literal notranslate"><span class="pre">render_template()</span></code></a> will render a template
+containing the HTML, which you’ll write in the next step of the
+tutorial.</p></li>
+</ol>
+</section>
+<section id="login">
+<h2>Login<a class="headerlink" href="#login" title="Link to this heading">¶</a></h2>
+<p>This view follows the same pattern as the <code class="docutils literal notranslate"><span class="pre">register</span></code> view above.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/auth.py</span></code></span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+            <span class="s1">&#39;SELECT * FROM user WHERE username = ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">username</span><span class="p">,)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;Incorrect username.&#39;</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">check_password_hash</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">],</span> <span class="n">password</span><span class="p">):</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;Incorrect password.&#39;</span>
+
+        <span class="k">if</span> <span class="n">error</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">session</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">))</span>
+
+        <span class="n">flash</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;auth/login.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>There are a few differences from the <code class="docutils literal notranslate"><span class="pre">register</span></code> view:</p>
+<ol class="arabic">
+<li><p>The user is queried first and stored in a variable for later use.</p>
+<p><a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.fetchone" title="(in Python v3.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fetchone()</span></code></a> returns one row from the query.
+If the query returned no results, it returns <code class="docutils literal notranslate"><span class="pre">None</span></code>. Later,
+<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.fetchall" title="(in Python v3.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fetchall()</span></code></a> will be used, which returns a list
+of all results.</p>
+</li>
+<li><p><a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/utils/#werkzeug.security.check_password_hash" title="(in Werkzeug v3.1.x)"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_password_hash()</span></code></a> hashes the submitted
+password in the same way as the stored hash and securely compares
+them. If they match, the password is valid.</p></li>
+<li><p><a class="reference internal" href="../api.html#flask.session" title="flask.session"><code class="xref py py-data docutils literal notranslate"><span class="pre">session</span></code></a> is a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> that stores data across requests.
+When validation succeeds, the user’s <code class="docutils literal notranslate"><span class="pre">id</span></code> is stored in a new
+session. The data is stored in a <em>cookie</em> that is sent to the
+browser, and the browser then sends it back with subsequent requests.
+Flask securely <em>signs</em> the data so that it can’t be tampered with.</p></li>
+</ol>
+<p>Now that the user’s <code class="docutils literal notranslate"><span class="pre">id</span></code> is stored in the <a class="reference internal" href="../api.html#flask.session" title="flask.session"><code class="xref py py-data docutils literal notranslate"><span class="pre">session</span></code></a>, it will be
+available on subsequent requests. At the beginning of each request, if
+a user is logged in their information should be loaded and made
+available to other views.</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/auth.py</span></code></span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@bp</span><span class="o">.</span><span class="n">before_app_request</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_logged_in_user</span><span class="p">():</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">user_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+            <span class="s1">&#39;SELECT * FROM user WHERE id = ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p><a class="reference internal" href="../api.html#flask.Blueprint.before_app_request" title="flask.Blueprint.before_app_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bp.before_app_request()</span></code></a> registers
+a function that runs before the view function, no matter what URL is
+requested. <code class="docutils literal notranslate"><span class="pre">load_logged_in_user</span></code> checks if a user id is stored in the
+<a class="reference internal" href="../api.html#flask.session" title="flask.session"><code class="xref py py-data docutils literal notranslate"><span class="pre">session</span></code></a> and gets that user’s data from the database, storing it
+on <a class="reference internal" href="../api.html#flask.g" title="flask.g"><code class="xref py py-data docutils literal notranslate"><span class="pre">g.user</span></code></a>, which lasts for the length of the request. If
+there is no user id, or if the id doesn’t exist, <code class="docutils literal notranslate"><span class="pre">g.user</span></code> will be
+<code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</section>
+<section id="logout">
+<h2>Logout<a class="headerlink" href="#logout" title="Link to this heading">¶</a></h2>
+<p>To log out, you need to remove the user id from the <a class="reference internal" href="../api.html#flask.session" title="flask.session"><code class="xref py py-data docutils literal notranslate"><span class="pre">session</span></code></a>.
+Then <code class="docutils literal notranslate"><span class="pre">load_logged_in_user</span></code> won’t load a user on subsequent requests.</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/auth.py</span></code></span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/logout&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logout</span><span class="p">():</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="require-authentication-in-other-views">
+<h2>Require Authentication in Other Views<a class="headerlink" href="#require-authentication-in-other-views" title="Link to this heading">¶</a></h2>
+<p>Creating, editing, and deleting blog posts will require a user to be
+logged in. A <em>decorator</em> can be used to check this for each view it’s
+applied to.</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/auth.py</span></code></span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">login_required</span><span class="p">(</span><span class="n">view</span><span class="p">):</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_view</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;auth.login&#39;</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">view</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapped_view</span>
+</pre></div>
+</div>
+</div>
+<p>This decorator returns a new view function that wraps the original view
+it’s applied to. The new function checks if a user is loaded and
+redirects to the login page otherwise. If a user is loaded the original
+view is called and continues normally. You’ll use this decorator when
+writing the blog views.</p>
+</section>
+<section id="endpoints-and-urls">
+<h2>Endpoints and URLs<a class="headerlink" href="#endpoints-and-urls" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="../api.html#flask.url_for" title="flask.url_for"><code class="xref py py-func docutils literal notranslate"><span class="pre">url_for()</span></code></a> function generates the URL to a view based on a name
+and arguments. The name associated with a view is also called the
+<em>endpoint</em>, and by default it’s the same as the name of the view
+function.</p>
+<p>For example, the <code class="docutils literal notranslate"><span class="pre">hello()</span></code> view that was added to the app
+factory earlier in the tutorial has the name <code class="docutils literal notranslate"><span class="pre">'hello'</span></code> and can be
+linked to with <code class="docutils literal notranslate"><span class="pre">url_for('hello')</span></code>. If it took an argument, which
+you’ll see later, it would be linked to using
+<code class="docutils literal notranslate"><span class="pre">url_for('hello',</span> <span class="pre">who='World')</span></code>.</p>
+<p>When using a blueprint, the name of the blueprint is prepended to the
+name of the function, so the endpoint for the <code class="docutils literal notranslate"><span class="pre">login</span></code> function you
+wrote above is <code class="docutils literal notranslate"><span class="pre">'auth.login'</span></code> because you added it to the <code class="docutils literal notranslate"><span class="pre">'auth'</span></code>
+blueprint.</p>
+<p>Continue to <a class="reference internal" href="templates.html"><span class="doc">Templates</span></a>.</p>
+</section>
 </section>
 
 
@@ -112,20 +330,33 @@ doesn’t show up, try clearing your browser’s cache.</p>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Blueprints and Views</a><ul>
+<li><a class="reference internal" href="#create-a-blueprint">Create a Blueprint</a></li>
+<li><a class="reference internal" href="#the-first-view-register">The First View: Register</a></li>
+<li><a class="reference internal" href="#login">Login</a></li>
+<li><a class="reference internal" href="#logout">Logout</a></li>
+<li><a class="reference internal" href="#require-authentication-in-other-views">Require Authentication in Other Views</a></li>
+<li><a class="reference internal" href="#endpoints-and-urls">Endpoints and URLs</a></li>
+</ul>
+</li>
+</ul>
 <h3>Navigation</h3>
 <ul>
   <li><a href="../index.html">Overview</a>
     <ul>
       <li><a href="index.html">Tutorial</a>
         <ul>
-          <li>Previous: <a href="templates.html" title="previous chapter">Templates</a>
-          <li>Next: <a href="blog.html" title="next chapter">Blog Blueprint</a></ul>
+          <li>Previous: <a href="database.html" title="previous chapter">Define and Access the Database</a>
+          <li>Next: <a href="templates.html" title="next chapter">Templates</a></ul>
       </li>
     </ul>
   </li>

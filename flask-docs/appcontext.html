@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The Application Context &#8212; Flask Documentation (3.2.x)</title>
+    <title>Changes &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
     <script src="_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,7 @@
     <link rel="icon" href="_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="The Request Context" href="reqcontext.html" />
-    <link rel="prev" title="Application Structure and Lifecycle" href="lifecycle.html" /> 
+    <link rel="prev" title="BSD-3-Clause License" href="license.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,146 +27,1588 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="reqcontext.html" title="The Request Context"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="lifecycle.html" title="Application Structure and Lifecycle"
+          <a href="license.html" title="BSD-3-Clause License"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Flask Documentation (3.2.x)</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">The Application Context</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Changes</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="the-application-context">
-<h1>The Application Context<a class="headerlink" href="#the-application-context" title="Link to this heading">¶</a></h1>
-<p>The application context keeps track of the application-level data during
-a request, CLI command, or other activity. Rather than passing the
-application around to each function, the <a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a> and
-<a class="reference internal" href="api.html#flask.g" title="flask.g"><code class="xref py py-data docutils literal notranslate"><span class="pre">g</span></code></a> proxies are accessed instead.</p>
-<p>This is similar to <a class="reference internal" href="reqcontext.html"><span class="doc">The Request Context</span></a>, which keeps track of
-request-level data during a request. A corresponding application context
-is pushed when a request context is pushed.</p>
-<section id="purpose-of-the-context">
-<h2>Purpose of the Context<a class="headerlink" href="#purpose-of-the-context" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference internal" href="api.html#flask.Flask" title="flask.Flask"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flask</span></code></a> application object has attributes, such as
-<a class="reference internal" href="api.html#flask.Flask.config" title="flask.Flask.config"><code class="xref py py-attr docutils literal notranslate"><span class="pre">config</span></code></a>, that are useful to access within views and
-<a class="reference internal" href="cli.html"><span class="doc">CLI commands</span></a>. However, importing the <code class="docutils literal notranslate"><span class="pre">app</span></code> instance
-within the modules in your project is prone to circular import issues.
-When using the <a class="reference internal" href="patterns/appfactories.html"><span class="doc">app factory pattern</span></a> or
-writing reusable <a class="reference internal" href="blueprints.html"><span class="doc">blueprints</span></a> or
-<a class="reference internal" href="extensions.html"><span class="doc">extensions</span></a> there won’t be an <code class="docutils literal notranslate"><span class="pre">app</span></code> instance to
-import at all.</p>
-<p>Flask solves this issue with the <em>application context</em>. Rather than
-referring to an <code class="docutils literal notranslate"><span class="pre">app</span></code> directly, you use the <a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a>
-proxy, which points to the application handling the current activity.</p>
-<p>Flask automatically <em>pushes</em> an application context when handling a
-request. View functions, error handlers, and other functions that run
-during a request will have access to <a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a>.</p>
-<p>Flask will also automatically push an app context when running CLI
-commands registered with <a class="reference internal" href="api.html#flask.Flask.cli" title="flask.Flask.cli"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Flask.cli</span></code></a> using <code class="docutils literal notranslate"><span class="pre">&#64;app.cli.command()</span></code>.</p>
+
+  <section id="changes">
+<h1>Changes<a class="headerlink" href="#changes" title="Link to this heading">¶</a></h1>
+<section id="version-3-2-0">
+<h2>Version 3.2.0<a class="headerlink" href="#version-3-2-0" title="Link to this heading">¶</a></h2>
+<p>Unreleased</p>
+<ul class="simple">
+<li><p>Remove previously deprecated code: <code class="docutils literal notranslate"><span class="pre">__version__</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/5648">#5648</a></p></li>
+</ul>
 </section>
-<section id="lifetime-of-the-context">
-<h2>Lifetime of the Context<a class="headerlink" href="#lifetime-of-the-context" title="Link to this heading">¶</a></h2>
-<p>The application context is created and destroyed as necessary. When a
-Flask application begins handling a request, it pushes an application
-context and a <a class="reference internal" href="reqcontext.html"><span class="doc">request context</span></a>. When the request
-ends it pops the request context then the application context.
-Typically, an application context will have the same lifetime as a
-request.</p>
-<p>See <a class="reference internal" href="reqcontext.html"><span class="doc">The Request Context</span></a> for more information about how the contexts work
-and the full life cycle of a request.</p>
+<section id="version-3-1-1">
+<h2>Version 3.1.1<a class="headerlink" href="#version-3-1-1" title="Link to this heading">¶</a></h2>
+<p>Unreleased</p>
+<ul class="simple">
+<li><p>Fix type hint for <code class="code docutils literal notranslate"><span class="pre">cli_runner.invoke</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5645">#5645</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">--help</span></code> loads the app and plugins first to make sure all commands
+are shown. :issue:5673`</p></li>
+<li><p>Mark sans-io base class as being able to handle views that return
+<code class="docutils literal notranslate"><span class="pre">AsyncIterable</span></code>. This is not accurate for Flask, but makes typing easier
+for Quart. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/5659">#5659</a></p></li>
+</ul>
 </section>
-<section id="manually-push-a-context">
-<h2>Manually Push a Context<a class="headerlink" href="#manually-push-a-context" title="Link to this heading">¶</a></h2>
-<p>If you try to access <a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a>, or anything that uses it,
-outside an application context, you’ll get this error message:</p>
-<div class="highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="x">RuntimeError: Working outside of application context.</span>
-
-<span class="x">This typically means that you attempted to use functionality that</span>
-<span class="x">needed to interface with the current application object in some way.</span>
-<span class="x">To solve this, set up an application context with app.app_context().</span>
-</pre></div>
-</div>
-<p>If you see that error while configuring your application, such as when
-initializing an extension, you can push a context manually since you
-have direct access to the <code class="docutils literal notranslate"><span class="pre">app</span></code>. Use <a class="reference internal" href="api.html#flask.Flask.app_context" title="flask.Flask.app_context"><code class="xref py py-meth docutils literal notranslate"><span class="pre">app_context()</span></code></a> in a
-<code class="docutils literal notranslate"><span class="pre">with</span></code> block, and everything that runs in the block will have access
-to <a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">():</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
-        <span class="n">init_db</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">app</span>
-</pre></div>
-</div>
-<p>If you see that error somewhere else in your code not related to
-configuring the application, it most likely indicates that you should
-move that code into a view function or CLI command.</p>
+<section id="version-3-1-0">
+<h2>Version 3.1.0<a class="headerlink" href="#version-3-1-0" title="Link to this heading">¶</a></h2>
+<p>Released 2024-11-13</p>
+<ul class="simple">
+<li><p>Drop support for Python 3.8. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/5623">#5623</a></p></li>
+<li><p>Update minimum dependency versions to latest feature releases.
+Werkzeug &gt;= 3.1, ItsDangerous &gt;= 2.2, Blinker &gt;= 1.9. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/5624,5633">#5624,5633</a></p></li>
+<li><p>Provide a configuration option to control automatic option
+responses. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/5496">#5496</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.open_resource</span></code>/<code class="docutils literal notranslate"><span class="pre">open_instance_resource</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Blueprint.open_resource</span></code> take an <code class="docutils literal notranslate"><span class="pre">encoding</span></code> parameter to use when
+opening in text mode. It defaults to <code class="docutils literal notranslate"><span class="pre">utf-8</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5504">#5504</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Request.max_content_length</span></code> can be customized per-request instead of only
+through the <code class="docutils literal notranslate"><span class="pre">MAX_CONTENT_LENGTH</span></code> config. Added
+<code class="docutils literal notranslate"><span class="pre">MAX_FORM_MEMORY_SIZE</span></code> and <code class="docutils literal notranslate"><span class="pre">MAX_FORM_PARTS</span></code> config. Added documentation
+about resource limits to the security page. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5625">#5625</a></p></li>
+<li><p>Add support for the <code class="docutils literal notranslate"><span class="pre">Partitioned</span></code> cookie attribute (CHIPS), with the
+<code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_PARTITIONED</span></code> config. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5472">#5472</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-e</span> <span class="pre">path</span></code> takes precedence over default <code class="docutils literal notranslate"><span class="pre">.env</span></code> and <code class="docutils literal notranslate"><span class="pre">.flaskenv</span></code> files.
+<code class="docutils literal notranslate"><span class="pre">load_dotenv</span></code> loads default files in addition to a path unless
+<code class="docutils literal notranslate"><span class="pre">load_defaults=False</span></code> is passed. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5628">#5628</a></p></li>
+<li><p>Support key rotation with the <code class="docutils literal notranslate"><span class="pre">SECRET_KEY_FALLBACKS</span></code> config, a list of old
+secret keys that can still be used for unsigning. Extensions will need to
+add support. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5621">#5621</a></p></li>
+<li><p>Fix how setting <code class="docutils literal notranslate"><span class="pre">host_matching=True</span></code> or <code class="docutils literal notranslate"><span class="pre">subdomain_matching=False</span></code>
+interacts with <code class="docutils literal notranslate"><span class="pre">SERVER_NAME</span></code>. Setting <code class="docutils literal notranslate"><span class="pre">SERVER_NAME</span></code> no longer restricts
+requests to only that domain. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5553">#5553</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Request.trusted_hosts</span></code> is checked during routing, and can be set through
+the <code class="docutils literal notranslate"><span class="pre">TRUSTED_HOSTS</span></code> config. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5636">#5636</a></p></li>
+</ul>
 </section>
-<section id="storing-data">
-<h2>Storing Data<a class="headerlink" href="#storing-data" title="Link to this heading">¶</a></h2>
-<p>The application context is a good place to store common data during a
-request or CLI command. Flask provides the <a class="reference internal" href="api.html#flask.g" title="flask.g"><code class="xref py py-data docutils literal notranslate"><span class="pre">g</span> <span class="pre">object</span></code></a> for this
-purpose. It is a simple namespace object that has the same lifetime as
-an application context.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">g</span></code> name stands for “global”, but that is referring to the
-data being global <em>within a context</em>. The data on <code class="docutils literal notranslate"><span class="pre">g</span></code> is lost
-after the context ends, and it is not an appropriate place to store
-data between requests. Use the <a class="reference internal" href="api.html#flask.session" title="flask.session"><code class="xref py py-data docutils literal notranslate"><span class="pre">session</span></code></a> or a database to
-store data across requests.</p>
-</div>
-<p>A common use for <a class="reference internal" href="api.html#flask.g" title="flask.g"><code class="xref py py-data docutils literal notranslate"><span class="pre">g</span></code></a> is to manage resources during a request.</p>
-<ol class="arabic simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">get_X()</span></code> creates resource <code class="docutils literal notranslate"><span class="pre">X</span></code> if it does not exist, caching it
-as <code class="docutils literal notranslate"><span class="pre">g.X</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">teardown_X()</span></code> closes or otherwise deallocates the resource if it
-exists. It is registered as a <a class="reference internal" href="api.html#flask.Flask.teardown_appcontext" title="flask.Flask.teardown_appcontext"><code class="xref py py-meth docutils literal notranslate"><span class="pre">teardown_appcontext()</span></code></a>
-handler.</p></li>
-</ol>
-<p>For example, you can manage a database connection using this pattern:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">g</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">get_db</span><span class="p">():</span>
-    <span class="k">if</span> <span class="s1">&#39;db&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
-        <span class="n">g</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">connect_to_database</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">db</span>
-
-<span class="nd">@app</span><span class="o">.</span><span class="n">teardown_appcontext</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">teardown_db</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
-    <span class="n">db</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;db&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>During a request, every call to <code class="docutils literal notranslate"><span class="pre">get_db()</span></code> will return the same
-connection, and it will be closed automatically at the end of the
-request.</p>
-<p>You can use <a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/local/#werkzeug.local.LocalProxy" title="(in Werkzeug v3.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalProxy</span></code></a> to make a new context
-local from <code class="docutils literal notranslate"><span class="pre">get_db()</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">werkzeug.local</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalProxy</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">LocalProxy</span><span class="p">(</span><span class="n">get_db</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Accessing <code class="docutils literal notranslate"><span class="pre">db</span></code> will call <code class="docutils literal notranslate"><span class="pre">get_db</span></code> internally, in the same way that
-<a class="reference internal" href="api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a> works.</p>
+<section id="version-3-0-3">
+<h2>Version 3.0.3<a class="headerlink" href="#version-3-0-3" title="Link to this heading">¶</a></h2>
+<p>Released 2024-04-07</p>
+<ul class="simple">
+<li><p>The default <code class="docutils literal notranslate"><span class="pre">hashlib.sha1</span></code> may not be available in FIPS builds. Don’t
+access it at import time so the developer has time to change the default.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5448">#5448</a></p></li>
+<li><p>Don’t initialize the <code class="docutils literal notranslate"><span class="pre">cli</span></code> attribute in the sansio scaffold, but rather in
+the <code class="docutils literal notranslate"><span class="pre">Flask</span></code> concrete class. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/5270">#5270</a></p></li>
+</ul>
 </section>
-<section id="events-and-signals">
-<h2>Events and Signals<a class="headerlink" href="#events-and-signals" title="Link to this heading">¶</a></h2>
-<p>The application will call functions registered with <a class="reference internal" href="api.html#flask.Flask.teardown_appcontext" title="flask.Flask.teardown_appcontext"><code class="xref py py-meth docutils literal notranslate"><span class="pre">teardown_appcontext()</span></code></a>
-when the application context is popped.</p>
-<p>The following signals are sent: <a class="reference internal" href="api.html#flask.appcontext_pushed" title="flask.appcontext_pushed"><code class="xref py py-data docutils literal notranslate"><span class="pre">appcontext_pushed</span></code></a>,
-<a class="reference internal" href="api.html#flask.appcontext_tearing_down" title="flask.appcontext_tearing_down"><code class="xref py py-data docutils literal notranslate"><span class="pre">appcontext_tearing_down</span></code></a>, and <a class="reference internal" href="api.html#flask.appcontext_popped" title="flask.appcontext_popped"><code class="xref py py-data docutils literal notranslate"><span class="pre">appcontext_popped</span></code></a>.</p>
+<section id="version-3-0-2">
+<h2>Version 3.0.2<a class="headerlink" href="#version-3-0-2" title="Link to this heading">¶</a></h2>
+<p>Released 2024-02-03</p>
+<ul class="simple">
+<li><p>Correct type for <code class="docutils literal notranslate"><span class="pre">jinja_loader</span></code> property. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5388">#5388</a></p></li>
+<li><p>Fix error with <code class="docutils literal notranslate"><span class="pre">--extra-files</span></code> and <code class="docutils literal notranslate"><span class="pre">--exclude-patterns</span></code> CLI options.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5391">#5391</a></p></li>
+</ul>
+</section>
+<section id="version-3-0-1">
+<h2>Version 3.0.1<a class="headerlink" href="#version-3-0-1" title="Link to this heading">¶</a></h2>
+<p>Released 2024-01-18</p>
+<ul class="simple">
+<li><p>Correct type for <code class="docutils literal notranslate"><span class="pre">path</span></code> argument to <code class="docutils literal notranslate"><span class="pre">send_file</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5336">#5336</a></p></li>
+<li><p>Fix a typo in an error message for the <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span> <span class="pre">--key</span></code> option. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/5344">#5344</a></p></li>
+<li><p>Session data is untagged without relying on the built-in <code class="docutils literal notranslate"><span class="pre">json.loads</span></code>
+<code class="docutils literal notranslate"><span class="pre">object_hook</span></code>. This allows other JSON providers that don’t implement that.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5381">#5381</a></p></li>
+<li><p>Address more type findings when using mypy strict mode. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/5383">#5383</a></p></li>
+</ul>
+</section>
+<section id="version-3-0-0">
+<h2>Version 3.0.0<a class="headerlink" href="#version-3-0-0" title="Link to this heading">¶</a></h2>
+<p>Released 2023-09-30</p>
+<ul class="simple">
+<li><p>Remove previously deprecated code. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/5223">#5223</a></p></li>
+<li><p>Deprecate the <code class="docutils literal notranslate"><span class="pre">__version__</span></code> attribute. Use feature detection, or
+<code class="docutils literal notranslate"><span class="pre">importlib.metadata.version(&quot;flask&quot;)</span></code>, instead. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5230">#5230</a></p></li>
+<li><p>Restructure the code such that the Flask (app) and Blueprint
+classes have Sans-IO bases. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/5127">#5127</a></p></li>
+<li><p>Allow self as an argument to url_for. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/5264">#5264</a></p></li>
+<li><p>Require Werkzeug &gt;= 3.0.0.</p></li>
+</ul>
+</section>
+<section id="version-2-3-3">
+<h2>Version 2.3.3<a class="headerlink" href="#version-2-3-3" title="Link to this heading">¶</a></h2>
+<p>Released 2023-08-21</p>
+<ul class="simple">
+<li><p>Python 3.12 compatibility.</p></li>
+<li><p>Require Werkzeug &gt;= 2.3.7.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">flit_core</span></code> instead of <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> as build backend.</p></li>
+<li><p>Refactor how an app’s root and instance paths are determined. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5160">#5160</a></p></li>
+</ul>
+</section>
+<section id="version-2-3-2">
+<h2>Version 2.3.2<a class="headerlink" href="#version-2-3-2" title="Link to this heading">¶</a></h2>
+<p>Released 2023-05-01</p>
+<ul class="simple">
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Vary:</span> <span class="pre">Cookie</span></code> header when the session is accessed, modified, or refreshed.</p></li>
+<li><p>Update Werkzeug requirement to &gt;=2.3.3 to apply recent bug fixes.
+<a class="extlink-ghsa reference external" href="https://github.com/pallets/flask/security/advisories/GHSA-m2qf-hxjv-5gpq">GHSA-m2qf-hxjv-5gpq</a></p></li>
+</ul>
+</section>
+<section id="version-2-3-1">
+<h2>Version 2.3.1<a class="headerlink" href="#version-2-3-1" title="Link to this heading">¶</a></h2>
+<p>Released 2023-04-25</p>
+<ul class="simple">
+<li><p>Restore deprecated <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">flask</span> <span class="pre">import</span> <span class="pre">Markup</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5084">#5084</a></p></li>
+</ul>
+</section>
+<section id="version-2-3-0">
+<h2>Version 2.3.0<a class="headerlink" href="#version-2-3-0" title="Link to this heading">¶</a></h2>
+<p>Released 2023-04-25</p>
+<ul class="simple">
+<li><p>Drop support for Python 3.7. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/5072">#5072</a></p></li>
+<li><p>Update minimum requirements to the latest versions: Werkzeug&gt;=2.3.0, Jinja2&gt;3.1.2,
+itsdangerous&gt;=2.1.2, click&gt;=8.1.3.</p></li>
+<li><p>Remove previously deprecated code. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4995">#4995</a></p>
+<ul>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">push</span></code> and <code class="docutils literal notranslate"><span class="pre">pop</span></code> methods of the deprecated <code class="docutils literal notranslate"><span class="pre">_app_ctx_stack</span></code> and
+<code class="docutils literal notranslate"><span class="pre">_request_ctx_stack</span></code> objects are removed. <code class="docutils literal notranslate"><span class="pre">top</span></code> still exists to give
+extensions more time to update, but it will be removed.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">FLASK_ENV</span></code> environment variable, <code class="docutils literal notranslate"><span class="pre">ENV</span></code> config key, and <code class="docutils literal notranslate"><span class="pre">app.env</span></code>
+property are removed.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">session_cookie_name</span></code>, <code class="docutils literal notranslate"><span class="pre">send_file_max_age_default</span></code>, <code class="docutils literal notranslate"><span class="pre">use_x_sendfile</span></code>,
+<code class="docutils literal notranslate"><span class="pre">propagate_exceptions</span></code>, and <code class="docutils literal notranslate"><span class="pre">templates_auto_reload</span></code> properties on <code class="docutils literal notranslate"><span class="pre">app</span></code>
+are removed.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">JSON_AS_ASCII</span></code>, <code class="docutils literal notranslate"><span class="pre">JSON_SORT_KEYS</span></code>, <code class="docutils literal notranslate"><span class="pre">JSONIFY_MIMETYPE</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">JSONIFY_PRETTYPRINT_REGULAR</span></code> config keys are removed.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">app.before_first_request</span></code> and <code class="docutils literal notranslate"><span class="pre">bp.before_app_first_request</span></code> decorators
+are removed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">json_encoder</span></code> and <code class="docutils literal notranslate"><span class="pre">json_decoder</span></code> attributes on app and blueprint, and the
+corresponding <code class="docutils literal notranslate"><span class="pre">json.JSONEncoder</span></code> and <code class="docutils literal notranslate"><span class="pre">JSONDecoder</span></code> classes, are removed.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">json.htmlsafe_dumps</span></code> and <code class="docutils literal notranslate"><span class="pre">htmlsafe_dump</span></code> functions are removed.</p></li>
+<li><p>Calling setup methods on blueprints after registration is an error instead of a
+warning. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4997">#4997</a></p></li>
+</ul>
+</li>
+<li><p>Importing <code class="docutils literal notranslate"><span class="pre">escape</span></code> and <code class="docutils literal notranslate"><span class="pre">Markup</span></code> from <code class="docutils literal notranslate"><span class="pre">flask</span></code> is deprecated. Import them
+directly from <code class="docutils literal notranslate"><span class="pre">markupsafe</span></code> instead. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4996">#4996</a></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">app.got_first_request</span></code> property is deprecated. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4997">#4997</a></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">locked_cached_property</span></code> decorator is deprecated. Use a lock inside the
+decorated function if locking is needed. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4993">#4993</a></p></li>
+<li><p>Signals are always available. <code class="docutils literal notranslate"><span class="pre">blinker&gt;=1.6.2</span></code> is a required dependency. The
+<code class="docutils literal notranslate"><span class="pre">signals_available</span></code> attribute is deprecated. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5056">#5056</a></p></li>
+<li><p>Signals support <code class="docutils literal notranslate"><span class="pre">async</span></code> subscriber functions. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/5049">#5049</a></p></li>
+<li><p>Remove uses of locks that could cause requests to block each other very briefly.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4993">#4993</a></p></li>
+<li><p>Use modern packaging metadata with <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> instead of <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code>.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4947">#4947</a></p></li>
+<li><p>Ensure subdomains are applied with nested blueprints. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4834">#4834</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config.from_file</span></code> can use <code class="docutils literal notranslate"><span class="pre">text=False</span></code> to indicate that the parser wants a
+binary file instead. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4989">#4989</a></p></li>
+<li><p>If a blueprint is created with an empty name it raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5010">#5010</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_DOMAIN</span></code> does not fall back to <code class="docutils literal notranslate"><span class="pre">SERVER_NAME</span></code>. The default is not
+to set the domain, which modern browsers interpret as an exact match rather than
+a subdomain match. Warnings about <code class="docutils literal notranslate"><span class="pre">localhost</span></code> and IP addresses are also removed.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5051">#5051</a></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">routes</span></code> command shows each rule’s <code class="docutils literal notranslate"><span class="pre">subdomain</span></code> or <code class="docutils literal notranslate"><span class="pre">host</span></code> when domain
+matching is in use. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/5004">#5004</a></p></li>
+<li><p>Use postponed evaluation of annotations. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/5071">#5071</a></p></li>
+</ul>
+</section>
+<section id="version-2-2-5">
+<h2>Version 2.2.5<a class="headerlink" href="#version-2-2-5" title="Link to this heading">¶</a></h2>
+<p>Released 2023-05-02</p>
+<ul class="simple">
+<li><p>Update for compatibility with Werkzeug 2.3.3.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Vary:</span> <span class="pre">Cookie</span></code> header when the session is accessed, modified, or refreshed.</p></li>
+</ul>
+</section>
+<section id="version-2-2-4">
+<h2>Version 2.2.4<a class="headerlink" href="#version-2-2-4" title="Link to this heading">¶</a></h2>
+<p>Released 2023-04-25</p>
+<ul class="simple">
+<li><p>Update for compatibility with Werkzeug 2.3.</p></li>
+</ul>
+</section>
+<section id="version-2-2-3">
+<h2>Version 2.2.3<a class="headerlink" href="#version-2-2-3" title="Link to this heading">¶</a></h2>
+<p>Released 2023-02-15</p>
+<ul class="simple">
+<li><p>Autoescape is enabled by default for <code class="docutils literal notranslate"><span class="pre">.svg</span></code> template files. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4831">#4831</a></p></li>
+<li><p>Fix the type of <code class="docutils literal notranslate"><span class="pre">template_folder</span></code> to accept <code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4892">#4892</a></p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">--debug</span></code> option to the <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> command. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4777">#4777</a></p></li>
+</ul>
+</section>
+<section id="version-2-2-2">
+<h2>Version 2.2.2<a class="headerlink" href="#version-2-2-2" title="Link to this heading">¶</a></h2>
+<p>Released 2022-08-08</p>
+<ul class="simple">
+<li><p>Update Werkzeug dependency to &gt;= 2.2.2. This includes fixes related
+to the new faster router, header parsing, and the development
+server. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4754">#4754</a></p></li>
+<li><p>Fix the default value for <code class="docutils literal notranslate"><span class="pre">app.env</span></code> to be <code class="docutils literal notranslate"><span class="pre">&quot;production&quot;</span></code>. This
+attribute remains deprecated. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4740">#4740</a></p></li>
+</ul>
+</section>
+<section id="version-2-2-1">
+<h2>Version 2.2.1<a class="headerlink" href="#version-2-2-1" title="Link to this heading">¶</a></h2>
+<p>Released 2022-08-03</p>
+<ul class="simple">
+<li><p>Setting or accessing <code class="docutils literal notranslate"><span class="pre">json_encoder</span></code> or <code class="docutils literal notranslate"><span class="pre">json_decoder</span></code> raises a
+deprecation warning. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4732">#4732</a></p></li>
+</ul>
+</section>
+<section id="version-2-2-0">
+<h2>Version 2.2.0<a class="headerlink" href="#version-2-2-0" title="Link to this heading">¶</a></h2>
+<p>Released 2022-08-01</p>
+<ul class="simple">
+<li><p>Remove previously deprecated code. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4667">#4667</a></p>
+<ul>
+<li><p>Old names for some <code class="docutils literal notranslate"><span class="pre">send_file</span></code> parameters have been removed.
+<code class="docutils literal notranslate"><span class="pre">download_name</span></code> replaces <code class="docutils literal notranslate"><span class="pre">attachment_filename</span></code>, <code class="docutils literal notranslate"><span class="pre">max_age</span></code>
+replaces <code class="docutils literal notranslate"><span class="pre">cache_timeout</span></code>, and <code class="docutils literal notranslate"><span class="pre">etag</span></code> replaces <code class="docutils literal notranslate"><span class="pre">add_etags</span></code>.
+Additionally, <code class="docutils literal notranslate"><span class="pre">path</span></code> replaces <code class="docutils literal notranslate"><span class="pre">filename</span></code> in
+<code class="docutils literal notranslate"><span class="pre">send_from_directory</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">RequestContext.g</span></code> property returning <code class="docutils literal notranslate"><span class="pre">AppContext.g</span></code> is
+removed.</p></li>
+</ul>
+</li>
+<li><p>Update Werkzeug dependency to &gt;= 2.2.</p></li>
+<li><p>The app and request contexts are managed using Python context vars
+directly rather than Werkzeug’s <code class="docutils literal notranslate"><span class="pre">LocalStack</span></code>. This should result
+in better performance and memory use. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4682">#4682</a></p>
+<ul>
+<li><p>Extension maintainers, be aware that <code class="docutils literal notranslate"><span class="pre">_app_ctx_stack.top</span></code>
+and <code class="docutils literal notranslate"><span class="pre">_request_ctx_stack.top</span></code> are deprecated. Store data on
+<code class="docutils literal notranslate"><span class="pre">g</span></code> instead using a unique prefix, like
+<code class="docutils literal notranslate"><span class="pre">g._extension_name_attr</span></code>.</p></li>
+</ul>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">FLASK_ENV</span></code> environment variable and <code class="docutils literal notranslate"><span class="pre">app.env</span></code> attribute are
+deprecated, removing the distinction between development and debug
+mode. Debug mode should be controlled directly using the <code class="docutils literal notranslate"><span class="pre">--debug</span></code>
+option or <code class="docutils literal notranslate"><span class="pre">app.run(debug=True)</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4714">#4714</a></p></li>
+<li><p>Some attributes that proxied config keys on <code class="docutils literal notranslate"><span class="pre">app</span></code> are deprecated:
+<code class="docutils literal notranslate"><span class="pre">session_cookie_name</span></code>, <code class="docutils literal notranslate"><span class="pre">send_file_max_age_default</span></code>,
+<code class="docutils literal notranslate"><span class="pre">use_x_sendfile</span></code>, <code class="docutils literal notranslate"><span class="pre">propagate_exceptions</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">templates_auto_reload</span></code>. Use the relevant config keys instead.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4716">#4716</a></p></li>
+<li><p>Add new customization points to the <code class="docutils literal notranslate"><span class="pre">Flask</span></code> app object for many
+previously global behaviors.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask.url_for</span></code> will call <code class="docutils literal notranslate"><span class="pre">app.url_for</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4568">#4568</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask.abort</span></code> will call <code class="docutils literal notranslate"><span class="pre">app.aborter</span></code>.
+<code class="docutils literal notranslate"><span class="pre">Flask.aborter_class</span></code> and <code class="docutils literal notranslate"><span class="pre">Flask.make_aborter</span></code> can be used
+to customize this aborter. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4567">#4567</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask.redirect</span></code> will call <code class="docutils literal notranslate"><span class="pre">app.redirect</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4569">#4569</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask.json</span></code> is an instance of <code class="docutils literal notranslate"><span class="pre">JSONProvider</span></code>. A different
+provider can be set to use a different JSON library.
+<code class="docutils literal notranslate"><span class="pre">flask.jsonify</span></code> will call <code class="docutils literal notranslate"><span class="pre">app.json.response</span></code>, other
+functions in <code class="docutils literal notranslate"><span class="pre">flask.json</span></code> will call corresponding functions in
+<code class="docutils literal notranslate"><span class="pre">app.json</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4692">#4692</a></p></li>
+</ul>
+</li>
+<li><p>JSON configuration is moved to attributes on the default
+<code class="docutils literal notranslate"><span class="pre">app.json</span></code> provider. <code class="docutils literal notranslate"><span class="pre">JSON_AS_ASCII</span></code>, <code class="docutils literal notranslate"><span class="pre">JSON_SORT_KEYS</span></code>,
+<code class="docutils literal notranslate"><span class="pre">JSONIFY_MIMETYPE</span></code>, and <code class="docutils literal notranslate"><span class="pre">JSONIFY_PRETTYPRINT_REGULAR</span></code> are
+deprecated. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4692">#4692</a></p></li>
+<li><p>Setting custom <code class="docutils literal notranslate"><span class="pre">json_encoder</span></code> and <code class="docutils literal notranslate"><span class="pre">json_decoder</span></code> classes on the
+app or a blueprint, and the corresponding <code class="docutils literal notranslate"><span class="pre">json.JSONEncoder</span></code> and
+<code class="docutils literal notranslate"><span class="pre">JSONDecoder</span></code> classes, are deprecated. JSON behavior can now be
+overridden using the <code class="docutils literal notranslate"><span class="pre">app.json</span></code> provider interface. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4692">#4692</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">json.htmlsafe_dumps</span></code> and <code class="docutils literal notranslate"><span class="pre">json.htmlsafe_dump</span></code> are deprecated,
+the function is built-in to Jinja now. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4692">#4692</a></p></li>
+<li><p>Refactor <code class="docutils literal notranslate"><span class="pre">register_error_handler</span></code> to consolidate error checking.
+Rewrite some error messages to be more consistent. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4559">#4559</a></p></li>
+<li><p>Use Blueprint decorators and functions intended for setup after
+registering the blueprint will show a warning. In the next version,
+this will become an error just like the application setup methods.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4571">#4571</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">before_first_request</span></code> is deprecated. Run setup code when creating
+the application instead. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4605">#4605</a></p></li>
+<li><p>Added the <code class="docutils literal notranslate"><span class="pre">View.init_every_request</span></code> class attribute. If a view
+subclass sets this to <code class="docutils literal notranslate"><span class="pre">False</span></code>, the view will not create a new
+instance on every request. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2520">#2520</a>.</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">flask.cli.FlaskGroup</span></code> Click group can be nested as a
+sub-command in a custom CLI. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3263">#3263</a></p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">--app</span></code> and <code class="docutils literal notranslate"><span class="pre">--debug</span></code> options to the <code class="docutils literal notranslate"><span class="pre">flask</span></code> CLI, instead
+of requiring that they are set through environment variables.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2836">#2836</a></p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">--env-file</span></code> option to the <code class="docutils literal notranslate"><span class="pre">flask</span></code> CLI. This allows
+specifying a dotenv file to load in addition to <code class="docutils literal notranslate"><span class="pre">.env</span></code> and
+<code class="docutils literal notranslate"><span class="pre">.flaskenv</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3108">#3108</a></p></li>
+<li><p>It is no longer required to decorate custom CLI commands on
+<code class="docutils literal notranslate"><span class="pre">app.cli</span></code> or <code class="docutils literal notranslate"><span class="pre">blueprint.cli</span></code> with <code class="docutils literal notranslate"><span class="pre">&#64;with_appcontext</span></code>, an app
+context will already be active at that point. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2410">#2410</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SessionInterface.get_expiration_time</span></code> uses a timezone-aware
+value. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4645">#4645</a></p></li>
+<li><p>View functions can return generators directly instead of wrapping
+them in a <code class="docutils literal notranslate"><span class="pre">Response</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4629">#4629</a></p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">stream_template</span></code> and <code class="docutils literal notranslate"><span class="pre">stream_template_string</span></code> functions to
+render a template as a stream of pieces. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4629">#4629</a></p></li>
+<li><p>A new implementation of context preservation during debugging and
+testing. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4666">#4666</a></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">request</span></code>, <code class="docutils literal notranslate"><span class="pre">g</span></code>, and other context-locals point to the
+correct data when running code in the interactive debugger
+console. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2836">#2836</a></p></li>
+<li><p>Teardown functions are always run at the end of the request,
+even if the context is preserved. They are also run after the
+preserved context is popped.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stream_with_context</span></code> preserves context separately from a
+<code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">client</span></code> block. It will be cleaned up when
+<code class="docutils literal notranslate"><span class="pre">response.get_data()</span></code> or <code class="docutils literal notranslate"><span class="pre">response.close()</span></code> is called.</p></li>
+</ul>
+</li>
+<li><p>Allow returning a list from a view function, to convert it to a
+JSON response like a dict is. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4672">#4672</a></p></li>
+<li><p>When type checking, allow <code class="docutils literal notranslate"><span class="pre">TypedDict</span></code> to be returned from view
+functions. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4695">#4695</a></p></li>
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">--eager-loading/--lazy-loading</span></code> options from the
+<code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> command. The app is always eager loaded the first
+time, then lazily loaded in the reloader. The reloader always prints
+errors immediately but continues serving. Remove the internal
+<code class="docutils literal notranslate"><span class="pre">DispatchingApp</span></code> middleware used by the previous implementation.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4715">#4715</a></p></li>
+</ul>
+</section>
+<section id="version-2-1-3">
+<h2>Version 2.1.3<a class="headerlink" href="#version-2-1-3" title="Link to this heading">¶</a></h2>
+<p>Released 2022-07-13</p>
+<ul class="simple">
+<li><p>Inline some optional imports that are only used for certain CLI
+commands. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4606">#4606</a></p></li>
+<li><p>Relax type annotation for <code class="docutils literal notranslate"><span class="pre">after_request</span></code> functions. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4600">#4600</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">instance_path</span></code> for namespace packages uses the path closest to
+the imported submodule. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4610">#4610</a></p></li>
+<li><p>Clearer error message when <code class="docutils literal notranslate"><span class="pre">render_template</span></code> and
+<code class="docutils literal notranslate"><span class="pre">render_template_string</span></code> are used outside an application context.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4693">#4693</a></p></li>
+</ul>
+</section>
+<section id="version-2-1-2">
+<h2>Version 2.1.2<a class="headerlink" href="#version-2-1-2" title="Link to this heading">¶</a></h2>
+<p>Released 2022-04-28</p>
+<ul class="simple">
+<li><p>Fix type annotation for <code class="docutils literal notranslate"><span class="pre">json.loads</span></code>, it accepts str or bytes.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4519">#4519</a></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">--cert</span></code> and <code class="docutils literal notranslate"><span class="pre">--key</span></code> options on <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> can be given
+in either order. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4459">#4459</a></p></li>
+</ul>
+</section>
+<section id="version-2-1-1">
+<h2>Version 2.1.1<a class="headerlink" href="#version-2-1-1" title="Link to this heading">¶</a></h2>
+<p>Released on 2022-03-30</p>
+<ul class="simple">
+<li><p>Set the minimum required version of importlib_metadata to 3.6.0,
+which is required on Python &lt; 3.10. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4502">#4502</a></p></li>
+</ul>
+</section>
+<section id="version-2-1-0">
+<h2>Version 2.1.0<a class="headerlink" href="#version-2-1-0" title="Link to this heading">¶</a></h2>
+<p>Released 2022-03-28</p>
+<ul class="simple">
+<li><p>Drop support for Python 3.6. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4335">#4335</a></p></li>
+<li><p>Update Click dependency to &gt;= 8.0. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4008">#4008</a></p></li>
+<li><p>Remove previously deprecated code. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4337">#4337</a></p>
+<ul>
+<li><p>The CLI does not pass <code class="docutils literal notranslate"><span class="pre">script_info</span></code> to app factory functions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config.from_json</span></code> is replaced by
+<code class="docutils literal notranslate"><span class="pre">config.from_file(name,</span> <span class="pre">load=json.load)</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">json</span></code> functions no longer take an <code class="docutils literal notranslate"><span class="pre">encoding</span></code> parameter.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">safe_join</span></code> is removed, use <code class="docutils literal notranslate"><span class="pre">werkzeug.utils.safe_join</span></code>
+instead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">total_seconds</span></code> is removed, use <code class="docutils literal notranslate"><span class="pre">timedelta.total_seconds</span></code>
+instead.</p></li>
+<li><p>The same blueprint cannot be registered with the same name. Use
+<code class="docutils literal notranslate"><span class="pre">name=</span></code> when registering to specify a unique name.</p></li>
+<li><p>The test client’s <code class="docutils literal notranslate"><span class="pre">as_tuple</span></code> parameter is removed. Use
+<code class="docutils literal notranslate"><span class="pre">response.request.environ</span></code> instead. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4417">#4417</a></p></li>
+</ul>
+</li>
+<li><p>Some parameters in <code class="docutils literal notranslate"><span class="pre">send_file</span></code> and <code class="docutils literal notranslate"><span class="pre">send_from_directory</span></code> were
+renamed in 2.0. The deprecation period for the old names is extended
+to 2.2. Be sure to test with deprecation warnings visible.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">attachment_filename</span></code> is renamed to <code class="docutils literal notranslate"><span class="pre">download_name</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cache_timeout</span></code> is renamed to <code class="docutils literal notranslate"><span class="pre">max_age</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_etags</span></code> is renamed to <code class="docutils literal notranslate"><span class="pre">etag</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filename</span></code> is renamed to <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p></li>
+</ul>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">RequestContext.g</span></code> property is deprecated. Use <code class="docutils literal notranslate"><span class="pre">g</span></code> directly
+or <code class="docutils literal notranslate"><span class="pre">AppContext.g</span></code> instead. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3898">#3898</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">copy_current_request_context</span></code> can decorate async functions.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4303">#4303</a></p></li>
+<li><p>The CLI uses <code class="docutils literal notranslate"><span class="pre">importlib.metadata</span></code> instead of <code class="docutils literal notranslate"><span class="pre">pkg_resources</span></code> to
+load command entry points. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4419">#4419</a></p></li>
+<li><p>Overriding <code class="docutils literal notranslate"><span class="pre">FlaskClient.open</span></code> will not cause an error on redirect.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3396">#3396</a></p></li>
+<li><p>Add an <code class="docutils literal notranslate"><span class="pre">--exclude-patterns</span></code> option to the <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> CLI
+command to specify patterns that will be ignored by the reloader.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4188">#4188</a></p></li>
+<li><p>When using lazy loading (the default with the debugger), the Click
+context from the <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> command remains available in the
+loader thread. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4460">#4460</a></p></li>
+<li><p>Deleting the session cookie uses the <code class="docutils literal notranslate"><span class="pre">httponly</span></code> flag.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4485">#4485</a></p></li>
+<li><p>Relax typing for <code class="docutils literal notranslate"><span class="pre">errorhandler</span></code> to allow the user to use more
+precise types and decorate the same function multiple times.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4095, 4295, 4297">#4095, 4295, 4297</a></p></li>
+<li><p>Fix typing for <code class="docutils literal notranslate"><span class="pre">__exit__</span></code> methods for better compatibility with
+<code class="docutils literal notranslate"><span class="pre">ExitStack</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4474">#4474</a></p></li>
+<li><p>From Werkzeug, for redirect responses the <code class="docutils literal notranslate"><span class="pre">Location</span></code> header URL
+will remain relative, and exclude the scheme and domain, by default.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4496">#4496</a></p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">Config.from_prefixed_env()</span></code> to load config values from
+environment variables that start with <code class="docutils literal notranslate"><span class="pre">FLASK_</span></code> or another prefix.
+This parses values as JSON by default, and allows setting keys in
+nested dicts. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4479">#4479</a></p></li>
+</ul>
+</section>
+<section id="version-2-0-3">
+<h2>Version 2.0.3<a class="headerlink" href="#version-2-0-3" title="Link to this heading">¶</a></h2>
+<p>Released 2022-02-14</p>
+<ul class="simple">
+<li><p>The test client’s <code class="docutils literal notranslate"><span class="pre">as_tuple</span></code> parameter is deprecated and will be
+removed in Werkzeug 2.1. It is now also deprecated in Flask, to be
+removed in Flask 2.1, while remaining compatible with both in
+2.0.x. Use <code class="docutils literal notranslate"><span class="pre">response.request.environ</span></code> instead. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4341">#4341</a></p></li>
+<li><p>Fix type annotation for <code class="docutils literal notranslate"><span class="pre">errorhandler</span></code> decorator. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4295">#4295</a></p></li>
+<li><p>Revert a change to the CLI that caused it to hide <code class="docutils literal notranslate"><span class="pre">ImportError</span></code>
+tracebacks when importing the application. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4307">#4307</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">app.json_encoder</span></code> and <code class="docutils literal notranslate"><span class="pre">json_decoder</span></code> are only passed to
+<code class="docutils literal notranslate"><span class="pre">dumps</span></code> and <code class="docutils literal notranslate"><span class="pre">loads</span></code> if they have custom behavior. This improves
+performance, mainly on PyPy. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4349">#4349</a></p></li>
+<li><p>Clearer error message when <code class="docutils literal notranslate"><span class="pre">after_this_request</span></code> is used outside a
+request context. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4333">#4333</a></p></li>
+</ul>
+</section>
+<section id="version-2-0-2">
+<h2>Version 2.0.2<a class="headerlink" href="#version-2-0-2" title="Link to this heading">¶</a></h2>
+<p>Released 2021-10-04</p>
+<ul class="simple">
+<li><p>Fix type annotation for <code class="docutils literal notranslate"><span class="pre">teardown_*</span></code> methods. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4093">#4093</a></p></li>
+<li><p>Fix type annotation for <code class="docutils literal notranslate"><span class="pre">before_request</span></code> and <code class="docutils literal notranslate"><span class="pre">before_app_request</span></code>
+decorators. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4104">#4104</a></p></li>
+<li><p>Fixed the issue where typing requires template global
+decorators to accept functions with no arguments. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4098">#4098</a></p></li>
+<li><p>Support View and MethodView instances with async handlers. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4112">#4112</a></p></li>
+<li><p>Enhance typing of <code class="docutils literal notranslate"><span class="pre">app.errorhandler</span></code> decorator. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4095">#4095</a></p></li>
+<li><p>Fix registering a blueprint twice with differing names. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4124">#4124</a></p></li>
+<li><p>Fix the type of <code class="docutils literal notranslate"><span class="pre">static_folder</span></code> to accept <code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code>.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4150">#4150</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jsonify</span></code> handles <code class="docutils literal notranslate"><span class="pre">decimal.Decimal</span></code> by encoding to <code class="docutils literal notranslate"><span class="pre">str</span></code>.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4157">#4157</a></p></li>
+<li><p>Correctly handle raising deferred errors in CLI lazy loading.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4096">#4096</a></p></li>
+<li><p>The CLI loader handles <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in a <code class="docutils literal notranslate"><span class="pre">create_app</span></code> function.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4170">#4170</a></p></li>
+<li><p>Fix the order of <code class="docutils literal notranslate"><span class="pre">before_request</span></code> and other callbacks that trigger
+before the view returns. They are called from the app down to the
+closest nested blueprint. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4229">#4229</a></p></li>
+</ul>
+</section>
+<section id="version-2-0-1">
+<h2>Version 2.0.1<a class="headerlink" href="#version-2-0-1" title="Link to this heading">¶</a></h2>
+<p>Released 2021-05-21</p>
+<ul class="simple">
+<li><p>Re-add the <code class="docutils literal notranslate"><span class="pre">filename</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">send_from_directory</span></code>. The
+<code class="docutils literal notranslate"><span class="pre">filename</span></code> parameter has been renamed to <code class="docutils literal notranslate"><span class="pre">path</span></code>, the old name
+is deprecated. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4019">#4019</a></p></li>
+<li><p>Mark top-level names as exported so type checking understands
+imports in user projects. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4024">#4024</a></p></li>
+<li><p>Fix type annotation for <code class="docutils literal notranslate"><span class="pre">g</span></code> and inform mypy that it is a namespace
+object that has arbitrary attributes. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4020">#4020</a></p></li>
+<li><p>Fix some types that weren’t available in Python 3.6.0. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4040">#4040</a></p></li>
+<li><p>Improve typing for <code class="docutils literal notranslate"><span class="pre">send_file</span></code>, <code class="docutils literal notranslate"><span class="pre">send_from_directory</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">get_send_file_max_age</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4044">#4044</a>, <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/4026">#4026</a></p></li>
+<li><p>Show an error when a blueprint name contains a dot. The <code class="docutils literal notranslate"><span class="pre">.</span></code> has
+special meaning, it is used to separate (nested) blueprint names and
+the endpoint name. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4041">#4041</a></p></li>
+<li><p>Combine URL prefixes when nesting blueprints that were created with
+a <code class="docutils literal notranslate"><span class="pre">url_prefix</span></code> value. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4037">#4037</a></p></li>
+<li><p>Revert a change to the order that URL matching was done. The
+URL is again matched after the session is loaded, so the session is
+available in custom URL converters. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4053">#4053</a></p></li>
+<li><p>Re-add deprecated <code class="docutils literal notranslate"><span class="pre">Config.from_json</span></code>, which was accidentally
+removed early. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4078">#4078</a></p></li>
+<li><p>Improve typing for some functions using <code class="docutils literal notranslate"><span class="pre">Callable</span></code> in their type
+signatures, focusing on decorator factories. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4060">#4060</a></p></li>
+<li><p>Nested blueprints are registered with their dotted name. This allows
+different blueprints with the same name to be nested at different
+locations. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4069">#4069</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">register_blueprint</span></code> takes a <code class="docutils literal notranslate"><span class="pre">name</span></code> option to change the
+(pre-dotted) name the blueprint is registered with. This allows the
+same blueprint to be registered multiple times with unique names for
+<code class="docutils literal notranslate"><span class="pre">url_for</span></code>. Registering the same blueprint with the same name
+multiple times is deprecated. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/1091">#1091</a></p></li>
+<li><p>Improve typing for <code class="docutils literal notranslate"><span class="pre">stream_with_context</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4052">#4052</a></p></li>
+</ul>
+</section>
+<section id="version-2-0-0">
+<h2>Version 2.0.0<a class="headerlink" href="#version-2-0-0" title="Link to this heading">¶</a></h2>
+<p>Released 2021-05-11</p>
+<ul class="simple">
+<li><p>Drop support for Python 2 and 3.5.</p></li>
+<li><p>Bump minimum versions of other Pallets projects: Werkzeug &gt;= 2,
+Jinja2 &gt;= 3, MarkupSafe &gt;= 2, ItsDangerous &gt;= 2, Click &gt;= 8. Be sure
+to check the change logs for each project. For better compatibility
+with other applications (e.g. Celery) that still require Click 7,
+there is no hard dependency on Click 8 yet, but using Click 7 will
+trigger a DeprecationWarning and Flask 2.1 will depend on Click 8.</p></li>
+<li><p>JSON support no longer uses simplejson. To use another JSON module,
+override <code class="docutils literal notranslate"><span class="pre">app.json_encoder</span></code> and <code class="docutils literal notranslate"><span class="pre">json_decoder</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3555">#3555</a></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">encoding</span></code> option to JSON functions is deprecated. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3562">#3562</a></p></li>
+<li><p>Passing <code class="docutils literal notranslate"><span class="pre">script_info</span></code> to app factory functions is deprecated. This
+was not portable outside the <code class="docutils literal notranslate"><span class="pre">flask</span></code> command. Use
+<code class="docutils literal notranslate"><span class="pre">click.get_current_context().obj</span></code> if it’s needed. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3552">#3552</a></p></li>
+<li><p>The CLI shows better error messages when the app failed to load
+when looking up commands. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2741">#2741</a></p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">SessionInterface.get_cookie_name</span></code> to allow setting the
+session cookie name dynamically. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3369">#3369</a></p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">Config.from_file</span></code> to load config using arbitrary file
+loaders, such as <code class="docutils literal notranslate"><span class="pre">toml.load</span></code> or <code class="docutils literal notranslate"><span class="pre">json.load</span></code>.
+<code class="docutils literal notranslate"><span class="pre">Config.from_json</span></code> is deprecated in favor of this. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3398">#3398</a></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> command will only defer errors on reload. Errors
+present during the initial call will cause the server to exit with
+the traceback immediately. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3431">#3431</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send_file</span></code> raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> when passed an <code class="docutils literal notranslate"><span class="pre">io</span></code> object
+in text mode. Previously, it would respond with 200 OK and an empty
+file. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3358">#3358</a></p></li>
+<li><p>When using ad-hoc certificates, check for the cryptography library
+instead of PyOpenSSL. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3492">#3492</a></p></li>
+<li><p>When specifying a factory function with <code class="docutils literal notranslate"><span class="pre">FLASK_APP</span></code>, keyword
+argument can be passed. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3553">#3553</a></p></li>
+<li><p>When loading a <code class="docutils literal notranslate"><span class="pre">.env</span></code> or <code class="docutils literal notranslate"><span class="pre">.flaskenv</span></code> file, the current working
+directory is no longer changed to the location of the file.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3560">#3560</a></p></li>
+<li><p>When returning a <code class="docutils literal notranslate"><span class="pre">(response,</span> <span class="pre">headers)</span></code> tuple from a view, the
+headers replace rather than extend existing headers on the response.
+For example, this allows setting the <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> for
+<code class="docutils literal notranslate"><span class="pre">jsonify()</span></code>. Use <code class="docutils literal notranslate"><span class="pre">response.headers.extend()</span></code> if extending is
+desired. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3628">#3628</a></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Scaffold</span></code> class provides a common API for the <code class="docutils literal notranslate"><span class="pre">Flask</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Blueprint</span></code> classes. <code class="docutils literal notranslate"><span class="pre">Blueprint</span></code> information is stored in
+attributes just like <code class="docutils literal notranslate"><span class="pre">Flask</span></code>, rather than opaque lambda functions.
+This is intended to improve consistency and maintainability.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3215">#3215</a></p></li>
+<li><p>Include <code class="docutils literal notranslate"><span class="pre">samesite</span></code> and <code class="docutils literal notranslate"><span class="pre">secure</span></code> options when removing the
+session cookie. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3726">#3726</a></p></li>
+<li><p>Support passing a <code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code> to <code class="docutils literal notranslate"><span class="pre">static_folder</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3579">#3579</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send_file</span></code> and <code class="docutils literal notranslate"><span class="pre">send_from_directory</span></code> are wrappers around the
+implementations in <code class="docutils literal notranslate"><span class="pre">werkzeug.utils</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3828">#3828</a></p></li>
+<li><p>Some <code class="docutils literal notranslate"><span class="pre">send_file</span></code> parameters have been renamed, the old names are
+deprecated. <code class="docutils literal notranslate"><span class="pre">attachment_filename</span></code> is renamed to <code class="docutils literal notranslate"><span class="pre">download_name</span></code>.
+<code class="docutils literal notranslate"><span class="pre">cache_timeout</span></code> is renamed to <code class="docutils literal notranslate"><span class="pre">max_age</span></code>. <code class="docutils literal notranslate"><span class="pre">add_etags</span></code> is
+renamed to <code class="docutils literal notranslate"><span class="pre">etag</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3828, 3883">#3828, 3883</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send_file</span></code> passes <code class="docutils literal notranslate"><span class="pre">download_name</span></code> even if
+<code class="docutils literal notranslate"><span class="pre">as_attachment=False</span></code> by using <code class="docutils literal notranslate"><span class="pre">Content-Disposition:</span> <span class="pre">inline</span></code>.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3828">#3828</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send_file</span></code> sets <code class="docutils literal notranslate"><span class="pre">conditional=True</span></code> and <code class="docutils literal notranslate"><span class="pre">max_age=None</span></code> by
+default. <code class="docutils literal notranslate"><span class="pre">Cache-Control</span></code> is set to <code class="docutils literal notranslate"><span class="pre">no-cache</span></code> if <code class="docutils literal notranslate"><span class="pre">max_age</span></code> is
+not set, otherwise <code class="docutils literal notranslate"><span class="pre">public</span></code>. This tells browsers to validate
+conditional requests instead of using a timed cache. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3828">#3828</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">helpers.safe_join</span></code> is deprecated. Use
+<code class="docutils literal notranslate"><span class="pre">werkzeug.utils.safe_join</span></code> instead. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3828">#3828</a></p></li>
+<li><p>The request context does route matching before opening the session.
+This could allow a session interface to change behavior based on
+<code class="docutils literal notranslate"><span class="pre">request.endpoint</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3776">#3776</a></p></li>
+<li><p>Use Jinja’s implementation of the <code class="docutils literal notranslate"><span class="pre">|tojson</span></code> filter. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3881">#3881</a></p></li>
+<li><p>Add route decorators for common HTTP methods. For example,
+<code class="docutils literal notranslate"><span class="pre">&#64;app.post(&quot;/login&quot;)</span></code> is a shortcut for
+<code class="docutils literal notranslate"><span class="pre">&#64;app.route(&quot;/login&quot;,</span> <span class="pre">methods=[&quot;POST&quot;])</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3907">#3907</a></p></li>
+<li><p>Support async views, error handlers, before and after request, and
+teardown functions. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3412">#3412</a></p></li>
+<li><p>Support nesting blueprints. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/593, 1548">#593, 1548</a>, <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3923">#3923</a></p></li>
+<li><p>Set the default encoding to “UTF-8” when loading <code class="docutils literal notranslate"><span class="pre">.env</span></code> and
+<code class="docutils literal notranslate"><span class="pre">.flaskenv</span></code> files to allow to use non-ASCII characters. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3931">#3931</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">shell</span></code> sets up tab and history completion like the default
+<code class="docutils literal notranslate"><span class="pre">python</span></code> shell if <code class="docutils literal notranslate"><span class="pre">readline</span></code> is installed. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3941">#3941</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">helpers.total_seconds()</span></code> is deprecated. Use
+<code class="docutils literal notranslate"><span class="pre">timedelta.total_seconds()</span></code> instead. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3962">#3962</a></p></li>
+<li><p>Add type hinting. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3973">#3973</a>.</p></li>
+</ul>
+</section>
+<section id="version-1-1-4">
+<h2>Version 1.1.4<a class="headerlink" href="#version-1-1-4" title="Link to this heading">¶</a></h2>
+<p>Released 2021-05-13</p>
+<ul class="simple">
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">static_folder</span></code> to use <code class="docutils literal notranslate"><span class="pre">_compat.fspath</span></code> instead of
+<code class="docutils literal notranslate"><span class="pre">os.fspath</span></code> to continue supporting Python &lt; 3.6 <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4050">#4050</a></p></li>
+</ul>
+</section>
+<section id="version-1-1-3">
+<h2>Version 1.1.3<a class="headerlink" href="#version-1-1-3" title="Link to this heading">¶</a></h2>
+<p>Released 2021-05-13</p>
+<ul class="simple">
+<li><p>Set maximum versions of Werkzeug, Jinja, Click, and ItsDangerous.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/4043">#4043</a></p></li>
+<li><p>Re-add support for passing a <code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code> for <code class="docutils literal notranslate"><span class="pre">static_folder</span></code>.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3579">#3579</a></p></li>
+</ul>
+</section>
+<section id="version-1-1-2">
+<h2>Version 1.1.2<a class="headerlink" href="#version-1-1-2" title="Link to this heading">¶</a></h2>
+<p>Released 2020-04-03</p>
+<ul class="simple">
+<li><p>Work around an issue when running the <code class="docutils literal notranslate"><span class="pre">flask</span></code> command with an
+external debugger on Windows. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3297">#3297</a></p></li>
+<li><p>The static route will not catch all URLs if the <code class="docutils literal notranslate"><span class="pre">Flask</span></code>
+<code class="docutils literal notranslate"><span class="pre">static_folder</span></code> argument ends with a slash. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3452">#3452</a></p></li>
+</ul>
+</section>
+<section id="version-1-1-1">
+<h2>Version 1.1.1<a class="headerlink" href="#version-1-1-1" title="Link to this heading">¶</a></h2>
+<p>Released 2019-07-08</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">flask.json_available</span></code> flag was added back for compatibility
+with some extensions. It will raise a deprecation warning when used,
+and will be removed in version 2.0.0. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3288">#3288</a></p></li>
+</ul>
+</section>
+<section id="version-1-1-0">
+<h2>Version 1.1.0<a class="headerlink" href="#version-1-1-0" title="Link to this heading">¶</a></h2>
+<p>Released 2019-07-04</p>
+<ul class="simple">
+<li><p>Bump minimum Werkzeug version to &gt;= 0.15.</p></li>
+<li><p>Drop support for Python 3.4.</p></li>
+<li><p>Error handlers for <code class="docutils literal notranslate"><span class="pre">InternalServerError</span></code> or <code class="docutils literal notranslate"><span class="pre">500</span></code> will always be
+passed an instance of <code class="docutils literal notranslate"><span class="pre">InternalServerError</span></code>. If they are invoked
+due to an unhandled exception, that original exception is now
+available as <code class="docutils literal notranslate"><span class="pre">e.original_exception</span></code> rather than being passed
+directly to the handler. The same is true if the handler is for the
+base <code class="docutils literal notranslate"><span class="pre">HTTPException</span></code>. This makes error handler behavior more
+consistent. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3266">#3266</a></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.finalize_request</span></code> is called for all unhandled
+exceptions even if there is no <code class="docutils literal notranslate"><span class="pre">500</span></code> error handler.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.logger</span></code> takes the same name as <code class="docutils literal notranslate"><span class="pre">Flask.name</span></code> (the value
+passed as <code class="docutils literal notranslate"><span class="pre">Flask(import_name)</span></code>. This reverts 1.0’s behavior of
+always logging to <code class="docutils literal notranslate"><span class="pre">&quot;flask.app&quot;</span></code>, in order to support multiple apps
+in the same process. A warning will be shown if old configuration is
+detected that needs to be moved. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2866">#2866</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RequestContext.copy</span></code> includes the current session object in the
+request context copy. This prevents <code class="docutils literal notranslate"><span class="pre">session</span></code> pointing to an
+out-of-date object. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2935">#2935</a></p></li>
+<li><p>Using built-in RequestContext, unprintable Unicode characters in
+Host header will result in a HTTP 400 response and not HTTP 500 as
+previously. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2994">#2994</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send_file</span></code> supports <code class="docutils literal notranslate"><span class="pre">PathLike</span></code> objects as described in
+<span class="target" id="index-0"></span><a class="pep reference external" href="https://peps.python.org/pep-0519/"><strong>PEP 519</strong></a>, to support <code class="docutils literal notranslate"><span class="pre">pathlib</span></code> in Python 3. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3059">#3059</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send_file</span></code> supports <code class="docutils literal notranslate"><span class="pre">BytesIO</span></code> partial content.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2957">#2957</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">open_resource</span></code> accepts the “rt” file mode. This still does the
+same thing as “r”. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3163">#3163</a></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">MethodView.methods</span></code> attribute set in a base class is used by
+subclasses. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3138">#3138</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.jinja_options</span></code> is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> instead of an
+<code class="docutils literal notranslate"><span class="pre">ImmutableDict</span></code> to allow easier configuration. Changes must still
+be made before creating the environment. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3190">#3190</a></p></li>
+<li><p>Flask’s <code class="docutils literal notranslate"><span class="pre">JSONMixin</span></code> for the request and response wrappers was
+moved into Werkzeug. Use Werkzeug’s version with Flask-specific
+support. This bumps the Werkzeug dependency to &gt;= 0.15.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3125">#3125</a></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">flask</span></code> command entry point is simplified to take advantage
+of Werkzeug 0.15’s better reloader support. This bumps the Werkzeug
+dependency to &gt;= 0.15. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3022">#3022</a></p></li>
+<li><p>Support <code class="docutils literal notranslate"><span class="pre">static_url_path</span></code> that ends with a forward slash.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3134">#3134</a></p></li>
+<li><p>Support empty <code class="docutils literal notranslate"><span class="pre">static_folder</span></code> without requiring setting an empty
+<code class="docutils literal notranslate"><span class="pre">static_url_path</span></code> as well. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3124">#3124</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jsonify</span></code> supports <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> objects. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3195">#3195</a></p></li>
+<li><p>Allow customizing the <code class="docutils literal notranslate"><span class="pre">Flask.url_map_class</span></code> used for routing.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3069">#3069</a></p></li>
+<li><p>The development server port can be set to 0, which tells the OS to
+pick an available port. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2926">#2926</a></p></li>
+<li><p>The return value from <code class="docutils literal notranslate"><span class="pre">cli.load_dotenv</span></code> is more consistent with
+the documentation. It will return <code class="docutils literal notranslate"><span class="pre">False</span></code> if python-dotenv is not
+installed, or if the given path isn’t a file. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2937">#2937</a></p></li>
+<li><p>Signaling support has a stub for the <code class="docutils literal notranslate"><span class="pre">connect_via</span></code> method when
+the Blinker library is not installed. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3208">#3208</a></p></li>
+<li><p>Add an <code class="docutils literal notranslate"><span class="pre">--extra-files</span></code> option to the <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> CLI command to
+specify extra files that will trigger the reloader on change.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2897">#2897</a></p></li>
+<li><p>Allow returning a dictionary from a view function. Similar to how
+returning a string will produce a <code class="docutils literal notranslate"><span class="pre">text/html</span></code> response, returning
+a dict will call <code class="docutils literal notranslate"><span class="pre">jsonify</span></code> to produce a <code class="docutils literal notranslate"><span class="pre">application/json</span></code>
+response. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3111">#3111</a></p></li>
+<li><p>Blueprints have a <code class="docutils literal notranslate"><span class="pre">cli</span></code> Click group like <code class="docutils literal notranslate"><span class="pre">app.cli</span></code>. CLI commands
+registered with a blueprint will be available as a group under the
+<code class="docutils literal notranslate"><span class="pre">flask</span></code> command. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/1357">#1357</a>.</p></li>
+<li><p>When using the test client as a context manager (<code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">client:</span></code>),
+all preserved request contexts are popped when the block exits,
+ensuring nested contexts are cleaned up correctly. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3157">#3157</a></p></li>
+<li><p>Show a better error message when the view return type is not
+supported. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3214">#3214</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask.testing.make_test_environ_builder()</span></code> has been deprecated in
+favour of a new class <code class="docutils literal notranslate"><span class="pre">flask.testing.EnvironBuilder</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/3232">#3232</a></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> command no longer fails if Python is not built
+with SSL support. Using the <code class="docutils literal notranslate"><span class="pre">--cert</span></code> option will show an
+appropriate error message. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3211">#3211</a></p></li>
+<li><p>URL matching now occurs after the request context is pushed, rather
+than when it’s created. This allows custom URL converters to access
+the app and request contexts, such as to query a database for an id.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3088">#3088</a></p></li>
+</ul>
+</section>
+<section id="version-1-0-4">
+<h2>Version 1.0.4<a class="headerlink" href="#version-1-0-4" title="Link to this heading">¶</a></h2>
+<p>Released 2019-07-04</p>
+<ul class="simple">
+<li><p>The key information for <code class="docutils literal notranslate"><span class="pre">BadRequestKeyError</span></code> is no longer cleared
+outside debug mode, so error handlers can still access it. This
+requires upgrading to Werkzeug 0.15.5. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3249">#3249</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send_file</span></code> url quotes the “:” and “/” characters for more
+compatible UTF-8 filename support in some browsers. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3074">#3074</a></p></li>
+<li><p>Fixes for <span class="target" id="index-1"></span><a class="pep reference external" href="https://peps.python.org/pep-0451/"><strong>PEP 451</strong></a> import loaders and pytest 5.x. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3275">#3275</a></p></li>
+<li><p>Show message about dotenv on stderr instead of stdout. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3285">#3285</a></p></li>
+</ul>
+</section>
+<section id="version-1-0-3">
+<h2>Version 1.0.3<a class="headerlink" href="#version-1-0-3" title="Link to this heading">¶</a></h2>
+<p>Released 2019-05-17</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">send_file</span></code> encodes filenames as ASCII instead of Latin-1
+(ISO-8859-1). This fixes compatibility with Gunicorn, which is
+stricter about header encodings than <span class="target" id="index-2"></span><a class="pep reference external" href="https://peps.python.org/pep-3333/"><strong>PEP 3333</strong></a>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2766">#2766</a></p></li>
+<li><p>Allow custom CLIs using <code class="docutils literal notranslate"><span class="pre">FlaskGroup</span></code> to set the debug flag without
+it always being overwritten based on environment variables.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2765">#2765</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">--version</span></code> outputs Werkzeug’s version and simplifies the
+Python version. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2825">#2825</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send_file</span></code> handles an <code class="docutils literal notranslate"><span class="pre">attachment_filename</span></code> that is a native
+Python 2 string (bytes) with UTF-8 coded bytes. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2933">#2933</a></p></li>
+<li><p>A catch-all error handler registered for <code class="docutils literal notranslate"><span class="pre">HTTPException</span></code> will not
+handle <code class="docutils literal notranslate"><span class="pre">RoutingException</span></code>, which is used internally during
+routing. This fixes the unexpected behavior that had been introduced
+in 1.0. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2986">#2986</a></p></li>
+<li><p>Passing the <code class="docutils literal notranslate"><span class="pre">json</span></code> argument to <code class="docutils literal notranslate"><span class="pre">app.test_client</span></code> does not
+push/pop an extra app context. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2900">#2900</a></p></li>
+</ul>
+</section>
+<section id="version-1-0-2">
+<h2>Version 1.0.2<a class="headerlink" href="#version-1-0-2" title="Link to this heading">¶</a></h2>
+<p>Released 2018-05-02</p>
+<ul class="simple">
+<li><p>Fix more backwards compatibility issues with merging slashes between
+a blueprint prefix and route. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2748">#2748</a></p></li>
+<li><p>Fix error with <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">routes</span></code> command when there are no routes.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2751">#2751</a></p></li>
+</ul>
+</section>
+<section id="version-1-0-1">
+<h2>Version 1.0.1<a class="headerlink" href="#version-1-0-1" title="Link to this heading">¶</a></h2>
+<p>Released 2018-04-29</p>
+<ul class="simple">
+<li><p>Fix registering partials (with no <code class="docutils literal notranslate"><span class="pre">__name__</span></code>) as view functions.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2730">#2730</a></p></li>
+<li><p>Don’t treat lists returned from view functions the same as tuples.
+Only tuples are interpreted as response data. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2736">#2736</a></p></li>
+<li><p>Extra slashes between a blueprint’s <code class="docutils literal notranslate"><span class="pre">url_prefix</span></code> and a route URL
+are merged. This fixes some backwards compatibility issues with the
+change in 1.0. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2731">#2731</a>, <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2742">#2742</a></p></li>
+<li><p>Only trap <code class="docutils literal notranslate"><span class="pre">BadRequestKeyError</span></code> errors in debug mode, not all
+<code class="docutils literal notranslate"><span class="pre">BadRequest</span></code> errors. This allows <code class="docutils literal notranslate"><span class="pre">abort(400)</span></code> to continue
+working as expected. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2735">#2735</a></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">FLASK_SKIP_DOTENV</span></code> environment variable can be set to <code class="docutils literal notranslate"><span class="pre">1</span></code>
+to skip automatically loading dotenv files. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2722">#2722</a></p></li>
+</ul>
+</section>
+<section id="version-1-0">
+<h2>Version 1.0<a class="headerlink" href="#version-1-0" title="Link to this heading">¶</a></h2>
+<p>Released 2018-04-26</p>
+<ul class="simple">
+<li><p>Python 2.6 and 3.3 are no longer supported.</p></li>
+<li><p>Bump minimum dependency versions to the latest stable versions:
+Werkzeug &gt;= 0.14, Jinja &gt;= 2.10, itsdangerous &gt;= 0.24, Click &gt;= 5.1.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2586">#2586</a></p></li>
+<li><p>Skip <code class="docutils literal notranslate"><span class="pre">app.run</span></code> when a Flask application is run from the command
+line. This avoids some behavior that was confusing to debug.</p></li>
+<li><p>Change the default for <code class="docutils literal notranslate"><span class="pre">JSONIFY_PRETTYPRINT_REGULAR</span></code> to
+<code class="docutils literal notranslate"><span class="pre">False</span></code>. <code class="docutils literal notranslate"><span class="pre">~json.jsonify</span></code> returns a compact format by default,
+and an indented format in debug mode. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2193">#2193</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.__init__</span></code> accepts the <code class="docutils literal notranslate"><span class="pre">host_matching</span></code> argument and sets
+it on <code class="docutils literal notranslate"><span class="pre">Flask.url_map</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/1559">#1559</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.__init__</span></code> accepts the <code class="docutils literal notranslate"><span class="pre">static_host</span></code> argument and passes
+it as the <code class="docutils literal notranslate"><span class="pre">host</span></code> argument when defining the static route.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/1559">#1559</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send_file</span></code> supports Unicode in <code class="docutils literal notranslate"><span class="pre">attachment_filename</span></code>.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2223">#2223</a></p></li>
+<li><p>Pass <code class="docutils literal notranslate"><span class="pre">_scheme</span></code> argument from <code class="docutils literal notranslate"><span class="pre">url_for</span></code> to
+<code class="docutils literal notranslate"><span class="pre">Flask.handle_url_build_error</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2017">#2017</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.add_url_rule</span></code> accepts the <code class="docutils literal notranslate"><span class="pre">provide_automatic_options</span></code>
+argument to disable adding the <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> method. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1489">#1489</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MethodView</span></code> subclasses inherit method handlers from base classes.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1936">#1936</a></p></li>
+<li><p>Errors caused while opening the session at the beginning of the
+request are handled by the app’s error handlers. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2254">#2254</a></p></li>
+<li><p>Blueprints gained <code class="docutils literal notranslate"><span class="pre">Blueprint.json_encoder</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Blueprint.json_decoder</span></code> attributes to override the app’s
+encoder and decoder. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1898">#1898</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.make_response</span></code> raises <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> instead of
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> for bad response types. The error messages have been
+improved to describe why the type is invalid. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2256">#2256</a></p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">routes</span></code> CLI command to output routes registered on the
+application. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2259">#2259</a></p></li>
+<li><p>Show warning when session cookie domain is a bare hostname or an IP
+address, as these may not behave properly in some browsers, such as
+Chrome. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2282">#2282</a></p></li>
+<li><p>Allow IP address as exact session cookie domain. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2282">#2282</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_DOMAIN</span></code> is set if it is detected through
+<code class="docutils literal notranslate"><span class="pre">SERVER_NAME</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2282">#2282</a></p></li>
+<li><p>Auto-detect zero-argument app factory called <code class="docutils literal notranslate"><span class="pre">create_app</span></code> or
+<code class="docutils literal notranslate"><span class="pre">make_app</span></code> from <code class="docutils literal notranslate"><span class="pre">FLASK_APP</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2297">#2297</a></p></li>
+<li><p>Factory functions are not required to take a <code class="docutils literal notranslate"><span class="pre">script_info</span></code>
+parameter to work with the <code class="docutils literal notranslate"><span class="pre">flask</span></code> command. If they take a single
+parameter or a parameter named <code class="docutils literal notranslate"><span class="pre">script_info</span></code>, the <code class="docutils literal notranslate"><span class="pre">ScriptInfo</span></code>
+object will be passed. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2319">#2319</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FLASK_APP</span></code> can be set to an app factory, with arguments if
+needed, for example <code class="docutils literal notranslate"><span class="pre">FLASK_APP=myproject.app:create_app('dev')</span></code>.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2326">#2326</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FLASK_APP</span></code> can point to local packages that are not installed in
+editable mode, although <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span></code> is still preferred.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2414">#2414</a></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">View</span></code> class attribute
+<code class="docutils literal notranslate"><span class="pre">View.provide_automatic_options</span></code> is set in <code class="docutils literal notranslate"><span class="pre">View.as_view</span></code>, to be
+detected by <code class="docutils literal notranslate"><span class="pre">Flask.add_url_rule</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2316">#2316</a></p></li>
+<li><p>Error handling will try handlers registered for <code class="docutils literal notranslate"><span class="pre">blueprint,</span> <span class="pre">code</span></code>,
+<code class="docutils literal notranslate"><span class="pre">app,</span> <span class="pre">code</span></code>, <code class="docutils literal notranslate"><span class="pre">blueprint,</span> <span class="pre">exception</span></code>, <code class="docutils literal notranslate"><span class="pre">app,</span> <span class="pre">exception</span></code>.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2314">#2314</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Cookie</span></code> is added to the response’s <code class="docutils literal notranslate"><span class="pre">Vary</span></code> header if the session
+is accessed at all during the request (and not deleted). <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2288">#2288</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.test_request_context</span></code> accepts <code class="docutils literal notranslate"><span class="pre">subdomain</span></code> and
+<code class="docutils literal notranslate"><span class="pre">url_scheme</span></code> arguments for use when building the base URL.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1621">#1621</a></p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">APPLICATION_ROOT</span></code> to <code class="docutils literal notranslate"><span class="pre">'/'</span></code> by default. This was already the
+implicit default when it was set to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TRAP_BAD_REQUEST_ERRORS</span></code> is enabled by default in debug mode.
+<code class="docutils literal notranslate"><span class="pre">BadRequestKeyError</span></code> has a message with the bad key in debug mode
+instead of the generic bad request message. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2348">#2348</a></p></li>
+<li><p>Allow registering new tags with <code class="docutils literal notranslate"><span class="pre">TaggedJSONSerializer</span></code> to support
+storing other types in the session cookie. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2352">#2352</a></p></li>
+<li><p>Only open the session if the request has not been pushed onto the
+context stack yet. This allows <code class="docutils literal notranslate"><span class="pre">stream_with_context</span></code> generators to
+access the same session that the containing view uses. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2354">#2354</a></p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">json</span></code> keyword argument for the test client request methods.
+This will dump the given object as JSON and set the appropriate
+content type. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2358">#2358</a></p></li>
+<li><p>Extract JSON handling to a mixin applied to both the <code class="docutils literal notranslate"><span class="pre">Request</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Response</span></code> classes. This adds the <code class="docutils literal notranslate"><span class="pre">Response.is_json</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Response.get_json</span></code> methods to the response to make testing JSON
+response much easier. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2358">#2358</a></p></li>
+<li><p>Removed error handler caching because it caused unexpected results
+for some exception inheritance hierarchies. Register handlers
+explicitly for each exception if you want to avoid traversing the
+MRO. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2362">#2362</a></p></li>
+<li><p>Fix incorrect JSON encoding of aware, non-UTC datetimes. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2374">#2374</a></p></li>
+<li><p>Template auto reloading will honor debug mode even if
+<code class="docutils literal notranslate"><span class="pre">Flask.jinja_env</span></code> was already accessed. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2373">#2373</a></p></li>
+<li><p>The following old deprecated code was removed. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2385">#2385</a></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask.ext</span></code> - import extensions directly by their name instead
+of through the <code class="docutils literal notranslate"><span class="pre">flask.ext</span></code> namespace. For example,
+<code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">flask.ext.sqlalchemy</span></code> becomes
+<code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">flask_sqlalchemy</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.init_jinja_globals</span></code> - extend
+<code class="docutils literal notranslate"><span class="pre">Flask.create_jinja_environment</span></code> instead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.error_handlers</span></code> - tracked by
+<code class="docutils literal notranslate"><span class="pre">Flask.error_handler_spec</span></code>, use <code class="docutils literal notranslate"><span class="pre">Flask.errorhandler</span></code>
+to register handlers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.request_globals_class</span></code> - use
+<code class="docutils literal notranslate"><span class="pre">Flask.app_ctx_globals_class</span></code> instead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.static_path</span></code> - use <code class="docutils literal notranslate"><span class="pre">Flask.static_url_path</span></code> instead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Request.module</span></code> - use <code class="docutils literal notranslate"><span class="pre">Request.blueprint</span></code> instead.</p></li>
+</ul>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Request.json</span></code> property is no longer deprecated. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/1421">#1421</a></p></li>
+<li><p>Support passing a <code class="docutils literal notranslate"><span class="pre">EnvironBuilder</span></code> or <code class="docutils literal notranslate"><span class="pre">dict</span></code> to
+<code class="docutils literal notranslate"><span class="pre">test_client.open</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2412">#2412</a></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">flask</span></code> command and <code class="docutils literal notranslate"><span class="pre">Flask.run</span></code> will load environment
+variables from <code class="docutils literal notranslate"><span class="pre">.env</span></code> and <code class="docutils literal notranslate"><span class="pre">.flaskenv</span></code> files if python-dotenv is
+installed. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2416">#2416</a></p></li>
+<li><p>When passing a full URL to the test client, the scheme in the URL is
+used instead of <code class="docutils literal notranslate"><span class="pre">PREFERRED_URL_SCHEME</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2430">#2430</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.logger</span></code> has been simplified. <code class="docutils literal notranslate"><span class="pre">LOGGER_NAME</span></code> and
+<code class="docutils literal notranslate"><span class="pre">LOGGER_HANDLER_POLICY</span></code> config was removed. The logger is always
+named <code class="docutils literal notranslate"><span class="pre">flask.app</span></code>. The level is only set on first access, it
+doesn’t check <code class="docutils literal notranslate"><span class="pre">Flask.debug</span></code> each time. Only one format is used,
+not different ones depending on <code class="docutils literal notranslate"><span class="pre">Flask.debug</span></code>. No handlers are
+removed, and a handler is only added if no handlers are already
+configured. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2436">#2436</a></p></li>
+<li><p>Blueprint view function names may not contain dots. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2450">#2450</a></p></li>
+<li><p>Fix a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> caused by invalid <code class="docutils literal notranslate"><span class="pre">Range</span></code> requests in some
+cases. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2526">#2526</a></p></li>
+<li><p>The development server uses threads by default. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2529">#2529</a></p></li>
+<li><p>Loading config files with <code class="docutils literal notranslate"><span class="pre">silent=True</span></code> will ignore <code class="docutils literal notranslate"><span class="pre">ENOTDIR</span></code>
+errors. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2581">#2581</a></p></li>
+<li><p>Pass <code class="docutils literal notranslate"><span class="pre">--cert</span></code> and <code class="docutils literal notranslate"><span class="pre">--key</span></code> options to <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> to run the
+development server over HTTPS. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2606">#2606</a></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">SESSION_COOKIE_SAMESITE</span></code> to control the <code class="docutils literal notranslate"><span class="pre">SameSite</span></code>
+attribute on the session cookie. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2607">#2607</a></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">Flask.test_cli_runner</span></code> to create a Click runner that can
+invoke Flask CLI commands for testing. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2636">#2636</a></p></li>
+<li><p>Subdomain matching is disabled by default and setting
+<code class="docutils literal notranslate"><span class="pre">SERVER_NAME</span></code> does not implicitly enable it. It can be enabled by
+passing <code class="docutils literal notranslate"><span class="pre">subdomain_matching=True</span></code> to the <code class="docutils literal notranslate"><span class="pre">Flask</span></code> constructor.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2635">#2635</a></p></li>
+<li><p>A single trailing slash is stripped from the blueprint
+<code class="docutils literal notranslate"><span class="pre">url_prefix</span></code> when it is registered with the app. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2629">#2629</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Request.get_json</span></code> doesn’t cache the result if parsing fails when
+<code class="docutils literal notranslate"><span class="pre">silent</span></code> is true. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2651">#2651</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Request.get_json</span></code> no longer accepts arbitrary encodings. Incoming
+JSON should be encoded using UTF-8 per <span class="target" id="index-3"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc8259.html"><strong>RFC 8259</strong></a>, but Flask will
+autodetect UTF-8, -16, or -32. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2691">#2691</a></p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">MAX_COOKIE_SIZE</span></code> and <code class="docutils literal notranslate"><span class="pre">Response.max_cookie_size</span></code> to
+control when Werkzeug warns about large cookies that browsers may
+ignore. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2693">#2693</a></p></li>
+<li><p>Updated documentation theme to make docs look better in small
+windows. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2709">#2709</a></p></li>
+<li><p>Rewrote the tutorial docs and example project to take a more
+structured approach to help new users avoid common pitfalls.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2676">#2676</a></p></li>
+</ul>
+</section>
+<section id="version-0-12-5">
+<h2>Version 0.12.5<a class="headerlink" href="#version-0-12-5" title="Link to this heading">¶</a></h2>
+<p>Released 2020-02-10</p>
+<ul class="simple">
+<li><p>Pin Werkzeug to &lt; 1.0.0. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/3497">#3497</a></p></li>
+</ul>
+</section>
+<section id="version-0-12-4">
+<h2>Version 0.12.4<a class="headerlink" href="#version-0-12-4" title="Link to this heading">¶</a></h2>
+<p>Released 2018-04-29</p>
+<ul class="simple">
+<li><p>Repackage 0.12.3 to fix package layout issue. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2728">#2728</a></p></li>
+</ul>
+</section>
+<section id="version-0-12-3">
+<h2>Version 0.12.3<a class="headerlink" href="#version-0-12-3" title="Link to this heading">¶</a></h2>
+<p>Released 2018-04-26</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Request.get_json</span></code> no longer accepts arbitrary encodings.
+Incoming JSON should be encoded using UTF-8 per <span class="target" id="index-4"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc8259.html"><strong>RFC 8259</strong></a>, but
+Flask will autodetect UTF-8, -16, or -32. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2692">#2692</a></p></li>
+<li><p>Fix a Python warning about imports when using <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">flask</span></code>.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2666">#2666</a></p></li>
+<li><p>Fix a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> caused by invalid <code class="docutils literal notranslate"><span class="pre">Range</span></code> requests in some
+cases.</p></li>
+</ul>
+</section>
+<section id="version-0-12-2">
+<h2>Version 0.12.2<a class="headerlink" href="#version-0-12-2" title="Link to this heading">¶</a></h2>
+<p>Released 2017-05-16</p>
+<ul class="simple">
+<li><p>Fix a bug in <code class="docutils literal notranslate"><span class="pre">safe_join</span></code> on Windows.</p></li>
+</ul>
+</section>
+<section id="version-0-12-1">
+<h2>Version 0.12.1<a class="headerlink" href="#version-0-12-1" title="Link to this heading">¶</a></h2>
+<p>Released 2017-03-31</p>
+<ul class="simple">
+<li><p>Prevent <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> from showing a <code class="docutils literal notranslate"><span class="pre">NoAppException</span></code> when an
+<code class="docutils literal notranslate"><span class="pre">ImportError</span></code> occurs within the imported application module.</p></li>
+<li><p>Fix encoding behavior of <code class="docutils literal notranslate"><span class="pre">app.config.from_pyfile</span></code> for Python 3.
+<a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2118">#2118</a></p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">SERVER_NAME</span></code> config if it is present as default values
+for <code class="docutils literal notranslate"><span class="pre">app.run</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/2109">#2109</a>, <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2152">#2152</a></p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">ctx.auto_pop</span></code> with the exception object instead of <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+in the event that a <code class="docutils literal notranslate"><span class="pre">BaseException</span></code> such as <code class="docutils literal notranslate"><span class="pre">KeyboardInterrupt</span></code>
+is raised in a request handler.</p></li>
+</ul>
+</section>
+<section id="version-0-12">
+<h2>Version 0.12<a class="headerlink" href="#version-0-12" title="Link to this heading">¶</a></h2>
+<p>Released 2016-12-21, codename Punsch</p>
+<ul class="simple">
+<li><p>The cli command now responds to <code class="docutils literal notranslate"><span class="pre">--version</span></code>.</p></li>
+<li><p>Mimetype guessing and ETag generation for file-like objects in
+<code class="docutils literal notranslate"><span class="pre">send_file</span></code> has been removed. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/104">#104</a>, :pr`1849`</p></li>
+<li><p>Mimetype guessing in <code class="docutils literal notranslate"><span class="pre">send_file</span></code> now fails loudly and doesn’t fall
+back to <code class="docutils literal notranslate"><span class="pre">application/octet-stream</span></code>. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1988">#1988</a></p></li>
+<li><p>Make <code class="docutils literal notranslate"><span class="pre">flask.safe_join</span></code> able to join multiple paths like
+<code class="docutils literal notranslate"><span class="pre">os.path.join</span></code> <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1730">#1730</a></p></li>
+<li><p>Revert a behavior change that made the dev server crash instead of
+returning an Internal Server Error. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/2006">#2006</a></p></li>
+<li><p>Correctly invoke response handlers for both regular request
+dispatching as well as error handlers.</p></li>
+<li><p>Disable logger propagation by default for the app logger.</p></li>
+<li><p>Add support for range requests in <code class="docutils literal notranslate"><span class="pre">send_file</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">app.test_client</span></code> includes preset default environment, which can
+now be directly set, instead of per <code class="docutils literal notranslate"><span class="pre">client.get</span></code>.</p></li>
+<li><p>Fix crash when running under PyPy3. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1814">#1814</a></p></li>
+</ul>
+</section>
+<section id="version-0-11-1">
+<h2>Version 0.11.1<a class="headerlink" href="#version-0-11-1" title="Link to this heading">¶</a></h2>
+<p>Released 2016-06-07</p>
+<ul class="simple">
+<li><p>Fixed a bug that prevented <code class="docutils literal notranslate"><span class="pre">FLASK_APP=foobar/__init__.py</span></code> from
+working. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1872">#1872</a></p></li>
+</ul>
+</section>
+<section id="version-0-11">
+<h2>Version 0.11<a class="headerlink" href="#version-0-11" title="Link to this heading">¶</a></h2>
+<p>Released 2016-05-29, codename Absinthe</p>
+<ul class="simple">
+<li><p>Added support to serializing top-level arrays to <code class="docutils literal notranslate"><span class="pre">jsonify</span></code>. This
+introduces a security risk in ancient browsers.</p></li>
+<li><p>Added before_render_template signal.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> to <code class="docutils literal notranslate"><span class="pre">Flask.test_client</span></code> to support passing
+additional keyword arguments to the constructor of
+<code class="docutils literal notranslate"><span class="pre">Flask.test_client_class</span></code>.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">SESSION_REFRESH_EACH_REQUEST</span></code> config key that controls the
+set-cookie behavior. If set to <code class="docutils literal notranslate"><span class="pre">True</span></code> a permanent session will be
+refreshed each request and get their lifetime extended, if set to
+<code class="docutils literal notranslate"><span class="pre">False</span></code> it will only be modified if the session actually modifies.
+Non permanent sessions are not affected by this and will always
+expire if the browser window closes.</p></li>
+<li><p>Made Flask support custom JSON mimetypes for incoming data.</p></li>
+<li><p>Added support for returning tuples in the form <code class="docutils literal notranslate"><span class="pre">(response,</span>
+<span class="pre">headers)</span></code> from a view function.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">Config.from_json</span></code>.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">Flask.config_class</span></code>.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">Config.get_namespace</span></code>.</p></li>
+<li><p>Templates are no longer automatically reloaded outside of debug
+mode. This can be configured with the new <code class="docutils literal notranslate"><span class="pre">TEMPLATES_AUTO_RELOAD</span></code>
+config key.</p></li>
+<li><p>Added a workaround for a limitation in Python 3.3’s namespace
+loader.</p></li>
+<li><p>Added support for explicit root paths when using Python 3.3’s
+namespace packages.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">flask</span></code> and the <code class="docutils literal notranslate"><span class="pre">flask.cli</span></code> module to start the
+local debug server through the click CLI system. This is recommended
+over the old <code class="docutils literal notranslate"><span class="pre">flask.run()</span></code> method as it works faster and more
+reliable due to a different design and also replaces
+<code class="docutils literal notranslate"><span class="pre">Flask-Script</span></code>.</p></li>
+<li><p>Error handlers that match specific classes are now checked first,
+thereby allowing catching exceptions that are subclasses of HTTP
+exceptions (in <code class="docutils literal notranslate"><span class="pre">werkzeug.exceptions</span></code>). This makes it possible for
+an extension author to create exceptions that will by default result
+in the HTTP error of their choosing, but may be caught with a custom
+error handler if desired.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">Config.from_mapping</span></code>.</p></li>
+<li><p>Flask will now log by default even if debug is disabled. The log
+format is now hardcoded but the default log handling can be disabled
+through the <code class="docutils literal notranslate"><span class="pre">LOGGER_HANDLER_POLICY</span></code> configuration key.</p></li>
+<li><p>Removed deprecated module functionality.</p></li>
+<li><p>Added the <code class="docutils literal notranslate"><span class="pre">EXPLAIN_TEMPLATE_LOADING</span></code> config flag which when
+enabled will instruct Flask to explain how it locates templates.
+This should help users debug when the wrong templates are loaded.</p></li>
+<li><p>Enforce blueprint handling in the order they were registered for
+template loading.</p></li>
+<li><p>Ported test suite to py.test.</p></li>
+<li><p>Deprecated <code class="docutils literal notranslate"><span class="pre">request.json</span></code> in favour of <code class="docutils literal notranslate"><span class="pre">request.get_json()</span></code>.</p></li>
+<li><p>Add “pretty” and “compressed” separators definitions in jsonify()
+method. Reduces JSON response size when
+<code class="docutils literal notranslate"><span class="pre">JSONIFY_PRETTYPRINT_REGULAR=False</span></code> by removing unnecessary white
+space included by default after separators.</p></li>
+<li><p>JSON responses are now terminated with a newline character, because
+it is a convention that UNIX text files end with a newline and some
+clients don’t deal well when this newline is missing. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1262">#1262</a></p></li>
+<li><p>The automatically provided <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> method is now correctly
+disabled if the user registered an overriding rule with the
+lowercase-version <code class="docutils literal notranslate"><span class="pre">options</span></code>. <a class="extlink-issue reference external" href="https://github.com/pallets/flask/issues/1288">#1288</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask.json.jsonify</span></code> now supports the <code class="docutils literal notranslate"><span class="pre">datetime.date</span></code> type.
+<a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1326">#1326</a></p></li>
+<li><p>Don’t leak exception info of already caught exceptions to context
+teardown handlers. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1393">#1393</a></p></li>
+<li><p>Allow custom Jinja environment subclasses. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1422">#1422</a></p></li>
+<li><p>Updated extension dev guidelines.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask.g</span></code> now has <code class="docutils literal notranslate"><span class="pre">pop()</span></code> and <code class="docutils literal notranslate"><span class="pre">setdefault</span></code> methods.</p></li>
+<li><p>Turn on autoescape for <code class="docutils literal notranslate"><span class="pre">flask.templating.render_template_string</span></code>
+by default. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1515">#1515</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask.ext</span></code> is now deprecated. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1484">#1484</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send_from_directory</span></code> now raises BadRequest if the filename is
+invalid on the server OS. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1763">#1763</a></p></li>
+<li><p>Added the <code class="docutils literal notranslate"><span class="pre">JSONIFY_MIMETYPE</span></code> configuration variable. <a class="extlink-pr reference external" href="https://github.com/pallets/flask/pull/1728">#1728</a></p></li>
+<li><p>Exceptions during teardown handling will no longer leave bad
+application contexts lingering around.</p></li>
+<li><p>Fixed broken <code class="docutils literal notranslate"><span class="pre">test_appcontext_signals()</span></code> test case.</p></li>
+<li><p>Raise an <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> in <code class="docutils literal notranslate"><span class="pre">helpers.find_package</span></code> with a
+useful message explaining why it is raised when a <span class="target" id="index-5"></span><a class="pep reference external" href="https://peps.python.org/pep-0302/"><strong>PEP 302</strong></a> import
+hook is used without an <code class="docutils literal notranslate"><span class="pre">is_package()</span></code> method.</p></li>
+<li><p>Fixed an issue causing exceptions raised before entering a request
+or app context to be passed to teardown handlers.</p></li>
+<li><p>Fixed an issue with query parameters getting removed from requests
+in the test client when absolute URLs were requested.</p></li>
+<li><p>Made <code class="docutils literal notranslate"><span class="pre">&#64;before_first_request</span></code> into a decorator as intended.</p></li>
+<li><p>Fixed an etags bug when sending a file streams with a name.</p></li>
+<li><p>Fixed <code class="docutils literal notranslate"><span class="pre">send_from_directory</span></code> not expanding to the application root
+path correctly.</p></li>
+<li><p>Changed logic of before first request handlers to flip the flag
+after invoking. This will allow some uses that are potentially
+dangerous but should probably be permitted.</p></li>
+<li><p>Fixed Python 3 bug when a handler from
+<code class="docutils literal notranslate"><span class="pre">app.url_build_error_handlers</span></code> reraises the <code class="docutils literal notranslate"><span class="pre">BuildError</span></code>.</p></li>
+</ul>
+</section>
+<section id="version-0-10-1">
+<h2>Version 0.10.1<a class="headerlink" href="#version-0-10-1" title="Link to this heading">¶</a></h2>
+<p>Released 2013-06-14</p>
+<ul class="simple">
+<li><p>Fixed an issue where <code class="docutils literal notranslate"><span class="pre">|tojson</span></code> was not quoting single quotes which
+made the filter not work properly in HTML attributes. Now it’s
+possible to use that filter in single quoted attributes. This should
+make using that filter with angular.js easier.</p></li>
+<li><p>Added support for byte strings back to the session system. This
+broke compatibility with the common case of people putting binary
+data for token verification into the session.</p></li>
+<li><p>Fixed an issue where registering the same method twice for the same
+endpoint would trigger an exception incorrectly.</p></li>
+</ul>
+</section>
+<section id="version-0-10">
+<h2>Version 0.10<a class="headerlink" href="#version-0-10" title="Link to this heading">¶</a></h2>
+<p>Released 2013-06-13, codename Limoncello</p>
+<ul class="simple">
+<li><p>Changed default cookie serialization format from pickle to JSON to
+limit the impact an attacker can do if the secret key leaks.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">template_test</span></code> methods in addition to the already existing
+<code class="docutils literal notranslate"><span class="pre">template_filter</span></code> method family.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">template_global</span></code> methods in addition to the already
+existing <code class="docutils literal notranslate"><span class="pre">template_filter</span></code> method family.</p></li>
+<li><p>Set the content-length header for x-sendfile.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tojson</span></code> filter now does not escape script blocks in HTML5
+parsers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tojson</span></code> used in templates is now safe by default. This was
+allowed due to the different escaping behavior.</p></li>
+<li><p>Flask will now raise an error if you attempt to register a new
+function on an already used endpoint.</p></li>
+<li><p>Added wrapper module around simplejson and added default
+serialization of datetime objects. This allows much easier
+customization of how JSON is handled by Flask or any Flask
+extension.</p></li>
+<li><p>Removed deprecated internal <code class="docutils literal notranslate"><span class="pre">flask.session</span></code> module alias. Use
+<code class="docutils literal notranslate"><span class="pre">flask.sessions</span></code> instead to get the session module. This is not to
+be confused with <code class="docutils literal notranslate"><span class="pre">flask.session</span></code> the session proxy.</p></li>
+<li><p>Templates can now be rendered without request context. The behavior
+is slightly different as the <code class="docutils literal notranslate"><span class="pre">request</span></code>, <code class="docutils literal notranslate"><span class="pre">session</span></code> and <code class="docutils literal notranslate"><span class="pre">g</span></code>
+objects will not be available and blueprint’s context processors are
+not called.</p></li>
+<li><p>The config object is now available to the template as a real global
+and not through a context processor which makes it available even in
+imported templates by default.</p></li>
+<li><p>Added an option to generate non-ascii encoded JSON which should
+result in less bytes being transmitted over the network. It’s
+disabled by default to not cause confusion with existing libraries
+that might expect <code class="docutils literal notranslate"><span class="pre">flask.json.dumps</span></code> to return bytes by default.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask.g</span></code> is now stored on the app context instead of the request
+context.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask.g</span></code> now gained a <code class="docutils literal notranslate"><span class="pre">get()</span></code> method for not erroring out on
+non existing items.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask.g</span></code> now can be used with the <code class="docutils literal notranslate"><span class="pre">in</span></code> operator to see what’s
+defined and it now is iterable and will yield all attributes stored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flask.Flask.request_globals_class</span></code> got renamed to
+<code class="docutils literal notranslate"><span class="pre">flask.Flask.app_ctx_globals_class</span></code> which is a better name to what
+it does since 0.10.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">request</span></code>, <code class="docutils literal notranslate"><span class="pre">session</span></code> and <code class="docutils literal notranslate"><span class="pre">g</span></code> are now also added as proxies to
+the template context which makes them available in imported
+templates. One has to be very careful with those though because
+usage outside of macros might cause caching.</p></li>
+<li><p>Flask will no longer invoke the wrong error handlers if a proxy
+exception is passed through.</p></li>
+<li><p>Added a workaround for chrome’s cookies in localhost not working as
+intended with domain names.</p></li>
+<li><p>Changed logic for picking defaults for cookie values from sessions
+to work better with Google Chrome.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">message_flashed</span></code> signal that simplifies flashing testing.</p></li>
+<li><p>Added support for copying of request contexts for better working
+with greenlets.</p></li>
+<li><p>Removed custom JSON HTTP exception subclasses. If you were relying
+on them you can reintroduce them again yourself trivially. Using
+them however is strongly discouraged as the interface was flawed.</p></li>
+<li><p>Python requirements changed: requiring Python 2.6 or 2.7 now to
+prepare for Python 3.3 port.</p></li>
+<li><p>Changed how the teardown system is informed about exceptions. This
+is now more reliable in case something handles an exception halfway
+through the error handling process.</p></li>
+<li><p>Request context preservation in debug mode now keeps the exception
+information around which means that teardown handlers are able to
+distinguish error from success cases.</p></li>
+<li><p>Added the <code class="docutils literal notranslate"><span class="pre">JSONIFY_PRETTYPRINT_REGULAR</span></code> configuration variable.</p></li>
+<li><p>Flask now orders JSON keys by default to not trash HTTP caches due
+to different hash seeds between different workers.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">appcontext_pushed</span></code> and <code class="docutils literal notranslate"><span class="pre">appcontext_popped</span></code> signals.</p></li>
+<li><p>The builtin run method now takes the <code class="docutils literal notranslate"><span class="pre">SERVER_NAME</span></code> into account
+when picking the default port to run on.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">flask.request.get_json()</span></code> as a replacement for the old
+<code class="docutils literal notranslate"><span class="pre">flask.request.json</span></code> property.</p></li>
+</ul>
+</section>
+<section id="version-0-9">
+<h2>Version 0.9<a class="headerlink" href="#version-0-9" title="Link to this heading">¶</a></h2>
+<p>Released 2012-07-01, codename Campari</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Request.on_json_loading_failed</span></code> now returns a JSON formatted
+response by default.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">url_for</span></code> function now can generate anchors to the generated
+links.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">url_for</span></code> function now can also explicitly generate URL rules
+specific to a given HTTP method.</p></li>
+<li><p>Logger now only returns the debug log setting if it was not set
+explicitly.</p></li>
+<li><p>Unregister a circular dependency between the WSGI environment and
+the request object when shutting down the request. This means that
+environ <code class="docutils literal notranslate"><span class="pre">werkzeug.request</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code> after the response was
+returned to the WSGI server but has the advantage that the garbage
+collector is not needed on CPython to tear down the request unless
+the user created circular dependencies themselves.</p></li>
+<li><p>Session is now stored after callbacks so that if the session payload
+is stored in the session you can still modify it in an after request
+callback.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Flask</span></code> class will avoid importing the provided import name if
+it can (the required first parameter), to benefit tools which build
+Flask instances programmatically. The Flask class will fall back to
+using import on systems with custom module hooks, e.g. Google App
+Engine, or when the import name is inside a zip archive (usually an
+egg) prior to Python 2.7.</p></li>
+<li><p>Blueprints now have a decorator to add custom template filters
+application wide, <code class="docutils literal notranslate"><span class="pre">Blueprint.app_template_filter</span></code>.</p></li>
+<li><p>The Flask and Blueprint classes now have a non-decorator method for
+adding custom template filters application wide,
+<code class="docutils literal notranslate"><span class="pre">Flask.add_template_filter</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Blueprint.add_app_template_filter</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">get_flashed_messages</span></code> function now allows rendering flashed
+message categories in separate blocks, through a <code class="docutils literal notranslate"><span class="pre">category_filter</span></code>
+argument.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Flask.run</span></code> method now accepts <code class="docutils literal notranslate"><span class="pre">None</span></code> for <code class="docutils literal notranslate"><span class="pre">host</span></code> and
+<code class="docutils literal notranslate"><span class="pre">port</span></code> arguments, using default values when <code class="docutils literal notranslate"><span class="pre">None</span></code>. This allows
+for calling run using configuration values, e.g.
+<code class="docutils literal notranslate"><span class="pre">app.run(app.config.get('MYHOST'),</span> <span class="pre">app.config.get('MYPORT'))</span></code>,
+with proper behavior whether or not a config file is provided.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">render_template</span></code> method now accepts a either an iterable of
+template names or a single template name. Previously, it only
+accepted a single template name. On an iterable, the first template
+found is rendered.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">Flask.app_context</span></code> which works very similar to the request
+context but only provides access to the current application. This
+also adds support for URL generation without an active request
+context.</p></li>
+<li><p>View functions can now return a tuple with the first instance being
+an instance of <code class="docutils literal notranslate"><span class="pre">Response</span></code>. This allows for returning
+<code class="docutils literal notranslate"><span class="pre">jsonify(error=&quot;error</span> <span class="pre">msg&quot;),</span> <span class="pre">400</span></code> from a view function.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask</span></code> and <code class="docutils literal notranslate"><span class="pre">Blueprint</span></code> now provide a <code class="docutils literal notranslate"><span class="pre">get_send_file_max_age</span></code>
+hook for subclasses to override behavior of serving static files
+from Flask when using <code class="docutils literal notranslate"><span class="pre">Flask.send_static_file</span></code> (used for the
+default static file handler) and <code class="docutils literal notranslate"><span class="pre">helpers.send_file</span></code>. This hook is
+provided a filename, which for example allows changing cache
+controls by file extension. The default max-age for <code class="docutils literal notranslate"><span class="pre">send_file</span></code>
+and static files can be configured through a new
+<code class="docutils literal notranslate"><span class="pre">SEND_FILE_MAX_AGE_DEFAULT</span></code> configuration variable, which is used
+in the default <code class="docutils literal notranslate"><span class="pre">get_send_file_max_age</span></code> implementation.</p></li>
+<li><p>Fixed an assumption in sessions implementation which could break
+message flashing on sessions implementations which use external
+storage.</p></li>
+<li><p>Changed the behavior of tuple return values from functions. They are
+no longer arguments to the response object, they now have a defined
+meaning.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">Flask.request_globals_class</span></code> to allow a specific class to
+be used on creation of the <code class="docutils literal notranslate"><span class="pre">g</span></code> instance of each request.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">required_methods</span></code> attribute to view functions to force-add
+methods on registration.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">flask.after_this_request</span></code>.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">flask.stream_with_context</span></code> and the ability to push contexts
+multiple times without producing unexpected behavior.</p></li>
+</ul>
+</section>
+<section id="version-0-8-1">
+<h2>Version 0.8.1<a class="headerlink" href="#version-0-8-1" title="Link to this heading">¶</a></h2>
+<p>Released 2012-07-01</p>
+<ul class="simple">
+<li><p>Fixed an issue with the undocumented <code class="docutils literal notranslate"><span class="pre">flask.session</span></code> module to not
+work properly on Python 2.5. It should not be used but did cause
+some problems for package managers.</p></li>
+</ul>
+</section>
+<section id="version-0-8">
+<h2>Version 0.8<a class="headerlink" href="#version-0-8" title="Link to this heading">¶</a></h2>
+<p>Released 2011-09-29, codename Rakija</p>
+<ul class="simple">
+<li><p>Refactored session support into a session interface so that the
+implementation of the sessions can be changed without having to
+override the Flask class.</p></li>
+<li><p>Empty session cookies are now deleted properly automatically.</p></li>
+<li><p>View functions can now opt out of getting the automatic OPTIONS
+implementation.</p></li>
+<li><p>HTTP exceptions and Bad Request errors can now be trapped so that
+they show up normally in the traceback.</p></li>
+<li><p>Flask in debug mode is now detecting some common problems and tries
+to warn you about them.</p></li>
+<li><p>Flask in debug mode will now complain with an assertion error if a
+view was attached after the first request was handled. This gives
+earlier feedback when users forget to import view code ahead of
+time.</p></li>
+<li><p>Added the ability to register callbacks that are only triggered once
+at the beginning of the first request with
+<code class="docutils literal notranslate"><span class="pre">Flask.before_first_request</span></code>.</p></li>
+<li><p>Malformed JSON data will now trigger a bad request HTTP exception
+instead of a value error which usually would result in a 500
+internal server error if not handled. This is a backwards
+incompatible change.</p></li>
+<li><p>Applications now not only have a root path where the resources and
+modules are located but also an instance path which is the
+designated place to drop files that are modified at runtime (uploads
+etc.). Also this is conceptually only instance depending and outside
+version control so it’s the perfect place to put configuration files
+etc.</p></li>
+<li><p>Added the <code class="docutils literal notranslate"><span class="pre">APPLICATION_ROOT</span></code> configuration variable.</p></li>
+<li><p>Implemented <code class="docutils literal notranslate"><span class="pre">TestClient.session_transaction</span></code> to easily modify
+sessions from the test environment.</p></li>
+<li><p>Refactored test client internally. The <code class="docutils literal notranslate"><span class="pre">APPLICATION_ROOT</span></code>
+configuration variable as well as <code class="docutils literal notranslate"><span class="pre">SERVER_NAME</span></code> are now properly
+used by the test client as defaults.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">View.decorators</span></code> to support simpler decorating of pluggable
+(class-based) views.</p></li>
+<li><p>Fixed an issue where the test client if used with the “with”
+statement did not trigger the execution of the teardown handlers.</p></li>
+<li><p>Added finer control over the session cookie parameters.</p></li>
+<li><p>HEAD requests to a method view now automatically dispatch to the
+<code class="docutils literal notranslate"><span class="pre">get</span></code> method if no handler was implemented.</p></li>
+<li><p>Implemented the virtual <code class="docutils literal notranslate"><span class="pre">flask.ext</span></code> package to import extensions
+from.</p></li>
+<li><p>The context preservation on exceptions is now an integral component
+of Flask itself and no longer of the test client. This cleaned up
+some internal logic and lowers the odds of runaway request contexts
+in unittests.</p></li>
+<li><p>Fixed the Jinja2 environment’s <code class="docutils literal notranslate"><span class="pre">list_templates</span></code> method not
+returning the correct names when blueprints or modules were
+involved.</p></li>
+</ul>
+</section>
+<section id="version-0-7-2">
+<h2>Version 0.7.2<a class="headerlink" href="#version-0-7-2" title="Link to this heading">¶</a></h2>
+<p>Released 2011-07-06</p>
+<ul class="simple">
+<li><p>Fixed an issue with URL processors not properly working on
+blueprints.</p></li>
+</ul>
+</section>
+<section id="version-0-7-1">
+<h2>Version 0.7.1<a class="headerlink" href="#version-0-7-1" title="Link to this heading">¶</a></h2>
+<p>Released 2011-06-29</p>
+<ul class="simple">
+<li><p>Added missing future import that broke 2.5 compatibility.</p></li>
+<li><p>Fixed an infinite redirect issue with blueprints.</p></li>
+</ul>
+</section>
+<section id="version-0-7">
+<h2>Version 0.7<a class="headerlink" href="#version-0-7" title="Link to this heading">¶</a></h2>
+<p>Released 2011-06-28, codename Grappa</p>
+<ul class="simple">
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">Flask.make_default_options_response</span></code> which can be used by
+subclasses to alter the default behavior for <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> responses.</p></li>
+<li><p>Unbound locals now raise a proper <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> instead of an
+<code class="docutils literal notranslate"><span class="pre">AttributeError</span></code>.</p></li>
+<li><p>Mimetype guessing and etag support based on file objects is now
+deprecated for <code class="docutils literal notranslate"><span class="pre">send_file</span></code> because it was unreliable. Pass
+filenames instead or attach your own etags and provide a proper
+mimetype by hand.</p></li>
+<li><p>Static file handling for modules now requires the name of the static
+folder to be supplied explicitly. The previous autodetection was not
+reliable and caused issues on Google’s App Engine. Until 1.0 the old
+behavior will continue to work but issue dependency warnings.</p></li>
+<li><p>Fixed a problem for Flask to run on jython.</p></li>
+<li><p>Added a <code class="docutils literal notranslate"><span class="pre">PROPAGATE_EXCEPTIONS</span></code> configuration variable that can be
+used to flip the setting of exception propagation which previously
+was linked to <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code> alone and is now linked to either <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code>
+or <code class="docutils literal notranslate"><span class="pre">TESTING</span></code>.</p></li>
+<li><p>Flask no longer internally depends on rules being added through the
+<code class="docutils literal notranslate"><span class="pre">add_url_rule</span></code> function and can now also accept regular werkzeug
+rules added to the url map.</p></li>
+<li><p>Added an <code class="docutils literal notranslate"><span class="pre">endpoint</span></code> method to the flask application object which
+allows one to register a callback to an arbitrary endpoint with a
+decorator.</p></li>
+<li><p>Use Last-Modified for static file sending instead of Date which was
+incorrectly introduced in 0.6.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">create_jinja_loader</span></code> to override the loader creation
+process.</p></li>
+<li><p>Implemented a silent flag for <code class="docutils literal notranslate"><span class="pre">config.from_pyfile</span></code>.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">teardown_request</span></code> decorator, for functions that should run
+at the end of a request regardless of whether an exception occurred.
+Also the behavior for <code class="docutils literal notranslate"><span class="pre">after_request</span></code> was changed. It’s now no
+longer executed when an exception is raised.</p></li>
+<li><p>Implemented <code class="docutils literal notranslate"><span class="pre">has_request_context</span></code>.</p></li>
+<li><p>Deprecated <code class="docutils literal notranslate"><span class="pre">init_jinja_globals</span></code>. Override the
+<code class="docutils literal notranslate"><span class="pre">Flask.create_jinja_environment</span></code> method instead to achieve the
+same functionality.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">safe_join</span></code>.</p></li>
+<li><p>The automatic JSON request data unpacking now looks at the charset
+mimetype parameter.</p></li>
+<li><p>Don’t modify the session on <code class="docutils literal notranslate"><span class="pre">get_flashed_messages</span></code> if there are no
+messages in the session.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">before_request</span></code> handlers are now able to abort requests with
+errors.</p></li>
+<li><p>It is not possible to define user exception handlers. That way you
+can provide custom error messages from a central hub for certain
+errors that might occur during request processing (for instance
+database connection errors, timeouts from remote resources etc.).</p></li>
+<li><p>Blueprints can provide blueprint specific error handlers.</p></li>
+<li><p>Implemented generic class-based views.</p></li>
+</ul>
+</section>
+<section id="version-0-6-1">
+<h2>Version 0.6.1<a class="headerlink" href="#version-0-6-1" title="Link to this heading">¶</a></h2>
+<p>Released 2010-12-31</p>
+<ul class="simple">
+<li><p>Fixed an issue where the default <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> response was not
+exposing all valid methods in the <code class="docutils literal notranslate"><span class="pre">Allow</span></code> header.</p></li>
+<li><p>Jinja2 template loading syntax now allows “./” in front of a
+template load path. Previously this caused issues with module
+setups.</p></li>
+<li><p>Fixed an issue where the subdomain setting for modules was ignored
+for the static folder.</p></li>
+<li><p>Fixed a security problem that allowed clients to download arbitrary
+files if the host server was a windows based operating system and
+the client uses backslashes to escape the directory the files where
+exposed from.</p></li>
+</ul>
+</section>
+<section id="version-0-6">
+<h2>Version 0.6<a class="headerlink" href="#version-0-6" title="Link to this heading">¶</a></h2>
+<p>Released 2010-07-27, codename Whisky</p>
+<ul class="simple">
+<li><p>After request functions are now called in reverse order of
+registration.</p></li>
+<li><p>OPTIONS is now automatically implemented by Flask unless the
+application explicitly adds ‘OPTIONS’ as method to the URL rule. In
+this case no automatic OPTIONS handling kicks in.</p></li>
+<li><p>Static rules are now even in place if there is no static folder for
+the module. This was implemented to aid GAE which will remove the
+static folder if it’s part of a mapping in the .yml file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.config</span></code> is now available in the templates as <code class="docutils literal notranslate"><span class="pre">config</span></code>.</p></li>
+<li><p>Context processors will no longer override values passed directly to
+the render function.</p></li>
+<li><p>Added the ability to limit the incoming request data with the new
+<code class="docutils literal notranslate"><span class="pre">MAX_CONTENT_LENGTH</span></code> configuration value.</p></li>
+<li><p>The endpoint for the <code class="docutils literal notranslate"><span class="pre">Module.add_url_rule</span></code> method is now optional
+to be consistent with the function of the same name on the
+application object.</p></li>
+<li><p>Added a <code class="docutils literal notranslate"><span class="pre">make_response</span></code> function that simplifies creating response
+object instances in views.</p></li>
+<li><p>Added signalling support based on blinker. This feature is currently
+optional and supposed to be used by extensions and applications. If
+you want to use it, make sure to have <code class="docutils literal notranslate"><span class="pre">blinker</span></code> installed.</p></li>
+<li><p>Refactored the way URL adapters are created. This process is now
+fully customizable with the <code class="docutils literal notranslate"><span class="pre">Flask.create_url_adapter</span></code> method.</p></li>
+<li><p>Modules can now register for a subdomain instead of just an URL
+prefix. This makes it possible to bind a whole module to a
+configurable subdomain.</p></li>
+</ul>
+</section>
+<section id="version-0-5-2">
+<h2>Version 0.5.2<a class="headerlink" href="#version-0-5-2" title="Link to this heading">¶</a></h2>
+<p>Released 2010-07-15</p>
+<ul class="simple">
+<li><p>Fixed another issue with loading templates from directories when
+modules were used.</p></li>
+</ul>
+</section>
+<section id="version-0-5-1">
+<h2>Version 0.5.1<a class="headerlink" href="#version-0-5-1" title="Link to this heading">¶</a></h2>
+<p>Released 2010-07-06</p>
+<ul class="simple">
+<li><p>Fixes an issue with template loading from directories when modules
+where used.</p></li>
+</ul>
+</section>
+<section id="version-0-5">
+<h2>Version 0.5<a class="headerlink" href="#version-0-5" title="Link to this heading">¶</a></h2>
+<p>Released 2010-07-06, codename Calvados</p>
+<ul class="simple">
+<li><p>Fixed a bug with subdomains that was caused by the inability to
+specify the server name. The server name can now be set with the
+<code class="docutils literal notranslate"><span class="pre">SERVER_NAME</span></code> config key. This key is now also used to set the
+session cookie cross-subdomain wide.</p></li>
+<li><p>Autoescaping is no longer active for all templates. Instead it is
+only active for <code class="docutils literal notranslate"><span class="pre">.html</span></code>, <code class="docutils literal notranslate"><span class="pre">.htm</span></code>, <code class="docutils literal notranslate"><span class="pre">.xml</span></code> and <code class="docutils literal notranslate"><span class="pre">.xhtml</span></code>. Inside
+templates this behavior can be changed with the <code class="docutils literal notranslate"><span class="pre">autoescape</span></code> tag.</p></li>
+<li><p>Refactored Flask internally. It now consists of more than a single
+file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send_file</span></code> now emits etags and has the ability to do conditional
+responses builtin.</p></li>
+<li><p>(temporarily) dropped support for zipped applications. This was a
+rarely used feature and led to some confusing behavior.</p></li>
+<li><p>Added support for per-package template and static-file directories.</p></li>
+<li><p>Removed support for <code class="docutils literal notranslate"><span class="pre">create_jinja_loader</span></code> which is no longer used
+in 0.5 due to the improved module support.</p></li>
+<li><p>Added a helper function to expose files from any directory.</p></li>
+</ul>
+</section>
+<section id="version-0-4">
+<h2>Version 0.4<a class="headerlink" href="#version-0-4" title="Link to this heading">¶</a></h2>
+<p>Released 2010-06-18, codename Rakia</p>
+<ul class="simple">
+<li><p>Added the ability to register application wide error handlers from
+modules.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.after_request</span></code> handlers are now also invoked if the request
+dies with an exception and an error handling page kicks in.</p></li>
+<li><p>Test client has not the ability to preserve the request context for
+a little longer. This can also be used to trigger custom requests
+that do not pop the request stack for testing.</p></li>
+<li><p>Because the Python standard library caches loggers, the name of the
+logger is configurable now to better support unittests.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">TESTING</span></code> switch that can activate unittesting helpers.</p></li>
+<li><p>The logger switches to <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code> mode now if debug is enabled.</p></li>
+</ul>
+</section>
+<section id="version-0-3-1">
+<h2>Version 0.3.1<a class="headerlink" href="#version-0-3-1" title="Link to this heading">¶</a></h2>
+<p>Released 2010-05-28</p>
+<ul class="simple">
+<li><p>Fixed a error reporting bug with <code class="docutils literal notranslate"><span class="pre">Config.from_envvar</span></code>.</p></li>
+<li><p>Removed some unused code.</p></li>
+<li><p>Release does no longer include development leftover files (.git
+folder for themes, built documentation in zip and pdf file and some
+.pyc files)</p></li>
+</ul>
+</section>
+<section id="version-0-3">
+<h2>Version 0.3<a class="headerlink" href="#version-0-3" title="Link to this heading">¶</a></h2>
+<p>Released 2010-05-28, codename Schnaps</p>
+<ul class="simple">
+<li><p>Added support for categories for flashed messages.</p></li>
+<li><p>The application now configures a <code class="docutils literal notranslate"><span class="pre">logging.Handler</span></code> and will log
+request handling exceptions to that logger when not in debug mode.
+This makes it possible to receive mails on server errors for
+example.</p></li>
+<li><p>Added support for context binding that does not require the use of
+the with statement for playing in the console.</p></li>
+<li><p>The request context is now available within the with statement
+making it possible to further push the request context or pop it.</p></li>
+<li><p>Added support for configurations.</p></li>
+</ul>
+</section>
+<section id="version-0-2">
+<h2>Version 0.2<a class="headerlink" href="#version-0-2" title="Link to this heading">¶</a></h2>
+<p>Released 2010-05-12, codename J?germeister</p>
+<ul class="simple">
+<li><p>Various bugfixes</p></li>
+<li><p>Integrated JSON support</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">get_template_attribute</span></code> helper function.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flask.add_url_rule</span></code> can now also register a view function.</p></li>
+<li><p>Refactored internal request dispatching.</p></li>
+<li><p>Server listens on 127.0.0.1 by default now to fix issues with
+chrome.</p></li>
+<li><p>Added external URL support.</p></li>
+<li><p>Added support for <code class="docutils literal notranslate"><span class="pre">send_file</span></code>.</p></li>
+<li><p>Module support and internal request handling refactoring to better
+support pluggable applications.</p></li>
+<li><p>Sessions can be set to be permanent now on a per-session basis.</p></li>
+<li><p>Better error reporting on missing secret keys.</p></li>
+<li><p>Added support for Google Appengine.</p></li>
+</ul>
+</section>
+<section id="version-0-1">
+<h2>Version 0.1<a class="headerlink" href="#version-0-1" title="Link to this heading">¶</a></h2>
+<p>Released 2010-04-16</p>
+<ul class="simple">
+<li><p>First public preview release.</p></li>
+</ul>
 </section>
 </section>
 
@@ -179,21 +1620,77 @@ when the application context is popped.</p>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
 
   <h3>Contents</h3>
   <ul>
-<li><a class="reference internal" href="#">The Application Context</a><ul>
-<li><a class="reference internal" href="#purpose-of-the-context">Purpose of the Context</a></li>
-<li><a class="reference internal" href="#lifetime-of-the-context">Lifetime of the Context</a></li>
-<li><a class="reference internal" href="#manually-push-a-context">Manually Push a Context</a></li>
-<li><a class="reference internal" href="#storing-data">Storing Data</a></li>
-<li><a class="reference internal" href="#events-and-signals">Events and Signals</a></li>
+<li><a class="reference internal" href="#">Changes</a><ul>
+<li><a class="reference internal" href="#version-3-2-0">Version 3.2.0</a></li>
+<li><a class="reference internal" href="#version-3-1-1">Version 3.1.1</a></li>
+<li><a class="reference internal" href="#version-3-1-0">Version 3.1.0</a></li>
+<li><a class="reference internal" href="#version-3-0-3">Version 3.0.3</a></li>
+<li><a class="reference internal" href="#version-3-0-2">Version 3.0.2</a></li>
+<li><a class="reference internal" href="#version-3-0-1">Version 3.0.1</a></li>
+<li><a class="reference internal" href="#version-3-0-0">Version 3.0.0</a></li>
+<li><a class="reference internal" href="#version-2-3-3">Version 2.3.3</a></li>
+<li><a class="reference internal" href="#version-2-3-2">Version 2.3.2</a></li>
+<li><a class="reference internal" href="#version-2-3-1">Version 2.3.1</a></li>
+<li><a class="reference internal" href="#version-2-3-0">Version 2.3.0</a></li>
+<li><a class="reference internal" href="#version-2-2-5">Version 2.2.5</a></li>
+<li><a class="reference internal" href="#version-2-2-4">Version 2.2.4</a></li>
+<li><a class="reference internal" href="#version-2-2-3">Version 2.2.3</a></li>
+<li><a class="reference internal" href="#version-2-2-2">Version 2.2.2</a></li>
+<li><a class="reference internal" href="#version-2-2-1">Version 2.2.1</a></li>
+<li><a class="reference internal" href="#version-2-2-0">Version 2.2.0</a></li>
+<li><a class="reference internal" href="#version-2-1-3">Version 2.1.3</a></li>
+<li><a class="reference internal" href="#version-2-1-2">Version 2.1.2</a></li>
+<li><a class="reference internal" href="#version-2-1-1">Version 2.1.1</a></li>
+<li><a class="reference internal" href="#version-2-1-0">Version 2.1.0</a></li>
+<li><a class="reference internal" href="#version-2-0-3">Version 2.0.3</a></li>
+<li><a class="reference internal" href="#version-2-0-2">Version 2.0.2</a></li>
+<li><a class="reference internal" href="#version-2-0-1">Version 2.0.1</a></li>
+<li><a class="reference internal" href="#version-2-0-0">Version 2.0.0</a></li>
+<li><a class="reference internal" href="#version-1-1-4">Version 1.1.4</a></li>
+<li><a class="reference internal" href="#version-1-1-3">Version 1.1.3</a></li>
+<li><a class="reference internal" href="#version-1-1-2">Version 1.1.2</a></li>
+<li><a class="reference internal" href="#version-1-1-1">Version 1.1.1</a></li>
+<li><a class="reference internal" href="#version-1-1-0">Version 1.1.0</a></li>
+<li><a class="reference internal" href="#version-1-0-4">Version 1.0.4</a></li>
+<li><a class="reference internal" href="#version-1-0-3">Version 1.0.3</a></li>
+<li><a class="reference internal" href="#version-1-0-2">Version 1.0.2</a></li>
+<li><a class="reference internal" href="#version-1-0-1">Version 1.0.1</a></li>
+<li><a class="reference internal" href="#version-1-0">Version 1.0</a></li>
+<li><a class="reference internal" href="#version-0-12-5">Version 0.12.5</a></li>
+<li><a class="reference internal" href="#version-0-12-4">Version 0.12.4</a></li>
+<li><a class="reference internal" href="#version-0-12-3">Version 0.12.3</a></li>
+<li><a class="reference internal" href="#version-0-12-2">Version 0.12.2</a></li>
+<li><a class="reference internal" href="#version-0-12-1">Version 0.12.1</a></li>
+<li><a class="reference internal" href="#version-0-12">Version 0.12</a></li>
+<li><a class="reference internal" href="#version-0-11-1">Version 0.11.1</a></li>
+<li><a class="reference internal" href="#version-0-11">Version 0.11</a></li>
+<li><a class="reference internal" href="#version-0-10-1">Version 0.10.1</a></li>
+<li><a class="reference internal" href="#version-0-10">Version 0.10</a></li>
+<li><a class="reference internal" href="#version-0-9">Version 0.9</a></li>
+<li><a class="reference internal" href="#version-0-8-1">Version 0.8.1</a></li>
+<li><a class="reference internal" href="#version-0-8">Version 0.8</a></li>
+<li><a class="reference internal" href="#version-0-7-2">Version 0.7.2</a></li>
+<li><a class="reference internal" href="#version-0-7-1">Version 0.7.1</a></li>
+<li><a class="reference internal" href="#version-0-7">Version 0.7</a></li>
+<li><a class="reference internal" href="#version-0-6-1">Version 0.6.1</a></li>
+<li><a class="reference internal" href="#version-0-6">Version 0.6</a></li>
+<li><a class="reference internal" href="#version-0-5-2">Version 0.5.2</a></li>
+<li><a class="reference internal" href="#version-0-5-1">Version 0.5.1</a></li>
+<li><a class="reference internal" href="#version-0-5">Version 0.5</a></li>
+<li><a class="reference internal" href="#version-0-4">Version 0.4</a></li>
+<li><a class="reference internal" href="#version-0-3-1">Version 0.3.1</a></li>
+<li><a class="reference internal" href="#version-0-3">Version 0.3</a></li>
+<li><a class="reference internal" href="#version-0-2">Version 0.2</a></li>
+<li><a class="reference internal" href="#version-0-1">Version 0.1</a></li>
 </ul>
 </li>
 </ul>
@@ -201,8 +1698,8 @@ when the application context is popped.</p>
 <ul>
   <li><a href="index.html">Overview</a>
     <ul>
-          <li>Previous: <a href="lifecycle.html" title="previous chapter">Application Structure and Lifecycle</a>
-          <li>Next: <a href="reqcontext.html" title="next chapter">The Request Context</a>
+          <li>Previous: <a href="license.html" title="previous chapter">BSD-3-Clause License</a>
+
     </ul>
   </li>
 </ul>

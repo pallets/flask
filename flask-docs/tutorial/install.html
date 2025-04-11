@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Make the Project Installable &#8212; Flask Documentation (3.2.x)</title>
+    <title>Static Files &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Test Coverage" href="tests.html" />
-    <link rel="prev" title="Blog Blueprint" href="blog.html" /> 
+    <link rel="next" title="Blog Blueprint" href="blog.html" />
+    <link rel="prev" title="Templates" href="templates.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,97 +28,80 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="tests.html" title="Test Coverage"
+          <a href="blog.html" title="Blog Blueprint"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="blog.html" title="Blog Blueprint"
+          <a href="templates.html" title="Templates"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Tutorial</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Make the Project Installable</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Static Files</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="make-the-project-installable">
-<h1>Make the Project Installable<a class="headerlink" href="#make-the-project-installable" title="Link to this heading">¶</a></h1>
-<p>Making your project installable means that you can build a <em>wheel</em> file and install that
-in another environment, just like you installed Flask in your project’s environment.
-This makes deploying your project the same as installing any other library, so you’re
-using all the standard Python tools to manage everything.</p>
-<p>Installing also comes with other benefits that might not be obvious from
-the tutorial or as a new Python user, including:</p>
-<ul class="simple">
-<li><p>Currently, Python and Flask understand how to use the <code class="docutils literal notranslate"><span class="pre">flaskr</span></code>
-package only because you’re running from your project’s directory.
-Installing means you can import it no matter where you run from.</p></li>
-<li><p>You can manage your project’s dependencies just like other packages
-do, so <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">yourproject.whl</span></code> installs them.</p></li>
-<li><p>Test tools can isolate your test environment from your development
-environment.</p></li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This is being introduced late in the tutorial, but in your future
-projects you should always start with this.</p>
+
+  <section id="static-files">
+<h1>Static Files<a class="headerlink" href="#static-files" title="Link to this heading">¶</a></h1>
+<p>The authentication views and templates work, but they look very plain
+right now. Some <a class="reference external" href="https://developer.mozilla.org/docs/Web/CSS">CSS</a> can be added to add style to the HTML layout you
+constructed. The style won’t change, so it’s a <em>static</em> file rather than
+a template.</p>
+<p>Flask automatically adds a <code class="docutils literal notranslate"><span class="pre">static</span></code> view that takes a path relative
+to the <code class="docutils literal notranslate"><span class="pre">flaskr/static</span></code> directory and serves it. The <code class="docutils literal notranslate"><span class="pre">base.html</span></code>
+template already has a link to the <code class="docutils literal notranslate"><span class="pre">style.css</span></code> file:</p>
+<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{{</span> <span class="nv">url_for</span><span class="o">(</span><span class="s1">&#39;static&#39;</span><span class="o">,</span> <span class="nv">filename</span><span class="o">=</span><span class="s1">&#39;style.css&#39;</span><span class="o">)</span> <span class="cp">}}</span>
+</pre></div>
 </div>
-<section id="describe-the-project">
-<h2>Describe the Project<a class="headerlink" href="#describe-the-project" title="Link to this heading">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file describes your project and how to build it.</p>
+<p>Besides CSS, other types of static files might be files with JavaScript
+functions, or a logo image. They are all placed under the
+<code class="docutils literal notranslate"><span class="pre">flaskr/static</span></code> directory and referenced with
+<code class="docutils literal notranslate"><span class="pre">url_for('static',</span> <span class="pre">filename='...')</span></code>.</p>
+<p>This tutorial isn’t focused on how to write CSS, so you can just copy
+the following into the <code class="docutils literal notranslate"><span class="pre">flaskr/static/style.css</span></code> file:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[project]</span>
-<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;flaskr&quot;</span>
-<span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span>
-<span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;The basic blog app built in the Flask tutorial.&quot;</span>
-<span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="s2">&quot;flask&quot;</span><span class="p">,</span>
-<span class="p">]</span>
-
-<span class="k">[build-system]</span>
-<span class="n">requires</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;flit_core&lt;4&quot;</span><span class="p">]</span>
-<span class="n">build-backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;flit_core.buildapi&quot;</span>
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">flaskr/static/style.css</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="nt">html</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="kc">sans-serif</span><span class="p">;</span><span class="w"> </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="mh">#eee</span><span class="p">;</span><span class="w"> </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="nt">body</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">max-width</span><span class="p">:</span><span class="w"> </span><span class="mi">960</span><span class="kt">px</span><span class="p">;</span><span class="w"> </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span><span class="w"> </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="kc">white</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="nt">h1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="kc">serif</span><span class="p">;</span><span class="w"> </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="mh">#377ba8</span><span class="p">;</span><span class="w"> </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="nt">a</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="mh">#377ba8</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="nt">hr</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">border</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span><span class="w"> </span><span class="k">border-top</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">px</span><span class="w"> </span><span class="kc">solid</span><span class="w"> </span><span class="kc">lightgray</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="nt">nav</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="kc">lightgray</span><span class="p">;</span><span class="w"> </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span><span class="w"> </span><span class="k">align-items</span><span class="p">:</span><span class="w"> </span><span class="kc">center</span><span class="p">;</span><span class="w"> </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mf">0.5</span><span class="kt">rem</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="nt">nav</span><span class="w"> </span><span class="nt">h1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">flex</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span><span class="w"> </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="nt">nav</span><span class="w"> </span><span class="nt">h1</span><span class="w"> </span><span class="nt">a</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">text-decoration</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span><span class="w"> </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mf">0.25</span><span class="kt">rem</span><span class="w"> </span><span class="mf">0.5</span><span class="kt">rem</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="nt">nav</span><span class="w"> </span><span class="nt">ul</span><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span><span class="w"> </span><span class="k">list-style</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span><span class="w"> </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="nt">nav</span><span class="w"> </span><span class="nt">ul</span><span class="w"> </span><span class="nt">li</span><span class="w"> </span><span class="nt">a</span><span class="o">,</span><span class="w"> </span><span class="nt">nav</span><span class="w"> </span><span class="nt">ul</span><span class="w"> </span><span class="nt">li</span><span class="w"> </span><span class="nt">span</span><span class="o">,</span><span class="w"> </span><span class="nt">header</span><span class="w"> </span><span class="p">.</span><span class="nc">action</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">block</span><span class="p">;</span><span class="w"> </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="kt">rem</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nt">header</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">border-bottom</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">px</span><span class="w"> </span><span class="kc">solid</span><span class="w"> </span><span class="kc">lightgray</span><span class="p">;</span><span class="w"> </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span><span class="w"> </span><span class="k">align-items</span><span class="p">:</span><span class="w"> </span><span class="kc">flex-end</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nt">header</span><span class="w"> </span><span class="nt">h1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">flex</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span><span class="w"> </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mf">0.25</span><span class="kt">rem</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">.</span><span class="nc">flash</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">em</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="mh">#cae6f6</span><span class="p">;</span><span class="w"> </span><span class="k">border</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">px</span><span class="w"> </span><span class="kc">solid</span><span class="w"> </span><span class="mh">#377ba8</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">.</span><span class="nc">post</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nt">header</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span><span class="w"> </span><span class="k">align-items</span><span class="p">:</span><span class="w"> </span><span class="kc">flex-end</span><span class="p">;</span><span class="w"> </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mf">0.85</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">.</span><span class="nc">post</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nt">header</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nt">div</span><span class="p">:</span><span class="nd">first-of-type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">flex</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">.</span><span class="nc">post</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nt">header</span><span class="w"> </span><span class="nt">h1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mf">1.5</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="k">margin-bottom</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">.</span><span class="nc">post</span><span class="w"> </span><span class="p">.</span><span class="nc">about</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="kc">slategray</span><span class="p">;</span><span class="w"> </span><span class="k">font-style</span><span class="p">:</span><span class="w"> </span><span class="kc">italic</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">.</span><span class="nc">post</span><span class="w"> </span><span class="p">.</span><span class="nc">body</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">white-space</span><span class="p">:</span><span class="w"> </span><span class="kc">pre-line</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">.</span><span class="nc">content</span><span class="p">:</span><span class="nd">last-child</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">margin-bottom</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="nt">form</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">em</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span><span class="w"> </span><span class="k">flex-direction</span><span class="p">:</span><span class="w"> </span><span class="kc">column</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="nt">label</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">font-weight</span><span class="p">:</span><span class="w"> </span><span class="kc">bold</span><span class="p">;</span><span class="w"> </span><span class="k">margin-bottom</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="nt">input</span><span class="o">,</span><span class="w"> </span><span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="nt">textarea</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">margin-bottom</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">.</span><span class="nc">content</span><span class="w"> </span><span class="nt">textarea</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">min-height</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="k">resize</span><span class="p">:</span><span class="w"> </span><span class="kc">vertical</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="nt">input</span><span class="p">.</span><span class="nc">danger</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="mh">#cc2f2e</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="nt">input</span><span class="o">[</span><span class="nt">type</span><span class="o">=</span><span class="nt">submit</span><span class="o">]</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">align-self</span><span class="p">:</span><span class="w"> </span><span class="kc">start</span><span class="p">;</span><span class="w"> </span><span class="k">min-width</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
-<p>See the official <a class="reference external" href="https://packaging.python.org/tutorials/packaging-projects/">Packaging tutorial</a> for more
-explanation of the files and options used.</p>
-</section>
-<section id="install-the-project">
-<h2>Install the Project<a class="headerlink" href="#install-the-project" title="Link to this heading">¶</a></h2>
-<p>Use <code class="docutils literal notranslate"><span class="pre">pip</span></code> to install your project in the virtual environment.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ pip install -e .
-</pre></div>
-</div>
-<p>This tells pip to find <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> in the current directory and install the
-project in <em>editable</em> or <em>development</em> mode. Editable mode means that as you make
-changes to your local code, you’ll only need to re-install if you change the metadata
-about the project, such as its dependencies.</p>
-<p>You can observe that the project is now installed with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">list</span></code>.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ pip list
-
-Package        Version   Location
--------------- --------- ----------------------------------
-click          6.7
-Flask          1.0
-flaskr         1.0.0     /home/user/Projects/flask-tutorial
-itsdangerous   0.24
-Jinja2         2.10
-MarkupSafe     1.0
-pip            9.0.3
-Werkzeug       0.14.1
-</pre></div>
-</div>
-<p>Nothing changes from how you’ve been running your project so far.
-<code class="docutils literal notranslate"><span class="pre">--app</span></code> is still set to <code class="docutils literal notranslate"><span class="pre">flaskr</span></code> and <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> still runs
-the application, but you can call it from anywhere, not just the
-<code class="docutils literal notranslate"><span class="pre">flask-tutorial</span></code> directory.</p>
-<p>Continue to <a class="reference internal" href="tests.html"><span class="doc">Test Coverage</span></a>.</p>
-</section>
+<p>You can find a less compact version of <code class="docutils literal notranslate"><span class="pre">style.css</span></code> in the
+<a class="reference external" href="https://github.com/pallets/flask/tree/main/examples/tutorial/flaskr/static/style.css">example code</a>.</p>
+<p>Go to <a class="reference external" href="http://127.0.0.1:5000/auth/login">http://127.0.0.1:5000/auth/login</a> and the page should look like the
+screenshot below.</p>
+<img alt="screenshot of login page" class="screenshot align-center" src="../_images/flaskr_login.png" />
+<p>You can read more about CSS from <a class="reference external" href="https://developer.mozilla.org/docs/Web/CSS">Mozilla’s documentation</a>. If
+you change a static file, refresh the browser page. If the change
+doesn’t show up, try clearing your browser’s cache.</p>
+<p>Continue to <a class="reference internal" href="blog.html"><span class="doc">Blog Blueprint</span></a>.</p>
 </section>
 
 
@@ -129,29 +112,20 @@ the application, but you can call it from anywhere, not just the
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
 
-  <h3>Contents</h3>
-  <ul>
-<li><a class="reference internal" href="#">Make the Project Installable</a><ul>
-<li><a class="reference internal" href="#describe-the-project">Describe the Project</a></li>
-<li><a class="reference internal" href="#install-the-project">Install the Project</a></li>
-</ul>
-</li>
-</ul>
 <h3>Navigation</h3>
 <ul>
   <li><a href="../index.html">Overview</a>
     <ul>
       <li><a href="index.html">Tutorial</a>
         <ul>
-          <li>Previous: <a href="blog.html" title="previous chapter">Blog Blueprint</a>
-          <li>Next: <a href="tests.html" title="next chapter">Test Coverage</a></ul>
+          <li>Previous: <a href="templates.html" title="previous chapter">Templates</a>
+          <li>Next: <a href="blog.html" title="next chapter">Blog Blueprint</a></ul>
       </li>
     </ul>
   </li>

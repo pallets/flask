@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Caching &#8212; Flask Documentation (3.2.x)</title>
+    <title>Adding a favicon &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="View Decorators" href="viewdecorators.html" />
-    <link rel="prev" title="Uploading Files" href="fileuploads.html" /> 
+    <link rel="next" title="Streaming Contents" href="streaming.html" />
+    <link rel="prev" title="MongoDB with MongoEngine" href="mongoengine.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,33 +28,73 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="viewdecorators.html" title="View Decorators"
+          <a href="streaming.html" title="Streaming Contents"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="fileuploads.html" title="Uploading Files"
+          <a href="mongoengine.html" title="MongoDB with MongoEngine"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Patterns for Flask</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Caching</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Adding a favicon</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="caching">
-<h1>Caching<a class="headerlink" href="#caching" title="Link to this heading">¶</a></h1>
-<p>When your application runs slow, throw some caches in.  Well, at least
-it’s the easiest way to speed up things.  What does a cache do?  Say you
-have a function that takes some time to complete but the results would
-still be good enough if they were 5 minutes old.  So then the idea is that
-you actually put the result of that calculation into a cache for some
-time.</p>
-<p>Flask itself does not provide caching for you, but <a class="reference external" href="https://flask-caching.readthedocs.io/en/latest/">Flask-Caching</a>, an
-extension for Flask does. Flask-Caching supports various backends, and it is
-even possible to develop your own caching backend.</p>
+
+  <section id="adding-a-favicon">
+<h1>Adding a favicon<a class="headerlink" href="#adding-a-favicon" title="Link to this heading">¶</a></h1>
+<p>A “favicon” is an icon used by browsers for tabs and bookmarks. This helps
+to distinguish your website and to give it a unique brand.</p>
+<p>A common question is how to add a favicon to a Flask application. First, of
+course, you need an icon. It should be 16 × 16 pixels and in the ICO file
+format. This is not a requirement but a de-facto standard supported by all
+relevant browsers. Put the icon in your static directory as
+<code class="file docutils literal notranslate"><span class="pre">favicon.ico</span></code>.</p>
+<p>Now, to get browsers to find your icon, the correct way is to add a link
+tag in your HTML. So, for example:</p>
+<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;shortcut icon&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">url_for</span><span class="o">(</span><span class="s1">&#39;static&#39;</span><span class="o">,</span> <span class="nv">filename</span><span class="o">=</span><span class="s1">&#39;favicon.ico&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="s">&quot;</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>That’s all you need for most browsers, however some really old ones do not
+support this standard. The old de-facto standard is to serve this file,
+with this name, at the website root. If your application is not mounted at
+the root path of the domain you either need to configure the web server to
+serve the icon at the root or if you can’t do that you’re out of luck. If
+however your application is the root you can simply route a redirect:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span>
+    <span class="s2">&quot;/favicon.ico&quot;</span><span class="p">,</span>
+    <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;favicon&quot;</span><span class="p">,</span>
+    <span class="n">redirect_to</span><span class="o">=</span><span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;favicon.ico&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>If you want to save the extra redirect request you can also write a view
+using <a class="reference internal" href="../api.html#flask.send_from_directory" title="flask.send_from_directory"><code class="xref py py-func docutils literal notranslate"><span class="pre">send_from_directory()</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_from_directory</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/favicon.ico&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">favicon</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">send_from_directory</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span> <span class="s1">&#39;static&#39;</span><span class="p">),</span>
+                               <span class="s1">&#39;favicon.ico&#39;</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s1">&#39;image/vnd.microsoft.icon&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can leave out the explicit mimetype and it will be guessed, but we may
+as well specify it to avoid the extra guessing, as it will always be the
+same.</p>
+<p>The above will serve the icon via your application and if possible it’s
+better to configure your dedicated web server to serve it; refer to the
+web server’s documentation.</p>
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>The <a class="reference external" href="https://en.wikipedia.org/wiki/Favicon">Favicon</a> article on
+Wikipedia</p></li>
+</ul>
+</section>
 </section>
 
 
@@ -65,20 +105,28 @@ even possible to develop your own caching backend.</p>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Adding a favicon</a><ul>
+<li><a class="reference internal" href="#see-also">See also</a></li>
+</ul>
+</li>
+</ul>
 <h3>Navigation</h3>
 <ul>
   <li><a href="../index.html">Overview</a>
     <ul>
       <li><a href="index.html">Patterns for Flask</a>
         <ul>
-          <li>Previous: <a href="fileuploads.html" title="previous chapter">Uploading Files</a>
-          <li>Next: <a href="viewdecorators.html" title="next chapter">View Decorators</a></ul>
+          <li>Previous: <a href="mongoengine.html" title="previous chapter">MongoDB with MongoEngine</a>
+          <li>Next: <a href="streaming.html" title="next chapter">Streaming Contents</a></ul>
       </li>
     </ul>
   </li>

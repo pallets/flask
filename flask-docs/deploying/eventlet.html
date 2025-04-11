@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>eventlet &#8212; Flask Documentation (3.2.x)</title>
+    <title>Deploying to Production &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="ASGI" href="asgi.html" />
-    <link rel="prev" title="gevent" href="gevent.html" /> 
+    <link rel="next" title="Gunicorn" href="gunicorn.html" />
+    <link rel="prev" title="Security Considerations" href="../web-security.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,84 +28,90 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="asgi.html" title="ASGI"
+          <a href="gunicorn.html" title="Gunicorn"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="gevent.html" title="gevent"
+          <a href="../web-security.html" title="Security Considerations"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Deploying to Production</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">eventlet</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Deploying to Production</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="eventlet">
-<h1>eventlet<a class="headerlink" href="#eventlet" title="Link to this heading">¶</a></h1>
-<p>Prefer using <a class="reference internal" href="gunicorn.html"><span class="doc">Gunicorn</span></a> with eventlet workers rather than using
-<a class="reference external" href="https://eventlet.net/">eventlet</a> directly. Gunicorn provides a much more configurable and
-production-tested server.</p>
-<p><a class="reference external" href="https://eventlet.net/">eventlet</a> allows writing asynchronous, coroutine-based code that looks
-like standard synchronous Python. It uses <a class="reference external" href="https://greenlet.readthedocs.io/en/latest/">greenlet</a> to enable task
-switching without writing <code class="docutils literal notranslate"><span class="pre">async/await</span></code> or using <code class="docutils literal notranslate"><span class="pre">asyncio</span></code>.</p>
-<p><a class="reference internal" href="gevent.html"><span class="doc">gevent</span></a> is another library that does the same thing. Certain
-dependencies you have, or other considerations, may affect which of the
-two you choose to use.</p>
-<p>eventlet provides a WSGI server that can handle many connections at once
-instead of one per worker process. You must actually use eventlet in
-your own code to see any benefit to using the server.</p>
-<section id="installing">
-<h2>Installing<a class="headerlink" href="#installing" title="Link to this heading">¶</a></h2>
-<p>When using eventlet, greenlet&gt;=1.0 is required, otherwise context locals
-such as <code class="docutils literal notranslate"><span class="pre">request</span></code> will not work as expected. When using PyPy,
-PyPy&gt;=7.3.7 is required.</p>
-<p>Create a virtualenv, install your application, then install
-<code class="docutils literal notranslate"><span class="pre">eventlet</span></code>.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cd hello-app
-$ python -m venv .venv
-$ . .venv/bin/activate
-$ pip install .  # install your application
-$ pip install eventlet
-</pre></div>
-</div>
-</section>
-<section id="running">
-<h2>Running<a class="headerlink" href="#running" title="Link to this heading">¶</a></h2>
-<p>To use eventlet to serve your application, write a script that imports
-its <code class="docutils literal notranslate"><span class="pre">wsgi.server</span></code>, as well as your app or app factory.</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">wsgi.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">eventlet</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">eventlet</span><span class="w"> </span><span class="kn">import</span> <span class="n">wsgi</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">hello</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
-<span class="n">wsgi</span><span class="o">.</span><span class="n">server</span><span class="p">(</span><span class="n">eventlet</span><span class="o">.</span><span class="n">listen</span><span class="p">((</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)),</span> <span class="n">app</span><span class="p">)</span>
-</pre></div>
+  <section id="deploying-to-production">
+<h1>Deploying to Production<a class="headerlink" href="#deploying-to-production" title="Link to this heading">¶</a></h1>
+<p>After developing your application, you’ll want to make it available
+publicly to other users. When you’re developing locally, you’re probably
+using the built-in development server, debugger, and reloader. These
+should not be used in production. Instead, you should use a dedicated
+WSGI server or hosting platform, some of which will be described here.</p>
+<p>“Production” means “not development”, which applies whether you’re
+serving your application publicly to millions of users or privately /
+locally to a single user. <strong>Do not use the development server when
+deploying to production. It is intended for use only during local
+development. It is not designed to be particularly secure, stable, or
+efficient.</strong></p>
+<section id="self-hosted-options">
+<h2>Self-Hosted Options<a class="headerlink" href="#self-hosted-options" title="Link to this heading">¶</a></h2>
+<p>Flask is a WSGI <em>application</em>. A WSGI <em>server</em> is used to run the
+application, converting incoming HTTP requests to the standard WSGI
+environ, and converting outgoing WSGI responses to HTTP responses.</p>
+<p>The primary goal of these docs is to familiarize you with the concepts
+involved in running a WSGI application using a production WSGI server
+and HTTP server. There are many WSGI servers and HTTP servers, with many
+configuration possibilities. The pages below discuss the most common
+servers, and show the basics of running each one. The next section
+discusses platforms that can manage this for you.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gunicorn.html">Gunicorn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="waitress.html">Waitress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mod_wsgi.html">mod_wsgi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uwsgi.html">uWSGI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gevent.html">gevent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eventlet.html">eventlet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asgi.html">ASGI</a></li>
+</ul>
 </div>
+<p>WSGI servers have HTTP servers built-in. However, a dedicated HTTP
+server may be safer, more efficient, or more capable. Putting an HTTP
+server in front of the WSGI server is called a “reverse proxy.”</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="proxy_fix.html">Tell Flask it is Behind a Proxy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nginx.html">nginx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apache-httpd.html">Apache httpd</a></li>
+</ul>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ python wsgi.py
-(x) wsgi starting up on http://127.0.0.1:8000
-</pre></div>
-</div>
+<p>This list is not exhaustive, and you should evaluate these and other
+servers based on your application’s needs. Different servers will have
+different capabilities, configuration, and support.</p>
 </section>
-<section id="binding-externally">
-<h2>Binding Externally<a class="headerlink" href="#binding-externally" title="Link to this heading">¶</a></h2>
-<p>eventlet should not be run as root because it would cause your
-application code to run as root, which is not secure. However, this
-means it will not be possible to bind to port 80 or 443. Instead, a
-reverse proxy such as <a class="reference internal" href="nginx.html"><span class="doc">nginx</span></a> or <a class="reference internal" href="apache-httpd.html"><span class="doc">Apache httpd</span></a> should be used
-in front of eventlet.</p>
-<p>You can bind to all external IPs on a non-privileged port by using
-<code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code> in the server arguments shown in the previous section.
-Don’t do this when using a reverse proxy setup, otherwise it will be
-possible to bypass the proxy.</p>
-<p><code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code> is not a valid address to navigate to, you’d use a specific
-IP address in your browser.</p>
+<section id="hosting-platforms">
+<h2>Hosting Platforms<a class="headerlink" href="#hosting-platforms" title="Link to this heading">¶</a></h2>
+<p>There are many services available for hosting web applications without
+needing to maintain your own server, networking, domain, etc. Some
+services may have a free tier up to a certain time or bandwidth. Many of
+these services use one of the WSGI servers described above, or a similar
+interface. The links below are for some of the most common platforms,
+which have instructions for Flask, WSGI, or Python.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://help.pythonanywhere.com/pages/Flask/">PythonAnywhere</a></p></li>
+<li><p><a class="reference external" href="https://cloud.google.com/appengine/docs/standard/python3/building-app">Google App Engine</a></p></li>
+<li><p><a class="reference external" href="https://cloud.google.com/run/docs/quickstarts/build-and-deploy/deploy-python-service">Google Cloud Run</a></p></li>
+<li><p><a class="reference external" href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-flask.html">AWS Elastic Beanstalk</a></p></li>
+<li><p><a class="reference external" href="https://docs.microsoft.com/en-us/azure/app-service/quickstart-python">Microsoft Azure</a></p></li>
+</ul>
+<p>This list is not exhaustive, and you should evaluate these and other
+services based on your application’s needs. Different services will have
+different capabilities, configuration, pricing, and support.</p>
+<p>You’ll probably need to <a class="reference internal" href="proxy_fix.html"><span class="doc">Tell Flask it is Behind a Proxy</span></a> when using most hosting
+platforms.</p>
 </section>
 </section>
 
@@ -117,19 +123,20 @@ IP address in your browser.</p>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
 
   <h3>Contents</h3>
   <ul>
-<li><a class="reference internal" href="#">eventlet</a><ul>
-<li><a class="reference internal" href="#installing">Installing</a></li>
-<li><a class="reference internal" href="#running">Running</a></li>
-<li><a class="reference internal" href="#binding-externally">Binding Externally</a></li>
+<li><a class="reference internal" href="#">Deploying to Production</a><ul>
+<li><a class="reference internal" href="#self-hosted-options">Self-Hosted Options</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#hosting-platforms">Hosting Platforms</a></li>
 </ul>
 </li>
 </ul>
@@ -137,11 +144,8 @@ IP address in your browser.</p>
 <ul>
   <li><a href="../index.html">Overview</a>
     <ul>
-      <li><a href="index.html">Deploying to Production</a>
-        <ul>
-          <li>Previous: <a href="gevent.html" title="previous chapter">gevent</a>
-          <li>Next: <a href="asgi.html" title="next chapter">ASGI</a></ul>
-      </li>
+          <li>Previous: <a href="../web-security.html" title="previous chapter">Security Considerations</a>
+          <li>Next: <a href="gunicorn.html" title="next chapter">Gunicorn</a>
     </ul>
   </li>
 </ul>

@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Application Factories &#8212; Flask Documentation (3.2.x)</title>
+    <title>Deferred Request Callbacks &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Application Dispatching" href="appdispatch.html" />
-    <link rel="prev" title="Large Applications as Packages" href="packages.html" /> 
+    <link rel="next" title="Adding HTTP Method Overrides" href="methodoverrides.html" />
+    <link rel="prev" title="Streaming Contents" href="streaming.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,130 +28,62 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="appdispatch.html" title="Application Dispatching"
+          <a href="methodoverrides.html" title="Adding HTTP Method Overrides"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="packages.html" title="Large Applications as Packages"
+          <a href="streaming.html" title="Streaming Contents"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Patterns for Flask</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Application Factories</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Deferred Request Callbacks</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="application-factories">
-<h1>Application Factories<a class="headerlink" href="#application-factories" title="Link to this heading">¶</a></h1>
-<p>If you are already using packages and blueprints for your application
-(<a class="reference internal" href="../blueprints.html"><span class="doc">Modular Applications with Blueprints</span></a>) there are a couple of really nice ways to further improve
-the experience.  A common pattern is creating the application object when
-the blueprint is imported.  But if you move the creation of this object
-into a function, you can then create multiple instances of this app later.</p>
-<p>So why would you want to do this?</p>
-<ol class="arabic simple">
-<li><p>Testing.  You can have instances of the application with different
-settings to test every case.</p></li>
-<li><p>Multiple instances.  Imagine you want to run different versions of the
-same application.  Of course you could have multiple instances with
-different configs set up in your webserver, but if you use factories,
-you can have multiple instances of the same application running in the
-same application process which can be handy.</p></li>
-</ol>
-<p>So how would you then actually implement that?</p>
-<section id="basic-factories">
-<h2>Basic Factories<a class="headerlink" href="#basic-factories" title="Link to this heading">¶</a></h2>
-<p>The idea is to set up the application in a function.  Like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">config_filename</span><span class="p">):</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_pyfile</span><span class="p">(</span><span class="n">config_filename</span><span class="p">)</span>
 
-    <span class="kn">from</span><span class="w"> </span><span class="nn">yourapplication.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">db</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+  <section id="deferred-request-callbacks">
+<h1>Deferred Request Callbacks<a class="headerlink" href="#deferred-request-callbacks" title="Link to this heading">¶</a></h1>
+<p>One of the design principles of Flask is that response objects are created and
+passed down a chain of potential callbacks that can modify them or replace
+them. When the request handling starts, there is no response object yet. It is
+created as necessary either by a view function or by some other component in
+the system.</p>
+<p>What happens if you want to modify the response at a point where the response
+does not exist yet?  A common example for that would be a
+<a class="reference internal" href="../api.html#flask.Flask.before_request" title="flask.Flask.before_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">before_request()</span></code></a> callback that wants to set a cookie on the
+response object.</p>
+<p>One way is to avoid the situation. Very often that is possible. For instance
+you can try to move that logic into a <a class="reference internal" href="../api.html#flask.Flask.after_request" title="flask.Flask.after_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">after_request()</span></code></a>
+callback instead. However, sometimes moving code there makes it
+more complicated or awkward to reason about.</p>
+<p>As an alternative, you can use <a class="reference internal" href="../api.html#flask.after_this_request" title="flask.after_this_request"><code class="xref py py-func docutils literal notranslate"><span class="pre">after_this_request()</span></code></a> to register
+callbacks that will execute after only the current request. This way you can
+defer code execution from anywhere in the application, based on the current
+request.</p>
+<p>At any time during a request, we can register a function to be called at the
+end of the request. For example you can remember the current language of the
+user in a cookie in a <a class="reference internal" href="../api.html#flask.Flask.before_request" title="flask.Flask.before_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">before_request()</span></code></a> callback:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">request</span><span class="p">,</span> <span class="n">after_this_request</span>
 
-    <span class="kn">from</span><span class="w"> </span><span class="nn">yourapplication.views.admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">yourapplication.views.frontend</span><span class="w"> </span><span class="kn">import</span> <span class="n">frontend</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">admin</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">frontend</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">before_request</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">detect_user_language</span><span class="p">():</span>
+    <span class="n">language</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_lang&#39;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">app</span>
-</pre></div>
-</div>
-<p>The downside is that you cannot use the application object in the blueprints
-at import time.  You can however use it from within a request.  How do you
-get access to the application with the config?  Use
-<a class="reference internal" href="../api.html#flask.current_app" title="flask.current_app"><code class="xref py py-data docutils literal notranslate"><span class="pre">current_app</span></code></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">current_app</span><span class="p">,</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">render_template</span>
-<span class="n">admin</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/admin&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">language</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">language</span> <span class="o">=</span> <span class="n">guess_language_from_request</span><span class="p">()</span>
 
-<span class="nd">@admin</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;INDEX_TEMPLATE&#39;</span><span class="p">])</span>
-</pre></div>
-</div>
-<p>Here we look up the name of a template in the config.</p>
-</section>
-<section id="factories-extensions">
-<h2>Factories &amp; Extensions<a class="headerlink" href="#factories-extensions" title="Link to this heading">¶</a></h2>
-<p>It’s preferable to create your extensions and app factories so that the
-extension object does not initially get bound to the application.</p>
-<p>Using <a class="reference external" href="https://flask-sqlalchemy.palletsprojects.com/">Flask-SQLAlchemy</a>,
-as an example, you should not do something along those lines:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">config_filename</span><span class="p">):</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_pyfile</span><span class="p">(</span><span class="n">config_filename</span><span class="p">)</span>
+        <span class="c1"># when the response exists, set a cookie with the language</span>
+        <span class="nd">@after_this_request</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">remember_language</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s1">&#39;user_lang&#39;</span><span class="p">,</span> <span class="n">language</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">response</span>
 
-    <span class="n">db</span> <span class="o">=</span> <span class="n">SQLAlchemy</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">language</span> <span class="o">=</span> <span class="n">language</span>
 </pre></div>
 </div>
-<p>But, rather, in model.py (or equivalent):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">db</span> <span class="o">=</span> <span class="n">SQLAlchemy</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>and in your application.py (or equivalent):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">config_filename</span><span class="p">):</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_pyfile</span><span class="p">(</span><span class="n">config_filename</span><span class="p">)</span>
-
-    <span class="kn">from</span><span class="w"> </span><span class="nn">yourapplication.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">db</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Using this design pattern, no application-specific state is stored on the
-extension object, so one extension object can be used for multiple apps.
-For more information about the design of extensions refer to <a class="reference internal" href="../extensiondev.html"><span class="doc">Flask Extension Development</span></a>.</p>
-</section>
-<section id="using-applications">
-<h2>Using Applications<a class="headerlink" href="#using-applications" title="Link to this heading">¶</a></h2>
-<p>To run such an application, you can use the <strong class="command">flask</strong> command:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ flask --app hello run
-</pre></div>
-</div>
-<p>Flask will automatically detect the factory if it is named
-<code class="docutils literal notranslate"><span class="pre">create_app</span></code> or <code class="docutils literal notranslate"><span class="pre">make_app</span></code> in <code class="docutils literal notranslate"><span class="pre">hello</span></code>. You can also pass arguments
-to the factory like this:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ flask --app &#39;hello:create_app(local_auth=True)&#39; run
-</pre></div>
-</div>
-<p>Then the <code class="docutils literal notranslate"><span class="pre">create_app</span></code> factory in <code class="docutils literal notranslate"><span class="pre">hello</span></code> is called with the keyword
-argument <code class="docutils literal notranslate"><span class="pre">local_auth=True</span></code>. See <a class="reference internal" href="../cli.html"><span class="doc">Command Line Interface</span></a> for more detail.</p>
-</section>
-<section id="factory-improvements">
-<h2>Factory Improvements<a class="headerlink" href="#factory-improvements" title="Link to this heading">¶</a></h2>
-<p>The factory function above is not very clever, but you can improve it.
-The following changes are straightforward to implement:</p>
-<ol class="arabic simple">
-<li><p>Make it possible to pass in configuration values for unit tests so that
-you don’t have to create config files on the filesystem.</p></li>
-<li><p>Call a function from a blueprint when the application is setting up so
-that you have a place to modify attributes of the application (like
-hooking in before/after request handlers etc.)</p></li>
-<li><p>Add in WSGI middlewares when the application is being created if necessary.</p></li>
-</ol>
-</section>
 </section>
 
 
@@ -162,31 +94,20 @@ hooking in before/after request handlers etc.)</p></li>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
 
-  <h3>Contents</h3>
-  <ul>
-<li><a class="reference internal" href="#">Application Factories</a><ul>
-<li><a class="reference internal" href="#basic-factories">Basic Factories</a></li>
-<li><a class="reference internal" href="#factories-extensions">Factories &amp; Extensions</a></li>
-<li><a class="reference internal" href="#using-applications">Using Applications</a></li>
-<li><a class="reference internal" href="#factory-improvements">Factory Improvements</a></li>
-</ul>
-</li>
-</ul>
 <h3>Navigation</h3>
 <ul>
   <li><a href="../index.html">Overview</a>
     <ul>
       <li><a href="index.html">Patterns for Flask</a>
         <ul>
-          <li>Previous: <a href="packages.html" title="previous chapter">Large Applications as Packages</a>
-          <li>Next: <a href="appdispatch.html" title="next chapter">Application Dispatching</a></ul>
+          <li>Previous: <a href="streaming.html" title="previous chapter">Streaming Contents</a>
+          <li>Next: <a href="methodoverrides.html" title="next chapter">Adding HTTP Method Overrides</a></ul>
       </li>
     </ul>
   </li>

@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AJAX with jQuery &#8212; Flask Documentation (3.2.x)</title>
+    <title>MongoDB with MongoEngine &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -14,7 +14,9 @@
     <script data-project="flask" data-version="3.2.x" src="../_static/describe_version.js?v=fa7f30d0"></script>
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Adding a favicon" href="favicon.html" />
+    <link rel="prev" title="Lazily Loading Views" href="lazyloading.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -25,19 +27,114 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="favicon.html" title="Adding a favicon"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="lazyloading.html" title="Lazily Loading Views"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">AJAX with jQuery</a></li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Patterns for Flask</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">MongoDB with MongoEngine</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="ajax-with-jquery">
-<h1>AJAX with jQuery<a class="headerlink" href="#ajax-with-jquery" title="Link to this heading">¶</a></h1>
-<p>Obsolete, see <a class="reference internal" href="javascript.html"><span class="doc">JavaScript, fetch, and JSON</span></a> instead.</p>
+
+  <section id="mongodb-with-mongoengine">
+<h1>MongoDB with MongoEngine<a class="headerlink" href="#mongodb-with-mongoengine" title="Link to this heading">¶</a></h1>
+<p>Using a document database like MongoDB is a common alternative to
+relational SQL databases. This pattern shows how to use
+<a class="reference external" href="http://mongoengine.org">MongoEngine</a>, a document mapper library, to integrate with MongoDB.</p>
+<p>A running MongoDB server and <a class="reference external" href="https://flask-mongoengine.readthedocs.io">Flask-MongoEngine</a> are required.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">flask</span><span class="o">-</span><span class="n">mongoengine</span>
+</pre></div>
+</div>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
+<p>Basic setup can be done by defining <code class="docutils literal notranslate"><span class="pre">MONGODB_SETTINGS</span></code> on
+<code class="docutils literal notranslate"><span class="pre">app.config</span></code> and creating a <code class="docutils literal notranslate"><span class="pre">MongoEngine</span></code> instance.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask_mongoengine</span><span class="w"> </span><span class="kn">import</span> <span class="n">MongoEngine</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;MONGODB_SETTINGS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;db&quot;</span><span class="p">:</span> <span class="s2">&quot;myapp&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">MongoEngine</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="mapping-documents">
+<h2>Mapping Documents<a class="headerlink" href="#mapping-documents" title="Link to this heading">¶</a></h2>
+<p>To declare a model that represents a Mongo document, create a class that
+inherits from <code class="docutils literal notranslate"><span class="pre">Document</span></code> and declare each of the fields.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">mongoengine</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">me</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Movie</span><span class="p">(</span><span class="n">me</span><span class="o">.</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">StringField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">year</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">IntField</span><span class="p">()</span>
+    <span class="n">rated</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">StringField</span><span class="p">()</span>
+    <span class="n">director</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">StringField</span><span class="p">()</span>
+    <span class="n">actors</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">ListField</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If the document has nested fields, use <code class="docutils literal notranslate"><span class="pre">EmbeddedDocument</span></code> to
+defined the fields of the embedded document and
+<code class="docutils literal notranslate"><span class="pre">EmbeddedDocumentField</span></code> to declare it on the parent document.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Imdb</span><span class="p">(</span><span class="n">me</span><span class="o">.</span><span class="n">EmbeddedDocument</span><span class="p">):</span>
+    <span class="n">imdb_id</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">StringField</span><span class="p">()</span>
+    <span class="n">rating</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">()</span>
+    <span class="n">votes</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">IntField</span><span class="p">()</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Movie</span><span class="p">(</span><span class="n">me</span><span class="o">.</span><span class="n">Document</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">imdb</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">EmbeddedDocumentField</span><span class="p">(</span><span class="n">Imdb</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-data">
+<h2>Creating Data<a class="headerlink" href="#creating-data" title="Link to this heading">¶</a></h2>
+<p>Instantiate your document class with keyword arguments for the fields.
+You can also assign values to the field attributes after instantiation.
+Then call <code class="docutils literal notranslate"><span class="pre">doc.save()</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bttf</span> <span class="o">=</span> <span class="n">Movie</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Back To The Future&quot;</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="mi">1985</span><span class="p">)</span>
+<span class="n">bttf</span><span class="o">.</span><span class="n">actors</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Michael J. Fox&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Christopher Lloyd&quot;</span>
+<span class="p">]</span>
+<span class="n">bttf</span><span class="o">.</span><span class="n">imdb</span> <span class="o">=</span> <span class="n">Imdb</span><span class="p">(</span><span class="n">imdb_id</span><span class="o">=</span><span class="s2">&quot;tt0088763&quot;</span><span class="p">,</span> <span class="n">rating</span><span class="o">=</span><span class="mf">8.5</span><span class="p">)</span>
+<span class="n">bttf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="queries">
+<h2>Queries<a class="headerlink" href="#queries" title="Link to this heading">¶</a></h2>
+<p>Use the class <code class="docutils literal notranslate"><span class="pre">objects</span></code> attribute to make queries. A keyword argument
+looks for an equal value on the field.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bttf</span> <span class="o">=</span> <span class="n">Movie</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Back To The Future&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_or_404</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Query operators may be used by concatenating them with the field name
+using a double-underscore. <code class="docutils literal notranslate"><span class="pre">objects</span></code>, and queries returned by
+calling it, are iterable.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">some_theron_movie</span> <span class="o">=</span> <span class="n">Movie</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">actors__in</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Charlize Theron&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">recents</span> <span class="ow">in</span> <span class="n">Movie</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">year__gte</span><span class="o">=</span><span class="mi">2017</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">recents</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
+<p>There are many more ways to define and query documents with MongoEngine.
+For more information, check out the <a class="reference external" href="http://mongoengine.org">official documentation</a>.</p>
+<p>Flask-MongoEngine adds helpful utilities on top of MongoEngine. Check
+out their <a class="reference external" href="https://flask-mongoengine.readthedocs.io">documentation</a> as well.</p>
+</section>
 </section>
 
 
@@ -48,16 +145,34 @@
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">MongoDB with MongoEngine</a><ul>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#mapping-documents">Mapping Documents</a></li>
+<li><a class="reference internal" href="#creating-data">Creating Data</a></li>
+<li><a class="reference internal" href="#queries">Queries</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+</li>
+</ul>
 <h3>Navigation</h3>
 <ul>
   <li><a href="../index.html">Overview</a>
-    
+    <ul>
+      <li><a href="index.html">Patterns for Flask</a>
+        <ul>
+          <li>Previous: <a href="lazyloading.html" title="previous chapter">Lazily Loading Views</a>
+          <li>Next: <a href="favicon.html" title="next chapter">Adding a favicon</a></ul>
+      </li>
+    </ul>
   </li>
 </ul>
 <search id="searchbox" style="display: none" role="search">

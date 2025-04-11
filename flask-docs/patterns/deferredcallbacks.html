@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Deferred Request Callbacks &#8212; Flask Documentation (3.2.x)</title>
+    <title>Message Flashing &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Adding HTTP Method Overrides" href="methodoverrides.html" />
-    <link rel="prev" title="Streaming Contents" href="streaming.html" /> 
+    <link rel="next" title="JavaScript, fetch, and JSON" href="javascript.html" />
+    <link rel="prev" title="Template Inheritance" href="templateinheritance.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,62 +28,161 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="methodoverrides.html" title="Adding HTTP Method Overrides"
+          <a href="javascript.html" title="JavaScript, fetch, and JSON"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="streaming.html" title="Streaming Contents"
+          <a href="templateinheritance.html" title="Template Inheritance"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Patterns for Flask</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Deferred Request Callbacks</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Message Flashing</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="deferred-request-callbacks">
-<h1>Deferred Request Callbacks<a class="headerlink" href="#deferred-request-callbacks" title="Link to this heading">¶</a></h1>
-<p>One of the design principles of Flask is that response objects are created and
-passed down a chain of potential callbacks that can modify them or replace
-them. When the request handling starts, there is no response object yet. It is
-created as necessary either by a view function or by some other component in
-the system.</p>
-<p>What happens if you want to modify the response at a point where the response
-does not exist yet?  A common example for that would be a
-<a class="reference internal" href="../api.html#flask.Flask.before_request" title="flask.Flask.before_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">before_request()</span></code></a> callback that wants to set a cookie on the
-response object.</p>
-<p>One way is to avoid the situation. Very often that is possible. For instance
-you can try to move that logic into a <a class="reference internal" href="../api.html#flask.Flask.after_request" title="flask.Flask.after_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">after_request()</span></code></a>
-callback instead. However, sometimes moving code there makes it
-more complicated or awkward to reason about.</p>
-<p>As an alternative, you can use <a class="reference internal" href="../api.html#flask.after_this_request" title="flask.after_this_request"><code class="xref py py-func docutils literal notranslate"><span class="pre">after_this_request()</span></code></a> to register
-callbacks that will execute after only the current request. This way you can
-defer code execution from anywhere in the application, based on the current
-request.</p>
-<p>At any time during a request, we can register a function to be called at the
-end of the request. For example you can remember the current language of the
-user in a cookie in a <a class="reference internal" href="../api.html#flask.Flask.before_request" title="flask.Flask.before_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">before_request()</span></code></a> callback:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">request</span><span class="p">,</span> <span class="n">after_this_request</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">before_request</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">detect_user_language</span><span class="p">():</span>
-    <span class="n">language</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_lang&#39;</span><span class="p">)</span>
+  <section id="message-flashing">
+<h1>Message Flashing<a class="headerlink" href="#message-flashing" title="Link to this heading">¶</a></h1>
+<p>Good applications and user interfaces are all about feedback.  If the user
+does not get enough feedback they will probably end up hating the
+application.  Flask provides a really simple way to give feedback to a
+user with the flashing system.  The flashing system basically makes it
+possible to record a message at the end of a request and access it next
+request and only next request.  This is usually combined with a layout
+template that does this. Note that browsers and sometimes web servers enforce
+a limit on cookie sizes. This means that flashing messages that are too
+large for session cookies causes message flashing to fail silently.</p>
+<section id="simple-flashing">
+<h2>Simple Flashing<a class="headerlink" href="#simple-flashing" title="Link to this heading">¶</a></h2>
+<p>So here is a full example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">flash</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">render_template</span><span class="p">,</span> \
+     <span class="n">request</span><span class="p">,</span> <span class="n">url_for</span>
 
-    <span class="k">if</span> <span class="n">language</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">language</span> <span class="o">=</span> <span class="n">guess_language_from_request</span><span class="p">()</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">secret_key</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;_5#y2L&quot;F4Q8z</span><span class="se">\n\xec</span><span class="s1">]/&#39;</span>
 
-        <span class="c1"># when the response exists, set a cookie with the language</span>
-        <span class="nd">@after_this_request</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">remember_language</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
-            <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s1">&#39;user_lang&#39;</span><span class="p">,</span> <span class="n">language</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">response</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">)</span>
 
-    <span class="n">g</span><span class="o">.</span><span class="n">language</span> <span class="o">=</span> <span class="n">language</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">():</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;admin&#39;</span> <span class="ow">or</span> \
+                <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;secret&#39;</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;Invalid credentials&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;You were successfully logged in&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;login.html&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>And here is the <code class="file docutils literal notranslate"><span class="pre">layout.html</span></code> template which does the magic:</p>
+<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>My Application<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="cp">{%</span> <span class="k">with</span> <span class="nv">messages</span> <span class="o">=</span> <span class="nv">get_flashed_messages</span><span class="o">()</span> <span class="cp">%}</span>
+  <span class="cp">{%</span> <span class="k">if</span> <span class="nv">messages</span> <span class="cp">%}</span>
+    <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">class</span><span class="o">=</span><span class="s">flashes</span><span class="p">&gt;</span>
+    <span class="cp">{%</span> <span class="k">for</span> <span class="nv">message</span> <span class="k">in</span> <span class="nv">messages</span> <span class="cp">%}</span>
+      <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">message</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+    <span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
+    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+  <span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">endwith</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">block</span> <span class="nv">body</span> <span class="cp">%}{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p>Here is the <code class="file docutils literal notranslate"><span class="pre">index.html</span></code> template which inherits from <code class="file docutils literal notranslate"><span class="pre">layout.html</span></code>:</p>
+<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">extends</span> <span class="s2">&quot;layout.html&quot;</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">block</span> <span class="nv">body</span> <span class="cp">%}</span>
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Overview<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Do you want to <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">url_for</span><span class="o">(</span><span class="s1">&#39;login&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="s">&quot;</span><span class="p">&gt;</span>log in?<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p>And here is the <code class="file docutils literal notranslate"><span class="pre">login.html</span></code> template which also inherits from
+<code class="file docutils literal notranslate"><span class="pre">layout.html</span></code>:</p>
+<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">extends</span> <span class="s2">&quot;layout.html&quot;</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">block</span> <span class="nv">body</span> <span class="cp">%}</span>
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Login<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+  <span class="cp">{%</span> <span class="k">if</span> <span class="nv">error</span> <span class="cp">%}</span>
+    <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">error</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span>Error:<span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span> <span class="cp">{{</span> <span class="nv">error</span> <span class="cp">}}</span>
+  <span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
+  <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">post</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">dl</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">dt</span><span class="p">&gt;</span>Username:
+      <span class="p">&lt;</span><span class="nt">dd</span><span class="p">&gt;&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">text</span> <span class="na">name</span><span class="o">=</span><span class="s">username</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span>
+          <span class="nv">request.form.username</span> <span class="cp">}}</span><span class="s">&quot;</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">dt</span><span class="p">&gt;</span>Password:
+      <span class="p">&lt;</span><span class="nt">dd</span><span class="p">&gt;&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">password</span> <span class="na">name</span><span class="o">=</span><span class="s">password</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">dl</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">submit</span> <span class="na">value</span><span class="o">=</span><span class="s">Login</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+</section>
+<section id="flashing-with-categories">
+<h2>Flashing With Categories<a class="headerlink" href="#flashing-with-categories" title="Link to this heading">¶</a></h2>
+<details class="changelog">
+<summary>Changelog</summary><div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.3.</span></p>
+</div>
+</details><p>It is also possible to provide categories when flashing a message.  The
+default category if nothing is provided is <code class="docutils literal notranslate"><span class="pre">'message'</span></code>.  Alternative
+categories can be used to give the user better feedback.  For example
+error messages could be displayed with a red background.</p>
+<p>To flash a message with a different category, just use the second argument
+to the <a class="reference internal" href="../api.html#flask.flash" title="flask.flash"><code class="xref py py-func docutils literal notranslate"><span class="pre">flash()</span></code></a> function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Invalid password provided&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Inside the template you then have to tell the
+<a class="reference internal" href="../api.html#flask.get_flashed_messages" title="flask.get_flashed_messages"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_flashed_messages()</span></code></a> function to also return the
+categories.  The loop looks slightly different in that situation then:</p>
+<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">with</span> <span class="nv">messages</span> <span class="o">=</span> <span class="nv">get_flashed_messages</span><span class="o">(</span><span class="nv">with_categories</span><span class="o">=</span><span class="kp">true</span><span class="o">)</span> <span class="cp">%}</span>
+  <span class="cp">{%</span> <span class="k">if</span> <span class="nv">messages</span> <span class="cp">%}</span>
+    <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">class</span><span class="o">=</span><span class="s">flashes</span><span class="p">&gt;</span>
+    <span class="cp">{%</span> <span class="k">for</span> <span class="nv">category</span><span class="o">,</span> <span class="nv">message</span> <span class="k">in</span> <span class="nv">messages</span> <span class="cp">%}</span>
+      <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">category</span> <span class="cp">}}</span><span class="s">&quot;</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">message</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+    <span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
+    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+  <span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">endwith</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+<p>This is just one example of how to render these flashed messages.  One
+might also use the category to add a prefix such as
+<code class="docutils literal notranslate"><span class="pre">&lt;strong&gt;Error:&lt;/strong&gt;</span></code> to the message.</p>
+</section>
+<section id="filtering-flash-messages">
+<h2>Filtering Flash Messages<a class="headerlink" href="#filtering-flash-messages" title="Link to this heading">¶</a></h2>
+<details class="changelog">
+<summary>Changelog</summary><div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.9.</span></p>
+</div>
+</details><p>Optionally you can pass a list of categories which filters the results of
+<a class="reference internal" href="../api.html#flask.get_flashed_messages" title="flask.get_flashed_messages"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_flashed_messages()</span></code></a>.  This is useful if you wish to
+render each category in a separate block.</p>
+<div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">with</span> <span class="nv">errors</span> <span class="o">=</span> <span class="nv">get_flashed_messages</span><span class="o">(</span><span class="nv">category_filter</span><span class="o">=[</span><span class="s2">&quot;error&quot;</span><span class="o">])</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">if</span> <span class="nv">errors</span> <span class="cp">%}</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;alert-message block-message error&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;close&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;#&quot;</span><span class="p">&gt;</span>×<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+    <span class="cp">{%</span>- <span class="k">for</span> <span class="nv">msg</span> <span class="k">in</span> <span class="nv">errors</span> <span class="cp">%}</span>
+    <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">msg</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+    <span class="cp">{%</span> <span class="k">endfor</span> -<span class="cp">%}</span>
+  <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">endwith</span> <span class="cp">%}</span>
+</pre></div>
+</div>
+</section>
 </section>
 
 
@@ -94,20 +193,30 @@ user in a cookie in a <a class="reference internal" href="../api.html#flask.Flas
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Message Flashing</a><ul>
+<li><a class="reference internal" href="#simple-flashing">Simple Flashing</a></li>
+<li><a class="reference internal" href="#flashing-with-categories">Flashing With Categories</a></li>
+<li><a class="reference internal" href="#filtering-flash-messages">Filtering Flash Messages</a></li>
+</ul>
+</li>
+</ul>
 <h3>Navigation</h3>
 <ul>
   <li><a href="../index.html">Overview</a>
     <ul>
       <li><a href="index.html">Patterns for Flask</a>
         <ul>
-          <li>Previous: <a href="streaming.html" title="previous chapter">Streaming Contents</a>
-          <li>Next: <a href="methodoverrides.html" title="next chapter">Adding HTTP Method Overrides</a></ul>
+          <li>Previous: <a href="templateinheritance.html" title="previous chapter">Template Inheritance</a>
+          <li>Next: <a href="javascript.html" title="next chapter">JavaScript, <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, and JSON</a></ul>
       </li>
     </ul>
   </li>

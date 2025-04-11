@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Patterns for Flask &#8212; Flask Documentation (3.2.x)</title>
+    <title>Lazily Loading Views &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Large Applications as Packages" href="packages.html" />
-    <link rel="prev" title="Working with the Shell" href="../shell.html" /> 
+    <link rel="next" title="MongoDB with MongoEngine" href="mongoengine.html" />
+    <link rel="prev" title="JavaScript, fetch, and JSON" href="javascript.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,153 +28,126 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="packages.html" title="Large Applications as Packages"
+          <a href="mongoengine.html" title="MongoDB with MongoEngine"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../shell.html" title="Working with the Shell"
+          <a href="javascript.html" title="JavaScript, fetch, and JSON"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Patterns for Flask</a></li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Patterns for Flask</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Lazily Loading Views</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="patterns-for-flask">
-<h1>Patterns for Flask<a class="headerlink" href="#patterns-for-flask" title="Link to this heading">¶</a></h1>
-<p>Certain features and interactions are common enough that you will find
-them in most web applications. For example, many applications use a
-relational database and user authentication. They will open a database
-connection at the beginning of the request and get the information for
-the logged in user. At the end of the request, the database connection
-is closed.</p>
-<p>These types of patterns may be a bit outside the scope of Flask itself,
-but Flask makes it easy to implement them. Some common patterns are
-collected in the following pages.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="packages.html">Large Applications as Packages</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="packages.html#simple-packages">Simple Packages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="packages.html#working-with-blueprints">Working with Blueprints</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="appfactories.html">Application Factories</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="appfactories.html#basic-factories">Basic Factories</a></li>
-<li class="toctree-l2"><a class="reference internal" href="appfactories.html#factories-extensions">Factories &amp; Extensions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="appfactories.html#using-applications">Using Applications</a></li>
-<li class="toctree-l2"><a class="reference internal" href="appfactories.html#factory-improvements">Factory Improvements</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="appdispatch.html">Application Dispatching</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="appdispatch.html#working-with-this-document">Working with this Document</a></li>
-<li class="toctree-l2"><a class="reference internal" href="appdispatch.html#combining-applications">Combining Applications</a></li>
-<li class="toctree-l2"><a class="reference internal" href="appdispatch.html#dispatch-by-subdomain">Dispatch by Subdomain</a></li>
-<li class="toctree-l2"><a class="reference internal" href="appdispatch.html#dispatch-by-path">Dispatch by Path</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="urlprocessors.html">Using URL Processors</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="urlprocessors.html#internationalized-application-urls">Internationalized Application URLs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="urlprocessors.html#internationalized-blueprint-urls">Internationalized Blueprint URLs</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="sqlite3.html">Using SQLite 3 with Flask</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="sqlite3.html#connect-on-demand">Connect on Demand</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sqlite3.html#easy-querying">Easy Querying</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sqlite3.html#initial-schemas">Initial Schemas</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="sqlalchemy.html">SQLAlchemy in Flask</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html#flask-sqlalchemy-extension">Flask-SQLAlchemy Extension</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html#declarative">Declarative</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html#manual-object-relational-mapping">Manual Object Relational Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html#sql-abstraction-layer">SQL Abstraction Layer</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="fileuploads.html">Uploading Files</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="fileuploads.html#a-gentle-introduction">A Gentle Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fileuploads.html#improving-uploads">Improving Uploads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fileuploads.html#upload-progress-bars">Upload Progress Bars</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fileuploads.html#an-easier-solution">An Easier Solution</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="caching.html">Caching</a></li>
-<li class="toctree-l1"><a class="reference internal" href="viewdecorators.html">View Decorators</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="viewdecorators.html#login-required-decorator">Login Required Decorator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="viewdecorators.html#caching-decorator">Caching Decorator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="viewdecorators.html#templating-decorator">Templating Decorator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="viewdecorators.html#endpoint-decorator">Endpoint Decorator</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="wtforms.html">Form Validation with WTForms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="wtforms.html#the-forms">The Forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="wtforms.html#in-the-view">In the View</a></li>
-<li class="toctree-l2"><a class="reference internal" href="wtforms.html#forms-in-templates">Forms in Templates</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="templateinheritance.html">Template Inheritance</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="templateinheritance.html#base-template">Base Template</a></li>
-<li class="toctree-l2"><a class="reference internal" href="templateinheritance.html#child-template">Child Template</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="flashing.html">Message Flashing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="flashing.html#simple-flashing">Simple Flashing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="flashing.html#flashing-with-categories">Flashing With Categories</a></li>
-<li class="toctree-l2"><a class="reference internal" href="flashing.html#filtering-flash-messages">Filtering Flash Messages</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="javascript.html">JavaScript, <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, and JSON</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="javascript.html#rendering-templates">Rendering Templates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="javascript.html#generating-urls">Generating URLs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="javascript.html#making-a-request-with-fetch">Making a Request with <code class="docutils literal notranslate"><span class="pre">fetch</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="javascript.html#following-redirects">Following Redirects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="javascript.html#replacing-content">Replacing Content</a></li>
-<li class="toctree-l2"><a class="reference internal" href="javascript.html#return-json-from-views">Return JSON from Views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="javascript.html#receiving-json-in-views">Receiving JSON in Views</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="lazyloading.html">Lazily Loading Views</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="lazyloading.html#converting-to-centralized-url-map">Converting to Centralized URL Map</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lazyloading.html#loading-late">Loading Late</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="mongoengine.html">MongoDB with MongoEngine</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="mongoengine.html#configuration">Configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mongoengine.html#mapping-documents">Mapping Documents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mongoengine.html#creating-data">Creating Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mongoengine.html#queries">Queries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mongoengine.html#documentation">Documentation</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="favicon.html">Adding a favicon</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="favicon.html#see-also">See also</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="streaming.html">Streaming Contents</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="streaming.html#basic-usage">Basic Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="streaming.html#streaming-from-templates">Streaming from Templates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="streaming.html#streaming-with-context">Streaming with Context</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="deferredcallbacks.html">Deferred Request Callbacks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="methodoverrides.html">Adding HTTP Method Overrides</a></li>
-<li class="toctree-l1"><a class="reference internal" href="requestchecksum.html">Request Content Checksums</a></li>
-<li class="toctree-l1"><a class="reference internal" href="celery.html">Background Tasks with Celery</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="celery.html#install">Install</a></li>
-<li class="toctree-l2"><a class="reference internal" href="celery.html#integrate-celery-with-flask">Integrate Celery with Flask</a></li>
-<li class="toctree-l2"><a class="reference internal" href="celery.html#application-factory">Application Factory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="celery.html#defining-tasks">Defining Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="celery.html#calling-tasks">Calling Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="celery.html#getting-results">Getting Results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="celery.html#passing-data-to-tasks">Passing Data to Tasks</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="subclassing.html">Subclassing Flask</a></li>
-<li class="toctree-l1"><a class="reference internal" href="singlepageapplications.html">Single-Page Applications</a></li>
-</ul>
+
+  <section id="lazily-loading-views">
+<h1>Lazily Loading Views<a class="headerlink" href="#lazily-loading-views" title="Link to this heading">¶</a></h1>
+<p>Flask is usually used with the decorators.  Decorators are simple and you
+have the URL right next to the function that is called for that specific
+URL.  However there is a downside to this approach: it means all your code
+that uses decorators has to be imported upfront or Flask will never
+actually find your function.</p>
+<p>This can be a problem if your application has to import quick.  It might
+have to do that on systems like Google’s App Engine or other systems.  So
+if you suddenly notice that your application outgrows this approach you
+can fall back to a centralized URL mapping.</p>
+<p>The system that enables having a central URL map is the
+<a class="reference internal" href="../api.html#flask.Flask.add_url_rule" title="flask.Flask.add_url_rule"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_url_rule()</span></code></a> function.  Instead of using decorators,
+you have a file that sets up the application with all URLs.</p>
+<section id="converting-to-centralized-url-map">
+<h2>Converting to Centralized URL Map<a class="headerlink" href="#converting-to-centralized-url-map" title="Link to this heading">¶</a></h2>
+<p>Imagine the current application looks somewhat like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
+    <span class="k">pass</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/user/&lt;username&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">user</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
 </div>
+<p>Then, with the centralized approach you would have one file with the views
+(<code class="file docutils literal notranslate"><span class="pre">views.py</span></code>) but without any decorator:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">user</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>And then a file that sets up an application which maps the functions to
+URLs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yourapplication</span><span class="w"> </span><span class="kn">import</span> <span class="n">views</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">view_func</span><span class="o">=</span><span class="n">views</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s1">&#39;/user/&lt;username&gt;&#39;</span><span class="p">,</span> <span class="n">view_func</span><span class="o">=</span><span class="n">views</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="loading-late">
+<h2>Loading Late<a class="headerlink" href="#loading-late" title="Link to this heading">¶</a></h2>
+<p>So far we only split up the views and the routing, but the module is still
+loaded upfront.  The trick is to actually load the view function as needed.
+This can be accomplished with a helper class that behaves just like a
+function but internally imports the real function on first use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">werkzeug.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_string</span><span class="p">,</span> <span class="n">cached_property</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LazyView</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">import_name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">import_name</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">import_name</span> <span class="o">=</span> <span class="n">import_name</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">import_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">import_name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>What’s important here is is that <code class="code docutils literal notranslate"><span class="pre">__module__</span></code> and <code class="code docutils literal notranslate"><span class="pre">__name__</span></code> are properly
+set.  This is used by Flask internally to figure out how to name the
+URL rules in case you don’t provide a name for the rule yourself.</p>
+<p>Then you can define your central place to combine the views like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yourapplication.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">LazyView</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
+                 <span class="n">view_func</span><span class="o">=</span><span class="n">LazyView</span><span class="p">(</span><span class="s1">&#39;yourapplication.views.index&#39;</span><span class="p">))</span>
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s1">&#39;/user/&lt;username&gt;&#39;</span><span class="p">,</span>
+                 <span class="n">view_func</span><span class="o">=</span><span class="n">LazyView</span><span class="p">(</span><span class="s1">&#39;yourapplication.views.user&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>You can further optimize this in terms of amount of keystrokes needed to
+write this by having a function that calls into
+<a class="reference internal" href="../api.html#flask.Flask.add_url_rule" title="flask.Flask.add_url_rule"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_url_rule()</span></code></a> by prefixing a string with the project
+name and a dot, and by wrapping <code class="code docutils literal notranslate"><span class="pre">view_func</span></code> in a <code class="code docutils literal notranslate"><span class="pre">LazyView</span></code> as needed.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="p">(</span><span class="n">import_name</span><span class="p">,</span> <span class="n">url_rules</span><span class="o">=</span><span class="p">[],</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="n">view</span> <span class="o">=</span> <span class="n">LazyView</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;yourapplication.</span><span class="si">{</span><span class="n">import_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">url_rule</span> <span class="ow">in</span> <span class="n">url_rules</span><span class="p">:</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="n">url_rule</span><span class="p">,</span> <span class="n">view_func</span><span class="o">=</span><span class="n">view</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+<span class="c1"># add a single route to the index view</span>
+<span class="n">url</span><span class="p">(</span><span class="s1">&#39;views.index&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">])</span>
+
+<span class="c1"># add two routes to a single function endpoint</span>
+<span class="n">url_rules</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;/user/&#39;</span><span class="p">,</span><span class="s1">&#39;/user/&lt;username&gt;&#39;</span><span class="p">]</span>
+<span class="n">url</span><span class="p">(</span><span class="s1">&#39;views.user&#39;</span><span class="p">,</span> <span class="n">url_rules</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>One thing to keep in mind is that before and after request handlers have
+to be in a file that is imported upfront to work properly on the first
+request.  The same goes for any kind of remaining decorator.</p>
+</section>
 </section>
 
 
@@ -185,18 +158,30 @@ collected in the following pages.</p>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Lazily Loading Views</a><ul>
+<li><a class="reference internal" href="#converting-to-centralized-url-map">Converting to Centralized URL Map</a></li>
+<li><a class="reference internal" href="#loading-late">Loading Late</a></li>
+</ul>
+</li>
+</ul>
 <h3>Navigation</h3>
 <ul>
   <li><a href="../index.html">Overview</a>
     <ul>
-          <li>Previous: <a href="../shell.html" title="previous chapter">Working with the Shell</a>
-          <li>Next: <a href="packages.html" title="next chapter">Large Applications as Packages</a>
+      <li><a href="index.html">Patterns for Flask</a>
+        <ul>
+          <li>Previous: <a href="javascript.html" title="previous chapter">JavaScript, <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, and JSON</a>
+          <li>Next: <a href="mongoengine.html" title="next chapter">MongoDB with MongoEngine</a></ul>
+      </li>
     </ul>
   </li>
 </ul>

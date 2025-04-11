@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Deploy to Production &#8212; Flask Documentation (3.2.x)</title>
+    <title>Make the Project Installable &#8212; Flask Documentation (3.2.x)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
     <script src="../_static/documentation_options.js?v=56528222"></script>
@@ -15,8 +15,8 @@
     <link rel="icon" href="../_static/shortcut-icon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Keep Developing!" href="next.html" />
-    <link rel="prev" title="Test Coverage" href="tests.html" /> 
+    <link rel="next" title="Test Coverage" href="tests.html" />
+    <link rel="prev" title="Blog Blueprint" href="blog.html" />
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
@@ -28,108 +28,96 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="next.html" title="Keep Developing!"
+          <a href="tests.html" title="Test Coverage"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="tests.html" title="Test Coverage"
+          <a href="blog.html" title="Blog Blueprint"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Tutorial</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Deploy to Production</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Make the Project Installable</a></li>
       </ul>
-    </div>  
+    </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
-  <section id="deploy-to-production">
-<h1>Deploy to Production<a class="headerlink" href="#deploy-to-production" title="Link to this heading">¶</a></h1>
-<p>This part of the tutorial assumes you have a server that you want to
-deploy your application to. It gives an overview of how to create the
-distribution file and install it, but won’t go into specifics about
-what server or software to use. You can set up a new environment on your
-development computer to try out the instructions below, but probably
-shouldn’t use it for hosting a real public application. See
-<a class="reference internal" href="../deploying/index.html"><span class="doc">Deploying to Production</span></a> for a list of many different ways to host your
-application.</p>
-<section id="build-and-install">
-<h2>Build and Install<a class="headerlink" href="#build-and-install" title="Link to this heading">¶</a></h2>
-<p>When you want to deploy your application elsewhere, you build a <em>wheel</em>
-(<code class="docutils literal notranslate"><span class="pre">.whl</span></code>) file. Install and use the <code class="docutils literal notranslate"><span class="pre">build</span></code> tool to do this.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ pip install build
-$ python -m build --wheel
-</pre></div>
-</div>
-<p>You can find the file in <code class="docutils literal notranslate"><span class="pre">dist/flaskr-1.0.0-py3-none-any.whl</span></code>. The
-file name is in the format of {project name}-{version}-{python tag}
--{abi tag}-{platform tag}.</p>
-<p>Copy this file to another machine,
-<a class="reference internal" href="../installation.html#install-create-env"><span class="std std-ref">set up a new virtualenv</span></a>, then install the
-file with <code class="docutils literal notranslate"><span class="pre">pip</span></code>.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ pip install flaskr-1.0.0-py3-none-any.whl
-</pre></div>
-</div>
-<p>Pip will install your project along with its dependencies.</p>
-<p>Since this is a different machine, you need to run <code class="docutils literal notranslate"><span class="pre">init-db</span></code> again to
-create the database in the instance folder.</p>
-<blockquote>
-<div><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ flask --app flaskr init-db
-</pre></div>
-</div>
-</div></blockquote>
-<p>When Flask detects that it’s installed (not in editable mode), it uses
-a different directory for the instance folder. You can find it at
-<code class="docutils literal notranslate"><span class="pre">.venv/var/flaskr-instance</span></code> instead.</p>
-</section>
-<section id="configure-the-secret-key">
-<h2>Configure the Secret Key<a class="headerlink" href="#configure-the-secret-key" title="Link to this heading">¶</a></h2>
-<p>In the beginning of the tutorial that you gave a default value for
-<a class="reference internal" href="../config.html#SECRET_KEY" title="SECRET_KEY"><code class="xref py py-data docutils literal notranslate"><span class="pre">SECRET_KEY</span></code></a>. This should be changed to some random bytes in
-production. Otherwise, attackers could use the public <code class="docutils literal notranslate"><span class="pre">'dev'</span></code> key to
-modify the session cookie, or anything else that uses the secret key.</p>
-<p>You can use the following command to output a random secret key:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ python -c &#39;import secrets; print(secrets.token_hex())&#39;
 
-&#39;192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf&#39;
-</pre></div>
+  <section id="make-the-project-installable">
+<h1>Make the Project Installable<a class="headerlink" href="#make-the-project-installable" title="Link to this heading">¶</a></h1>
+<p>Making your project installable means that you can build a <em>wheel</em> file and install that
+in another environment, just like you installed Flask in your project’s environment.
+This makes deploying your project the same as installing any other library, so you’re
+using all the standard Python tools to manage everything.</p>
+<p>Installing also comes with other benefits that might not be obvious from
+the tutorial or as a new Python user, including:</p>
+<ul class="simple">
+<li><p>Currently, Python and Flask understand how to use the <code class="docutils literal notranslate"><span class="pre">flaskr</span></code>
+package only because you’re running from your project’s directory.
+Installing means you can import it no matter where you run from.</p></li>
+<li><p>You can manage your project’s dependencies just like other packages
+do, so <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">yourproject.whl</span></code> installs them.</p></li>
+<li><p>Test tools can isolate your test environment from your development
+environment.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is being introduced late in the tutorial, but in your future
+projects you should always start with this.</p>
 </div>
-<p>Create the <code class="docutils literal notranslate"><span class="pre">config.py</span></code> file in the instance folder, which the factory
-will read from if it exists. Copy the generated value into it.</p>
+<section id="describe-the-project">
+<h2>Describe the Project<a class="headerlink" href="#describe-the-project" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file describes your project and how to build it.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">.venv/var/flaskr-instance/config.py</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="s1">&#39;192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf&#39;</span>
-</pre></div>
-</div>
-</div>
-<p>You can also set any other necessary configuration here, although
-<code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code> is the only one needed for Flaskr.</p>
-</section>
-<section id="run-with-a-production-server">
-<h2>Run with a Production Server<a class="headerlink" href="#run-with-a-production-server" title="Link to this heading">¶</a></h2>
-<p>When running publicly rather than in development, you should not use the
-built-in development server (<code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code>). The development server is
-provided by Werkzeug for convenience, but is not designed to be
-particularly efficient, stable, or secure.</p>
-<p>Instead, use a production WSGI server. For example, to use <a class="reference external" href="https://docs.pylonsproject.org/projects/waitress/en/stable/">Waitress</a>,
-first install it in the virtual environment:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ pip install waitress
-</pre></div>
-</div>
-<p>You need to tell Waitress about your application, but it doesn’t use
-<code class="docutils literal notranslate"><span class="pre">--app</span></code> like <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> does. You need to tell it to import and
-call the application factory to get an application object.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ waitress-serve --call &#39;flaskr:create_app&#39;
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[project]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;flaskr&quot;</span>
+<span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span>
+<span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;The basic blog app built in the Flask tutorial.&quot;</span>
+<span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;flask&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
-Serving on http://0.0.0.0:8080
+<span class="k">[build-system]</span>
+<span class="n">requires</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;flit_core&lt;4&quot;</span><span class="p">]</span>
+<span class="n">build-backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;flit_core.buildapi&quot;</span>
 </pre></div>
 </div>
-<p>See <a class="reference internal" href="../deploying/index.html"><span class="doc">Deploying to Production</span></a> for a list of many different ways to host
-your application. Waitress is just an example, chosen for the tutorial
-because it supports both Windows and Linux. There are many more WSGI
-servers and deployment options that you may choose for your project.</p>
-<p>Continue to <a class="reference internal" href="next.html"><span class="doc">Keep Developing!</span></a>.</p>
+</div>
+<p>See the official <a class="reference external" href="https://packaging.python.org/tutorials/packaging-projects/">Packaging tutorial</a> for more
+explanation of the files and options used.</p>
+</section>
+<section id="install-the-project">
+<h2>Install the Project<a class="headerlink" href="#install-the-project" title="Link to this heading">¶</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">pip</span></code> to install your project in the virtual environment.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ pip install -e .
+</pre></div>
+</div>
+<p>This tells pip to find <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> in the current directory and install the
+project in <em>editable</em> or <em>development</em> mode. Editable mode means that as you make
+changes to your local code, you’ll only need to re-install if you change the metadata
+about the project, such as its dependencies.</p>
+<p>You can observe that the project is now installed with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">list</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ pip list
+
+Package        Version   Location
+-------------- --------- ----------------------------------
+click          6.7
+Flask          1.0
+flaskr         1.0.0     /home/user/Projects/flask-tutorial
+itsdangerous   0.24
+Jinja2         2.10
+MarkupSafe     1.0
+pip            9.0.3
+Werkzeug       0.14.1
+</pre></div>
+</div>
+<p>Nothing changes from how you’ve been running your project so far.
+<code class="docutils literal notranslate"><span class="pre">--app</span></code> is still set to <code class="docutils literal notranslate"><span class="pre">flaskr</span></code> and <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">run</span></code> still runs
+the application, but you can call it from anywhere, not just the
+<code class="docutils literal notranslate"><span class="pre">flask-tutorial</span></code> directory.</p>
+<p>Continue to <a class="reference internal" href="tests.html"><span class="doc">Test Coverage</span></a>.</p>
 </section>
 </section>
 
@@ -141,19 +129,18 @@ servers and deployment options that you may choose for your project.</p>
   <span id="sidebar-top"></span>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  
-    
+
+
             <p class="logo"><a href="../index.html">
               <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
             </a></p>
-  
+
 
   <h3>Contents</h3>
   <ul>
-<li><a class="reference internal" href="#">Deploy to Production</a><ul>
-<li><a class="reference internal" href="#build-and-install">Build and Install</a></li>
-<li><a class="reference internal" href="#configure-the-secret-key">Configure the Secret Key</a></li>
-<li><a class="reference internal" href="#run-with-a-production-server">Run with a Production Server</a></li>
+<li><a class="reference internal" href="#">Make the Project Installable</a><ul>
+<li><a class="reference internal" href="#describe-the-project">Describe the Project</a></li>
+<li><a class="reference internal" href="#install-the-project">Install the Project</a></li>
 </ul>
 </li>
 </ul>
@@ -163,8 +150,8 @@ servers and deployment options that you may choose for your project.</p>
     <ul>
       <li><a href="index.html">Tutorial</a>
         <ul>
-          <li>Previous: <a href="tests.html" title="previous chapter">Test Coverage</a>
-          <li>Next: <a href="next.html" title="next chapter">Keep Developing!</a></ul>
+          <li>Previous: <a href="blog.html" title="previous chapter">Blog Blueprint</a>
+          <li>Next: <a href="tests.html" title="next chapter">Test Coverage</a></ul>
       </li>
     </ul>
   </li>
