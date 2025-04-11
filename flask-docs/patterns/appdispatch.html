@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Background Tasks with Celery &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
+    <script src="../_static/documentation_options.js?v=56528222"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Subclassing Flask" href="subclassing.html" />
+    <link rel="prev" title="Request Content Checksums" href="requestchecksum.html" />
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="subclassing.html" title="Subclassing Flask"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="requestchecksum.html" title="Request Content Checksums"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Patterns for Flask</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Background Tasks with Celery</a></li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="background-tasks-with-celery">
+<h1>Background Tasks with Celery<a class="headerlink" href="#background-tasks-with-celery" title="Link to this heading">¶</a></h1>
+<p>If your application has a long running task, such as processing some uploaded data or
+sending email, you don’t want to wait for it to finish during a request. Instead, use a
+task queue to send the necessary data to another process that will run the task in the
+background while the request returns immediately.</p>
+<p><a class="reference external" href="https://celery.readthedocs.io">Celery</a> is a powerful task queue that can be used for simple background tasks as well
+as complex multi-stage programs and schedules. This guide will show you how to configure
+Celery using Flask. Read Celery’s <a class="reference external" href="https://celery.readthedocs.io/en/latest/getting-started/first-steps-with-celery.html">First Steps with Celery</a> guide to learn how to use
+Celery itself.</p>
+<p>The Flask repository contains <a class="reference external" href="https://github.com/pallets/flask/tree/main/examples/celery">an example</a>
+based on the information on this page, which also shows how to use JavaScript to submit
+tasks and poll for progress and results.</p>
+<section id="install">
+<h2>Install<a class="headerlink" href="#install" title="Link to this heading">¶</a></h2>
+<p>Install Celery from PyPI, for example using pip:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ pip install celery
+</pre></div>
+</div>
+</section>
+<section id="integrate-celery-with-flask">
+<h2>Integrate Celery with Flask<a class="headerlink" href="#integrate-celery-with-flask" title="Link to this heading">¶</a></h2>
+<p>You can use Celery without any integration with Flask, but it’s convenient to configure
+it through Flask’s config, and to let tasks access the Flask application.</p>
+<p>Celery uses similar ideas to Flask, with a <code class="docutils literal notranslate"><span class="pre">Celery</span></code> app object that has configuration
+and registers tasks. While creating a Flask app, use the following code to create and
+configure a Celery app as well.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">celery</span><span class="w"> </span><span class="kn">import</span> <span class="n">Celery</span><span class="p">,</span> <span class="n">Task</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">celery_init_app</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Flask</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Celery</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">FlaskTask</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">celery_app</span> <span class="o">=</span> <span class="n">Celery</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">task_cls</span><span class="o">=</span><span class="n">FlaskTask</span><span class="p">)</span>
+    <span class="n">celery_app</span><span class="o">.</span><span class="n">config_from_object</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;CELERY&quot;</span><span class="p">])</span>
+    <span class="n">celery_app</span><span class="o">.</span><span class="n">set_default</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s2">&quot;celery&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">celery_app</span>
+    <span class="k">return</span> <span class="n">celery_app</span>
+</pre></div>
+</div>
+<p>This creates and returns a <code class="docutils literal notranslate"><span class="pre">Celery</span></code> app object. Celery <a class="reference external" href="https://celery.readthedocs.io/en/stable/userguide/configuration.html">configuration</a> is taken from
+the <code class="docutils literal notranslate"><span class="pre">CELERY</span></code> key in the Flask configuration. The Celery app is set as the default, so
+that it is seen during each request. The <code class="docutils literal notranslate"><span class="pre">Task</span></code> subclass automatically runs task
+functions with a Flask app context active, so that services like your database
+connections are available.</p>
+<p>Here’s a basic <code class="docutils literal notranslate"><span class="pre">example.py</span></code> that configures Celery to use Redis for communication. We
+enable a result backend, but ignore results by default. This allows us to store results
+only for tasks where we care about the result.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_mapping</span><span class="p">(</span>
+    <span class="n">CELERY</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+        <span class="n">broker_url</span><span class="o">=</span><span class="s2">&quot;redis://localhost&quot;</span><span class="p">,</span>
+        <span class="n">result_backend</span><span class="o">=</span><span class="s2">&quot;redis://localhost&quot;</span><span class="p">,</span>
+        <span class="n">task_ignore_result</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">celery_app</span> <span class="o">=</span> <span class="n">celery_init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Point the <code class="docutils literal notranslate"><span class="pre">celery</span> <span class="pre">worker</span></code> command at this and it will find the <code class="docutils literal notranslate"><span class="pre">celery_app</span></code> object.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ celery -A example worker --loglevel INFO
+</pre></div>
+</div>
+<p>You can also run the <code class="docutils literal notranslate"><span class="pre">celery</span> <span class="pre">beat</span></code> command to run tasks on a schedule. See Celery’s
+docs for more information about defining schedules.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ celery -A example beat --loglevel INFO
+</pre></div>
+</div>
+</section>
+<section id="application-factory">
+<h2>Application Factory<a class="headerlink" href="#application-factory" title="Link to this heading">¶</a></h2>
+<p>When using the Flask application factory pattern, call the <code class="docutils literal notranslate"><span class="pre">celery_init_app</span></code> function
+inside the factory. It sets <code class="docutils literal notranslate"><span class="pre">app.extensions[&quot;celery&quot;]</span></code> to the Celery app object, which
+can be used to get the Celery app from the Flask app returned by the factory.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Flask</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_mapping</span><span class="p">(</span>
+        <span class="n">CELERY</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">broker_url</span><span class="o">=</span><span class="s2">&quot;redis://localhost&quot;</span><span class="p">,</span>
+            <span class="n">result_backend</span><span class="o">=</span><span class="s2">&quot;redis://localhost&quot;</span><span class="p">,</span>
+            <span class="n">task_ignore_result</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_prefixed_env</span><span class="p">()</span>
+    <span class="n">celery_init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">app</span>
+</pre></div>
+</div>
+<p>To use <code class="docutils literal notranslate"><span class="pre">celery</span></code> commands, Celery needs an app object, but that’s no longer directly
+available. Create a <code class="docutils literal notranslate"><span class="pre">make_celery.py</span></code> file that calls the Flask app factory and gets
+the Celery app from the returned Flask app.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">example</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+
+<span class="n">flask_app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+<span class="n">celery_app</span> <span class="o">=</span> <span class="n">flask_app</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s2">&quot;celery&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Point the <code class="docutils literal notranslate"><span class="pre">celery</span></code> command to this file.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ celery -A make_celery worker --loglevel INFO
+$ celery -A make_celery beat --loglevel INFO
+</pre></div>
+</div>
+</section>
+<section id="defining-tasks">
+<h2>Defining Tasks<a class="headerlink" href="#defining-tasks" title="Link to this heading">¶</a></h2>
+<p>Using <code class="docutils literal notranslate"><span class="pre">&#64;celery_app.task</span></code> to decorate task functions requires access to the
+<code class="docutils literal notranslate"><span class="pre">celery_app</span></code> object, which won’t be available when using the factory pattern. It also
+means that the decorated tasks are tied to the specific Flask and Celery app instances,
+which could be an issue during testing if you change configuration for a test.</p>
+<p>Instead, use Celery’s <code class="docutils literal notranslate"><span class="pre">&#64;shared_task</span></code> decorator. This creates task objects that will
+access whatever the “current app” is, which is a similar concept to Flask’s blueprints
+and app context. This is why we called <code class="docutils literal notranslate"><span class="pre">celery_app.set_default()</span></code> above.</p>
+<p>Here’s an example task that adds two numbers together and returns the result.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">celery</span><span class="w"> </span><span class="kn">import</span> <span class="n">shared_task</span>
+
+<span class="nd">@shared_task</span><span class="p">(</span><span class="n">ignore_result</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_together</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</pre></div>
+</div>
+<p>Earlier, we configured Celery to ignore task results by default. Since we want to know
+the return value of this task, we set <code class="docutils literal notranslate"><span class="pre">ignore_result=False</span></code>. On the other hand, a task
+that didn’t need a result, such as sending an email, wouldn’t set this.</p>
+</section>
+<section id="calling-tasks">
+<h2>Calling Tasks<a class="headerlink" href="#calling-tasks" title="Link to this heading">¶</a></h2>
+<p>The decorated function becomes a task object with methods to call it in the background.
+The simplest way is to use the <code class="docutils literal notranslate"><span class="pre">delay(*args,</span> <span class="pre">**kwargs)</span></code> method. See Celery’s docs for
+more methods.</p>
+<p>A Celery worker must be running to run the task. Starting a worker is shown in the
+previous sections.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">request</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/add&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">start_add</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">add_together</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;result_id&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The route doesn’t get the task’s result immediately. That would defeat the purpose by
+blocking the response. Instead, we return the running task’s result id, which we can use
+later to get the result.</p>
+</section>
+<section id="getting-results">
+<h2>Getting Results<a class="headerlink" href="#getting-results" title="Link to this heading">¶</a></h2>
+<p>To fetch the result of the task we started above, we’ll add another route that takes the
+result id we returned before. We return whether the task is finished (ready), whether it
+finished successfully, and what the return value (or error) was if it is finished.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">celery.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncResult</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/result/&lt;id&gt;&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">task_result</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">AsyncResult</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;ready&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">ready</span><span class="p">(),</span>
+        <span class="s2">&quot;successful&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">successful</span><span class="p">(),</span>
+        <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">ready</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>Now you can start the task using the first route, then poll for the result using the
+second route. This keeps the Flask request workers from being blocked waiting for tasks
+to finish.</p>
+<p>The Flask repository contains <a class="reference external" href="https://github.com/pallets/flask/tree/main/examples/celery">an example</a>
+using JavaScript to submit tasks and poll for progress and results.</p>
+</section>
+<section id="passing-data-to-tasks">
+<h2>Passing Data to Tasks<a class="headerlink" href="#passing-data-to-tasks" title="Link to this heading">¶</a></h2>
+<p>The “add” task above took two integers as arguments. To pass arguments to tasks, Celery
+has to serialize them to a format that it can pass to other processes. Therefore,
+passing complex objects is not recommended. For example, it would be impossible to pass
+a SQLAlchemy model object, since that object is probably not serializable and is tied to
+the session that queried it.</p>
+<p>Pass the minimal amount of data necessary to fetch or recreate any complex data within
+the task. Consider a task that will run when the logged in user asks for an archive of
+their data. The Flask request knows the logged in user, and has the user object queried
+from the database. It got that by querying the database for a given id, so the task can
+do the same thing. Pass the user’s id rather than the user object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@shared_task</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_user_archive</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
+    <span class="o">...</span>
+
+<span class="n">generate_user_archive</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="n">current_user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+
+
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Background Tasks with Celery</a><ul>
+<li><a class="reference internal" href="#install">Install</a></li>
+<li><a class="reference internal" href="#integrate-celery-with-flask">Integrate Celery with Flask</a></li>
+<li><a class="reference internal" href="#application-factory">Application Factory</a></li>
+<li><a class="reference internal" href="#defining-tasks">Defining Tasks</a></li>
+<li><a class="reference internal" href="#calling-tasks">Calling Tasks</a></li>
+<li><a class="reference internal" href="#getting-results">Getting Results</a></li>
+<li><a class="reference internal" href="#passing-data-to-tasks">Passing Data to Tasks</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="../index.html">Overview</a>
+    <ul>
+      <li><a href="index.html">Patterns for Flask</a>
+        <ul>
+          <li>Previous: <a href="requestchecksum.html" title="previous chapter">Request Content Checksums</a>
+          <li>Next: <a href="subclassing.html" title="next chapter">Subclassing Flask</a></ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

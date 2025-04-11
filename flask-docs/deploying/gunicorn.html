@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>nginx &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
+    <script src="../_static/documentation_options.js?v=56528222"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Apache httpd" href="apache-httpd.html" />
+    <link rel="prev" title="Tell Flask it is Behind a Proxy" href="proxy_fix.html" />
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="apache-httpd.html" title="Apache httpd"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="proxy_fix.html" title="Tell Flask it is Behind a Proxy"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Deploying to Production</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">nginx</a></li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="nginx">
+<h1>nginx<a class="headerlink" href="#nginx" title="Link to this heading">¶</a></h1>
+<p><a class="reference external" href="https://nginx.org/">nginx</a> is a fast, production level HTTP server. When serving your
+application with one of the WSGI servers listed in <a class="reference internal" href="index.html"><span class="doc">Deploying to Production</span></a>, it is
+often good or necessary to put a dedicated HTTP server in front of it.
+This “reverse proxy” can handle incoming requests, TLS, and other
+security and performance concerns better than the WSGI server.</p>
+<p>Nginx can be installed using your system package manager, or a pre-built
+executable for Windows. Installing and running Nginx itself is outside
+the scope of this doc. This page outlines the basics of configuring
+Nginx to proxy your application. Be sure to read its documentation to
+understand what features are available.</p>
+<section id="domain-name">
+<h2>Domain Name<a class="headerlink" href="#domain-name" title="Link to this heading">¶</a></h2>
+<p>Acquiring and configuring a domain name is outside the scope of this
+doc. In general, you will buy a domain name from a registrar, pay for
+server space with a hosting provider, and then point your registrar
+at the hosting provider’s name servers.</p>
+<p>To simulate this, you can also edit your <code class="docutils literal notranslate"><span class="pre">hosts</span></code> file, located at
+<code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code> on Linux. Add a line that associates a name with the
+local IP.</p>
+<p>Modern Linux systems may be configured to treat any domain name that
+ends with <code class="docutils literal notranslate"><span class="pre">.localhost</span></code> like this without adding it to the <code class="docutils literal notranslate"><span class="pre">hosts</span></code>
+file.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="mf">127.0.0.1</span> <span class="n">hello</span><span class="o">.</span><span class="n">localhost</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
+<p>The nginx configuration is located at <code class="docutils literal notranslate"><span class="pre">/etc/nginx/nginx.conf</span></code> on
+Linux. It may be different depending on your operating system. Check the
+docs and look for <code class="docutils literal notranslate"><span class="pre">nginx.conf</span></code>.</p>
+<p>Remove or comment out any existing <code class="docutils literal notranslate"><span class="pre">server</span></code> section. Add a <code class="docutils literal notranslate"><span class="pre">server</span></code>
+section and use the <code class="docutils literal notranslate"><span class="pre">proxy_pass</span></code> directive to point to the address the
+WSGI server is listening on. We’ll assume the WSGI server is listening
+locally at <code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8000</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">/etc/nginx.conf</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-nginx notranslate"><div class="highlight"><pre><span></span><span class="k">server</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
+<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">_</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://127.0.0.1:8000/</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-For</span><span class="w"> </span><span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-Proto</span><span class="w"> </span><span class="nv">$scheme</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-Host</span><span class="w"> </span><span class="nv">$host</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-Prefix</span><span class="w"> </span><span class="s">/</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Then <a class="reference internal" href="proxy_fix.html"><span class="doc">Tell Flask it is Behind a Proxy</span></a> so that your application uses these headers.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+
+
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">nginx</a><ul>
+<li><a class="reference internal" href="#domain-name">Domain Name</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="../index.html">Overview</a>
+    <ul>
+      <li><a href="index.html">Deploying to Production</a>
+        <ul>
+          <li>Previous: <a href="proxy_fix.html" title="previous chapter">Tell Flask it is Behind a Proxy</a>
+          <li>Next: <a href="apache-httpd.html" title="next chapter">Apache httpd</a></ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

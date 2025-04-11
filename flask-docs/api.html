@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Modular Applications with Blueprints &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
+    <script src="_static/documentation_options.js?v=56528222"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Extensions" href="extensions.html" />
+    <link rel="prev" title="The Request Context" href="reqcontext.html" />
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="extensions.html" title="Extensions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="reqcontext.html" title="The Request Context"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Modular Applications with Blueprints</a></li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="modular-applications-with-blueprints">
+<h1>Modular Applications with Blueprints<a class="headerlink" href="#modular-applications-with-blueprints" title="Link to this heading">¶</a></h1>
+<details class="changelog">
+<summary>Changelog</summary><div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.7.</span></p>
+</div>
+</details><p>Flask uses a concept of <em>blueprints</em> for making application components and
+supporting common patterns within an application or across applications.
+Blueprints can greatly simplify how large applications work and provide a
+central means for Flask extensions to register operations on applications.
+A <a class="reference internal" href="api.html#flask.Blueprint" title="flask.Blueprint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Blueprint</span></code></a> object works similarly to a <a class="reference internal" href="api.html#flask.Flask" title="flask.Flask"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flask</span></code></a>
+application object, but it is not actually an application.  Rather it is a
+<em>blueprint</em> of how to construct or extend an application.</p>
+<section id="why-blueprints">
+<h2>Why Blueprints?<a class="headerlink" href="#why-blueprints" title="Link to this heading">¶</a></h2>
+<p>Blueprints in Flask are intended for these cases:</p>
+<ul class="simple">
+<li><p>Factor an application into a set of blueprints.  This is ideal for
+larger applications; a project could instantiate an application object,
+initialize several extensions, and register a collection of blueprints.</p></li>
+<li><p>Register a blueprint on an application at a URL prefix and/or subdomain.
+Parameters in the URL prefix/subdomain become common view arguments
+(with defaults) across all view functions in the blueprint.</p></li>
+<li><p>Register a blueprint multiple times on an application with different URL
+rules.</p></li>
+<li><p>Provide template filters, static files, templates, and other utilities
+through blueprints.  A blueprint does not have to implement applications
+or view functions.</p></li>
+<li><p>Register a blueprint on an application for any of these cases when
+initializing a Flask extension.</p></li>
+</ul>
+<p>A blueprint in Flask is not a pluggable app because it is not actually an
+application – it’s a set of operations which can be registered on an
+application, even multiple times.  Why not have multiple application
+objects?  You can do that (see <a class="reference internal" href="patterns/appdispatch.html"><span class="doc">Application Dispatching</span></a>), but your
+applications will have separate configs and will be managed at the WSGI
+layer.</p>
+<p>Blueprints instead provide separation at the Flask level, share
+application config, and can change an application object as necessary with
+being registered. The downside is that you cannot unregister a blueprint
+once an application was created without having to destroy the whole
+application object.</p>
+</section>
+<section id="the-concept-of-blueprints">
+<h2>The Concept of Blueprints<a class="headerlink" href="#the-concept-of-blueprints" title="Link to this heading">¶</a></h2>
+<p>The basic concept of blueprints is that they record operations to execute
+when registered on an application.  Flask associates view functions with
+blueprints when dispatching requests and generating URLs from one endpoint
+to another.</p>
+</section>
+<section id="my-first-blueprint">
+<h2>My First Blueprint<a class="headerlink" href="#my-first-blueprint" title="Link to this heading">¶</a></h2>
+<p>This is what a very basic blueprint looks like.  In this case we want to
+implement a blueprint that does simple rendering of static templates:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">abort</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateNotFound</span>
+
+<span class="n">simple_page</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;simple_page&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span>
+                        <span class="n">template_folder</span><span class="o">=</span><span class="s1">&#39;templates&#39;</span><span class="p">)</span>
+
+<span class="nd">@simple_page</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;page&#39;</span><span class="p">:</span> <span class="s1">&#39;index&#39;</span><span class="p">})</span>
+<span class="nd">@simple_page</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;page&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;pages/</span><span class="si">{</span><span class="n">page</span><span class="si">}</span><span class="s1">.html&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">TemplateNotFound</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When you bind a function with the help of the <code class="docutils literal notranslate"><span class="pre">&#64;simple_page.route</span></code>
+decorator, the blueprint will record the intention of registering the
+function <code class="docutils literal notranslate"><span class="pre">show</span></code> on the application when it’s later registered.
+Additionally it will prefix the endpoint of the function with the
+name of the blueprint which was given to the <a class="reference internal" href="api.html#flask.Blueprint" title="flask.Blueprint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Blueprint</span></code></a>
+constructor (in this case also <code class="docutils literal notranslate"><span class="pre">simple_page</span></code>). The blueprint’s name
+does not modify the URL, only the endpoint.</p>
+</section>
+<section id="registering-blueprints">
+<h2>Registering Blueprints<a class="headerlink" href="#registering-blueprints" title="Link to this heading">¶</a></h2>
+<p>So how do you register that blueprint?  Like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yourapplication.simple_page</span><span class="w"> </span><span class="kn">import</span> <span class="n">simple_page</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">simple_page</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you check the rules registered on the application, you will find
+these:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">app</span><span class="o">.</span><span class="n">url_map</span>
+<span class="go">Map([&lt;Rule &#39;/static/&lt;filename&gt;&#39; (HEAD, OPTIONS, GET) -&gt; static&gt;,</span>
+<span class="go"> &lt;Rule &#39;/&lt;page&gt;&#39; (HEAD, OPTIONS, GET) -&gt; simple_page.show&gt;,</span>
+<span class="go"> &lt;Rule &#39;/&#39; (HEAD, OPTIONS, GET) -&gt; simple_page.show&gt;])</span>
+</pre></div>
+</div>
+<p>The first one is obviously from the application itself for the static
+files.  The other two are for the <code class="code docutils literal notranslate"><span class="pre">show</span></code> function of the <code class="docutils literal notranslate"><span class="pre">simple_page</span></code>
+blueprint.  As you can see, they are also prefixed with the name of the
+blueprint and separated by a dot (<code class="docutils literal notranslate"><span class="pre">.</span></code>).</p>
+<p>Blueprints however can also be mounted at different locations:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">simple_page</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/pages&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And sure enough, these are the generated rules:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">app</span><span class="o">.</span><span class="n">url_map</span>
+<span class="go">Map([&lt;Rule &#39;/static/&lt;filename&gt;&#39; (HEAD, OPTIONS, GET) -&gt; static&gt;,</span>
+<span class="go"> &lt;Rule &#39;/pages/&lt;page&gt;&#39; (HEAD, OPTIONS, GET) -&gt; simple_page.show&gt;,</span>
+<span class="go"> &lt;Rule &#39;/pages/&#39; (HEAD, OPTIONS, GET) -&gt; simple_page.show&gt;])</span>
+</pre></div>
+</div>
+<p>On top of that you can register blueprints multiple times though not every
+blueprint might respond properly to that.  In fact it depends on how the
+blueprint is implemented if it can be mounted more than once.</p>
+</section>
+<section id="nesting-blueprints">
+<h2>Nesting Blueprints<a class="headerlink" href="#nesting-blueprints" title="Link to this heading">¶</a></h2>
+<p>It is possible to register a blueprint on another blueprint.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parent</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;parent&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/parent&#39;</span><span class="p">)</span>
+<span class="n">child</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/child&#39;</span><span class="p">)</span>
+<span class="n">parent</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The child blueprint will gain the parent’s name as a prefix to its
+name, and child URLs will be prefixed with the parent’s URL prefix.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;parent.child.create&#39;</span><span class="p">)</span>
+<span class="o">/</span><span class="n">parent</span><span class="o">/</span><span class="n">child</span><span class="o">/</span><span class="n">create</span>
+</pre></div>
+</div>
+<p>In addition a child blueprint’s will gain their parent’s subdomain,
+with their subdomain as prefix if present i.e.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parent</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;parent&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">subdomain</span><span class="o">=</span><span class="s1">&#39;parent&#39;</span><span class="p">)</span>
+<span class="n">child</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">subdomain</span><span class="o">=</span><span class="s1">&#39;child&#39;</span><span class="p">)</span>
+<span class="n">parent</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+<span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;parent.child.create&#39;</span><span class="p">,</span> <span class="n">_external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="s2">&quot;child.parent.domain.tld&quot;</span>
+</pre></div>
+</div>
+<p>Blueprint-specific before request functions, etc. registered with the
+parent will trigger for the child. If a child does not have an error
+handler that can handle a given exception, the parent’s will be tried.</p>
+</section>
+<section id="blueprint-resources">
+<h2>Blueprint Resources<a class="headerlink" href="#blueprint-resources" title="Link to this heading">¶</a></h2>
+<p>Blueprints can provide resources as well.  Sometimes you might want to
+introduce a blueprint only for the resources it provides.</p>
+<section id="blueprint-resource-folder">
+<h3>Blueprint Resource Folder<a class="headerlink" href="#blueprint-resource-folder" title="Link to this heading">¶</a></h3>
+<p>Like for regular applications, blueprints are considered to be contained
+in a folder.  While multiple blueprints can originate from the same folder,
+it does not have to be the case and it’s usually not recommended.</p>
+<p>The folder is inferred from the second argument to <a class="reference internal" href="api.html#flask.Blueprint" title="flask.Blueprint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Blueprint</span></code></a> which
+is usually <code class="code docutils literal notranslate"><span class="pre">__name__</span></code>.  This argument specifies what logical Python
+module or package corresponds to the blueprint.  If it points to an actual
+Python package that package (which is a folder on the filesystem) is the
+resource folder.  If it’s a module, the package the module is contained in
+will be the resource folder.  You can access the
+<a class="reference internal" href="api.html#flask.Blueprint.root_path" title="flask.Blueprint.root_path"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Blueprint.root_path</span></code></a> property to see what the resource folder is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">simple_page</span><span class="o">.</span><span class="n">root_path</span>
+<span class="go">&#39;/Users/username/TestProject/yourapplication&#39;</span>
+</pre></div>
+</div>
+<p>To quickly open sources from this folder you can use the
+<a class="reference internal" href="api.html#flask.Blueprint.open_resource" title="flask.Blueprint.open_resource"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open_resource()</span></code></a> function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">simple_page</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="s1">&#39;static/style.css&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="static-files">
+<h3>Static Files<a class="headerlink" href="#static-files" title="Link to this heading">¶</a></h3>
+<p>A blueprint can expose a folder with static files by providing the path
+to the folder on the filesystem with the <code class="docutils literal notranslate"><span class="pre">static_folder</span></code> argument.
+It is either an absolute path or relative to the blueprint’s location:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">admin</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">static_folder</span><span class="o">=</span><span class="s1">&#39;static&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By default the rightmost part of the path is where it is exposed on the
+web. This can be changed with the <code class="docutils literal notranslate"><span class="pre">static_url_path</span></code> argument. Because the
+folder is called <code class="docutils literal notranslate"><span class="pre">static</span></code> here it will be available at the
+<code class="docutils literal notranslate"><span class="pre">url_prefix</span></code> of the blueprint + <code class="docutils literal notranslate"><span class="pre">/static</span></code>. If the blueprint
+has the prefix <code class="docutils literal notranslate"><span class="pre">/admin</span></code>, the static URL will be <code class="docutils literal notranslate"><span class="pre">/admin/static</span></code>.</p>
+<p>The endpoint is named <code class="docutils literal notranslate"><span class="pre">blueprint_name.static</span></code>. You can generate URLs
+to it with <a class="reference internal" href="api.html#flask.url_for" title="flask.url_for"><code class="xref py py-func docutils literal notranslate"><span class="pre">url_for()</span></code></a> like you would with the static folder of the
+application:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;admin.static&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;style.css&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, if the blueprint does not have a <code class="docutils literal notranslate"><span class="pre">url_prefix</span></code>, it is not
+possible to access the blueprint’s static folder. This is because the
+URL would be <code class="docutils literal notranslate"><span class="pre">/static</span></code> in this case, and the application’s <code class="docutils literal notranslate"><span class="pre">/static</span></code>
+route takes precedence. Unlike template folders, blueprint static
+folders are not searched if the file does not exist in the application
+static folder.</p>
+</section>
+<section id="templates">
+<h3>Templates<a class="headerlink" href="#templates" title="Link to this heading">¶</a></h3>
+<p>If you want the blueprint to expose templates you can do that by providing
+the <code class="code docutils literal notranslate"><span class="pre">template_folder</span></code> parameter to the <a class="reference internal" href="api.html#flask.Blueprint" title="flask.Blueprint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Blueprint</span></code></a> constructor:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">admin</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">template_folder</span><span class="o">=</span><span class="s1">&#39;templates&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For static files, the path can be absolute or relative to the blueprint
+resource folder.</p>
+<p>The template folder is added to the search path of templates but with a lower
+priority than the actual application’s template folder. That way you can
+easily override templates that a blueprint provides in the actual application.
+This also means that if you don’t want a blueprint template to be accidentally
+overridden, make sure that no other blueprint or actual application template
+has the same relative path. When multiple blueprints provide the same relative
+template path the first blueprint registered takes precedence over the others.</p>
+<p>So if you have a blueprint in the folder <code class="docutils literal notranslate"><span class="pre">yourapplication/admin</span></code> and you
+want to render the template <code class="docutils literal notranslate"><span class="pre">'admin/index.html'</span></code> and you have provided
+<code class="docutils literal notranslate"><span class="pre">templates</span></code> as a <code class="code docutils literal notranslate"><span class="pre">template_folder</span></code> you will have to create a file like
+this: <code class="file docutils literal notranslate"><span class="pre">yourapplication/admin/templates/admin/index.html</span></code>. The reason
+for the extra <code class="docutils literal notranslate"><span class="pre">admin</span></code> folder is to avoid getting our template overridden
+by a template named <code class="docutils literal notranslate"><span class="pre">index.html</span></code> in the actual application template
+folder.</p>
+<p>To further reiterate this: if you have a blueprint named <code class="docutils literal notranslate"><span class="pre">admin</span></code> and you
+want to render a template called <code class="file docutils literal notranslate"><span class="pre">index.html</span></code> which is specific to this
+blueprint, the best idea is to lay out your templates like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yourpackage</span><span class="o">/</span>
+    <span class="n">blueprints</span><span class="o">/</span>
+        <span class="n">admin</span><span class="o">/</span>
+            <span class="n">templates</span><span class="o">/</span>
+                <span class="n">admin</span><span class="o">/</span>
+                    <span class="n">index</span><span class="o">.</span><span class="n">html</span>
+            <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>And then when you want to render the template, use <code class="file docutils literal notranslate"><span class="pre">admin/index.html</span></code> as
+the name to look up the template by.  If you encounter problems loading
+the correct templates enable the <code class="docutils literal notranslate"><span class="pre">EXPLAIN_TEMPLATE_LOADING</span></code> config
+variable which will instruct Flask to print out the steps it goes through
+to locate templates on every <code class="docutils literal notranslate"><span class="pre">render_template</span></code> call.</p>
+</section>
+</section>
+<section id="building-urls">
+<h2>Building URLs<a class="headerlink" href="#building-urls" title="Link to this heading">¶</a></h2>
+<p>If you want to link from one page to another you can use the
+<a class="reference internal" href="api.html#flask.url_for" title="flask.url_for"><code class="xref py py-func docutils literal notranslate"><span class="pre">url_for()</span></code></a> function just like you normally would do just that you
+prefix the URL endpoint with the name of the blueprint and a dot (<code class="docutils literal notranslate"><span class="pre">.</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;admin.index&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Additionally if you are in a view function of a blueprint or a rendered
+template and you want to link to another endpoint of the same blueprint,
+you can use relative redirects by prefixing the endpoint with a dot only:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;.index&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will link to <code class="docutils literal notranslate"><span class="pre">admin.index</span></code> for instance in case the current request
+was dispatched to any other admin blueprint endpoint.</p>
+</section>
+<section id="blueprint-error-handlers">
+<h2>Blueprint Error Handlers<a class="headerlink" href="#blueprint-error-handlers" title="Link to this heading">¶</a></h2>
+<p>Blueprints support the <code class="docutils literal notranslate"><span class="pre">errorhandler</span></code> decorator just like the <a class="reference internal" href="api.html#flask.Flask" title="flask.Flask"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flask</span></code></a>
+application object, so it is easy to make Blueprint-specific custom error
+pages.</p>
+<p>Here is an example for a “404 Page Not Found” exception:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@simple_page</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">page_not_found</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;pages/404.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Most errorhandlers will simply work as expected; however, there is a caveat
+concerning handlers for 404 and 405 exceptions.  These errorhandlers are only
+invoked from an appropriate <code class="docutils literal notranslate"><span class="pre">raise</span></code> statement or a call to <code class="docutils literal notranslate"><span class="pre">abort</span></code> in another
+of the blueprint’s view functions; they are not invoked by, e.g., an invalid URL
+access.  This is because the blueprint does not “own” a certain URL space, so
+the application instance has no way of knowing which blueprint error handler it
+should run if given an invalid URL.  If you would like to execute different
+handling strategies for these errors based on URL prefixes, they may be defined
+at the application level using the <code class="docutils literal notranslate"><span class="pre">request</span></code> proxy object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">405</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_handle_api_error</span><span class="p">(</span><span class="n">ex</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/api/&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)),</span> <span class="n">ex</span><span class="o">.</span><span class="n">code</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ex</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="errorhandling.html"><span class="doc">Handling Application Errors</span></a>.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+
+
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Modular Applications with Blueprints</a><ul>
+<li><a class="reference internal" href="#why-blueprints">Why Blueprints?</a></li>
+<li><a class="reference internal" href="#the-concept-of-blueprints">The Concept of Blueprints</a></li>
+<li><a class="reference internal" href="#my-first-blueprint">My First Blueprint</a></li>
+<li><a class="reference internal" href="#registering-blueprints">Registering Blueprints</a></li>
+<li><a class="reference internal" href="#nesting-blueprints">Nesting Blueprints</a></li>
+<li><a class="reference internal" href="#blueprint-resources">Blueprint Resources</a><ul>
+<li><a class="reference internal" href="#blueprint-resource-folder">Blueprint Resource Folder</a></li>
+<li><a class="reference internal" href="#static-files">Static Files</a></li>
+<li><a class="reference internal" href="#templates">Templates</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#building-urls">Building URLs</a></li>
+<li><a class="reference internal" href="#blueprint-error-handlers">Blueprint Error Handlers</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="index.html">Overview</a>
+    <ul>
+          <li>Previous: <a href="reqcontext.html" title="previous chapter">The Request Context</a>
+          <li>Next: <a href="extensions.html" title="next chapter">Extensions</a>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

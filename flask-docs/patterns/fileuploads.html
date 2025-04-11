@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JavaScript, fetch, and JSON &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="../_static/flask.css?v=b87c8d14" />
+    <script src="../_static/documentation_options.js?v=56528222"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="../_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="../_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Lazily Loading Views" href="lazyloading.html" />
+    <link rel="prev" title="Message Flashing" href="flashing.html" />
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lazyloading.html" title="Lazily Loading Views"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="flashing.html" title="Message Flashing"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Patterns for Flask</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">JavaScript, <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, and JSON</a></li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="javascript-fetch-and-json">
+<h1>JavaScript, <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, and JSON<a class="headerlink" href="#javascript-fetch-and-json" title="Link to this heading">¶</a></h1>
+<p>You may want to make your HTML page dynamic, by changing data without
+reloading the entire page. Instead of submitting an HTML <code class="docutils literal notranslate"><span class="pre">&lt;form&gt;</span></code> and
+performing a redirect to re-render the template, you can add
+<a class="reference external" href="https://developer.mozilla.org/Web/JavaScript">JavaScript</a> that calls <a class="reference external" href="https://developer.mozilla.org/Web/API/Fetch_API"><code class="docutils literal notranslate"><span class="pre">fetch()</span></code></a> and replaces content on the page.</p>
+<p><a class="reference external" href="https://developer.mozilla.org/Web/API/Fetch_API"><code class="docutils literal notranslate"><span class="pre">fetch()</span></code></a> is the modern, built-in JavaScript solution to making
+requests from a page. You may have heard of other “AJAX” methods and
+libraries, such as <a class="reference external" href="https://developer.mozilla.org/Web/API/XMLHttpRequest"><code class="docutils literal notranslate"><span class="pre">XMLHttpRequest()</span></code></a> or <a class="reference external" href="https://jquery.com/">jQuery</a>. These are no longer needed in
+modern browsers, although you may choose to use them or another library
+depending on your application’s requirements. These docs will only focus
+on built-in JavaScript features.</p>
+<section id="rendering-templates">
+<h2>Rendering Templates<a class="headerlink" href="#rendering-templates" title="Link to this heading">¶</a></h2>
+<p>It is important to understand the difference between templates and
+JavaScript. Templates are rendered on the server, before the response is
+sent to the user’s browser. JavaScript runs in the user’s browser, after
+the template is rendered and sent. Therefore, it is impossible to use
+JavaScript to affect how the Jinja template is rendered, but it is
+possible to render data into the JavaScript that will run.</p>
+<p>To provide data to JavaScript when rendering the template, use the
+<a class="reference external" href="https://jinja.palletsprojects.com/en/stable/templates/#jinja-filters.tojson" title="(in Jinja v3.1.x)"><code class="xref py py-func docutils literal notranslate"><span class="pre">tojson()</span></code></a> filter in a <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> block. This will
+convert the data to a valid JavaScript object, and ensure that any
+unsafe HTML characters are rendered safely. If you do not use the
+<code class="docutils literal notranslate"><span class="pre">tojson</span></code> filter, you will get a <code class="docutils literal notranslate"><span class="pre">SyntaxError</span></code> in the browser
+console.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">generate_report</span><span class="p">()</span>
+<span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">&quot;report.html&quot;</span><span class="p">,</span> <span class="n">chart_data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-jinja notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;script&gt;</span>
+<span class="x">    const chart_data = </span><span class="cp">{{</span> <span class="nv">chart_data</span><span class="o">|</span><span class="nf">tojson</span> <span class="cp">}}</span>
+<span class="x">    chartLib.makeChart(chart_data)</span>
+<span class="x">&lt;/script&gt;</span>
+</pre></div>
+</div>
+<p>A less common pattern is to add the data to a <code class="docutils literal notranslate"><span class="pre">data-</span></code> attribute on an
+HTML tag. In this case, you must use single quotes around the value, not
+double quotes, otherwise you will produce invalid or unsafe HTML.</p>
+<div class="highlight-jinja notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;div data-chart=&#39;</span><span class="cp">{{</span> <span class="nv">chart_data</span><span class="o">|</span><span class="nf">tojson</span> <span class="cp">}}</span><span class="x">&#39;&gt;&lt;/div&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="generating-urls">
+<h2>Generating URLs<a class="headerlink" href="#generating-urls" title="Link to this heading">¶</a></h2>
+<p>The other way to get data from the server to JavaScript is to make a
+request for it. First, you need to know the URL to request.</p>
+<p>The simplest way to generate URLs is to continue to use
+<a class="reference internal" href="../api.html#flask.url_for" title="flask.url_for"><code class="xref py py-func docutils literal notranslate"><span class="pre">url_for()</span></code></a> when rendering the template. For example:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">user_url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{{</span><span class="w"> </span><span class="nx">url_for</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">id</span><span class="o">=</span><span class="nx">current_user</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span><span class="o">|</span><span class="nx">tojson</span><span class="w"> </span><span class="p">}}</span>
+<span class="nx">fetch</span><span class="p">(</span><span class="nx">user_url</span><span class="p">).</span><span class="nx">then</span><span class="p">(...)</span>
+</pre></div>
+</div>
+<p>However, you might need to generate a URL based on information you only
+know in JavaScript. As discussed above, JavaScript runs in the user’s
+browser, not as part of the template rendering, so you can’t use
+<code class="docutils literal notranslate"><span class="pre">url_for</span></code> at that point.</p>
+<p>In this case, you need to know the “root URL” under which your
+application is served. In simple setups, this is <code class="docutils literal notranslate"><span class="pre">/</span></code>, but it might
+also be something else, like <code class="docutils literal notranslate"><span class="pre">https://example.com/myapp/</span></code>.</p>
+<p>A simple way to tell your JavaScript code about this root is to set it
+as a global variable when rendering the template. Then you can use it
+when generating URLs from JavaScript.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">SCRIPT_ROOT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{{</span><span class="w"> </span><span class="nx">request</span><span class="p">.</span><span class="nx">script_root</span><span class="o">|</span><span class="nx">tojson</span><span class="w"> </span><span class="p">}}</span>
+<span class="kd">let</span><span class="w"> </span><span class="nx">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span><span class="w">  </span><span class="c1">// do something to get a user id from the page</span>
+<span class="kd">let</span><span class="w"> </span><span class="nx">user_url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">SCRIPT_ROOT</span><span class="si">}</span><span class="sb">/user/</span><span class="si">${</span><span class="nx">user_id</span><span class="si">}</span><span class="sb">`</span>
+<span class="nx">fetch</span><span class="p">(</span><span class="nx">user_url</span><span class="p">).</span><span class="nx">then</span><span class="p">(...)</span>
+</pre></div>
+</div>
+</section>
+<section id="making-a-request-with-fetch">
+<h2>Making a Request with <code class="docutils literal notranslate"><span class="pre">fetch</span></code><a class="headerlink" href="#making-a-request-with-fetch" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://developer.mozilla.org/Web/API/Fetch_API"><code class="docutils literal notranslate"><span class="pre">fetch()</span></code></a> takes two arguments, a URL and an object with other options,
+and returns a <a class="reference external" href="https://developer.mozilla.org/Web/JavaScript/Reference/Global_Objects/Promise"><code class="docutils literal notranslate"><span class="pre">Promise</span></code></a>. We won’t cover all the available options, and
+will only use <code class="docutils literal notranslate"><span class="pre">then()</span></code> on the promise, not other callbacks or
+<code class="docutils literal notranslate"><span class="pre">await</span></code> syntax. Read the linked MDN docs for more information about
+those features.</p>
+<p>By default, the GET method is used. If the response contains JSON, it
+can be used with a <code class="docutils literal notranslate"><span class="pre">then()</span></code> callback chain.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">room_url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{{</span><span class="w"> </span><span class="nx">url_for</span><span class="p">(</span><span class="s2">&quot;room_detail&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">id</span><span class="o">=</span><span class="nx">room</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span><span class="o">|</span><span class="nx">tojson</span><span class="w"> </span><span class="p">}}</span>
+<span class="nx">fetch</span><span class="p">(</span><span class="nx">room_url</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// data is a parsed JSON object</span>
+<span class="w">    </span><span class="p">})</span>
+</pre></div>
+</div>
+<p>To send data, use a data method such as POST, and pass the <code class="docutils literal notranslate"><span class="pre">body</span></code>
+option. The most common types for data are form data or JSON data.</p>
+<p>To send form data, pass a populated <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/FormData"><code class="docutils literal notranslate"><span class="pre">FormData</span></code></a> object. This uses the
+same format as an HTML form, and would be accessed with <code class="docutils literal notranslate"><span class="pre">request.form</span></code>
+in a Flask view.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">FormData</span><span class="p">()</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Flask Room&quot;</span><span class="p">)</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Talk about Flask here.&quot;</span><span class="p">)</span>
+<span class="nx">fetch</span><span class="p">(</span><span class="nx">room_url</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s2">&quot;method&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;body&quot;</span><span class="o">:</span><span class="w"> </span><span class="nx">data</span><span class="p">,</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(...)</span>
+</pre></div>
+</div>
+<p>In general, prefer sending request data as form data, as would be used
+when submitting an HTML form. JSON can represent more complex data, but
+unless you need that it’s better to stick with the simpler format. When
+sending JSON data, the <code class="docutils literal notranslate"><span class="pre">Content-Type:</span> <span class="pre">application/json</span></code> header must be
+sent as well, otherwise Flask will return a 400 error.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Flask Room&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;description&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Talk about Flask here.&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="nx">fetch</span><span class="p">(</span><span class="nx">room_url</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s2">&quot;method&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;headers&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;application/json&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="s2">&quot;body&quot;</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">data</span><span class="p">),</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(...)</span>
+</pre></div>
+</div>
+</section>
+<section id="following-redirects">
+<h2>Following Redirects<a class="headerlink" href="#following-redirects" title="Link to this heading">¶</a></h2>
+<p>A response might be a redirect, for example if you logged in with
+JavaScript instead of a traditional HTML form, and your view returned
+a redirect instead of JSON. JavaScript requests do follow redirects, but
+they don’t change the page. If you want to make the page change you can
+inspect the response and apply the redirect manually.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">fetch</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;body&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">...}).</span><span class="nx">then</span><span class="p">(</span>
+<span class="w">    </span><span class="nx">response</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">redirected</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">url</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">showLoginError</span><span class="p">()</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="replacing-content">
+<h2>Replacing Content<a class="headerlink" href="#replacing-content" title="Link to this heading">¶</a></h2>
+<p>A response might be new HTML, either a new section of the page to add or
+replace, or an entirely new page. In general, if you’re returning the
+entire page, it would be better to handle that with a redirect as shown
+in the previous section. The following example shows how to replace a
+<code class="docutils literal notranslate"><span class="pre">&lt;div&gt;</span></code> with the HTML returned by a request.</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;geology-fact&quot;</span><span class="p">&gt;</span>
+    {{ include &quot;geology_fact.html&quot; }}
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">geology_url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{{</span><span class="w"> </span><span class="nx">url_for</span><span class="p">(</span><span class="s2">&quot;geology_fact&quot;</span><span class="p">)</span><span class="o">|</span><span class="nx">tojson</span><span class="w"> </span><span class="p">}}</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">geology_div</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;geology-fact&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">geology_url</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">text</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">text</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">geology_div</span><span class="p">.</span><span class="nx">innerHTML</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">text</span><span class="p">)</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="return-json-from-views">
+<h2>Return JSON from Views<a class="headerlink" href="#return-json-from-views" title="Link to this heading">¶</a></h2>
+<p>To return a JSON object from your API view, you can directly return a
+dict from the view. It will be serialized to JSON automatically.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/user/&lt;int:id&gt;&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">user_detail</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get_or_404</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+        <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">User</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
+        <span class="s2">&quot;picture&quot;</span><span class="p">:</span> <span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;users/</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">/profile.png&quot;</span><span class="p">),</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>If you want to return another JSON type, use the
+<a class="reference internal" href="../api.html#flask.json.jsonify" title="flask.json.jsonify"><code class="xref py py-func docutils literal notranslate"><span class="pre">jsonify()</span></code></a> function, which creates a response object
+with the given data serialized to JSON.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">jsonify</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">user_list</span><span class="p">():</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">([</span><span class="n">u</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">users</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>It is usually not a good idea to return file data in a JSON response.
+JSON cannot represent binary data directly, so it must be base64
+encoded, which can be slow, takes more bandwidth to send, and is not as
+easy to cache. Instead, serve files using one view, and generate a URL
+to the desired file to include in the JSON. Then the client can make a
+separate request to get the linked resource after getting the JSON.</p>
+</section>
+<section id="receiving-json-in-views">
+<h2>Receiving JSON in Views<a class="headerlink" href="#receiving-json-in-views" title="Link to this heading">¶</a></h2>
+<p>Use the <a class="reference internal" href="../api.html#flask.Request.json" title="flask.Request.json"><code class="xref py py-attr docutils literal notranslate"><span class="pre">json</span></code></a> property of the
+<a class="reference internal" href="../api.html#flask.request" title="flask.request"><code class="xref py py-data docutils literal notranslate"><span class="pre">request</span></code></a> object to decode the request’s body as JSON. If
+the body is not valid JSON, or the <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> header is not set to
+<code class="docutils literal notranslate"><span class="pre">application/json</span></code>, a 400 Bad Request error will be raised.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">request</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/user/&lt;int:id&gt;&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">user_update</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get_or_404</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+    <span class="n">user</span><span class="o">.</span><span class="n">update_from_json</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">user</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+
+
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">JavaScript, <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, and JSON</a><ul>
+<li><a class="reference internal" href="#rendering-templates">Rendering Templates</a></li>
+<li><a class="reference internal" href="#generating-urls">Generating URLs</a></li>
+<li><a class="reference internal" href="#making-a-request-with-fetch">Making a Request with <code class="docutils literal notranslate"><span class="pre">fetch</span></code></a></li>
+<li><a class="reference internal" href="#following-redirects">Following Redirects</a></li>
+<li><a class="reference internal" href="#replacing-content">Replacing Content</a></li>
+<li><a class="reference internal" href="#return-json-from-views">Return JSON from Views</a></li>
+<li><a class="reference internal" href="#receiving-json-in-views">Receiving JSON in Views</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="../index.html">Overview</a>
+    <ul>
+      <li><a href="index.html">Patterns for Flask</a>
+        <ul>
+          <li>Previous: <a href="flashing.html" title="previous chapter">Message Flashing</a>
+          <li>Next: <a href="lazyloading.html" title="next chapter">Lazily Loading Views</a></ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

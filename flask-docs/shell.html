@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Testing Flask Applications &#8212; Flask Documentation (3.2.x)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="_static/flask.css?v=b87c8d14" />
+    <script src="_static/documentation_options.js?v=56528222"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script data-project="flask" data-version="3.2.x" src="_static/describe_version.js?v=fa7f30d0"></script>
+    <link rel="icon" href="_static/shortcut-icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Handling Application Errors" href="errorhandling.html" />
+    <link rel="prev" title="Templates" href="templating.html" />
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="errorhandling.html" title="Handling Application Errors"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="templating.html" title="Templates"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Flask Documentation (3.2.x)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Testing Flask Applications</a></li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="testing-flask-applications">
+<h1>Testing Flask Applications<a class="headerlink" href="#testing-flask-applications" title="Link to this heading">¶</a></h1>
+<p>Flask provides utilities for testing an application. This documentation
+goes over techniques for working with different parts of the application
+in tests.</p>
+<p>We will use the <a class="reference external" href="https://docs.pytest.org/">pytest</a> framework to set up and run our tests.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ pip install pytest
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="tutorial/index.html"><span class="doc">tutorial</span></a> goes over how to write tests for
+100% coverage of the sample Flaskr blog application. See
+<a class="reference internal" href="tutorial/tests.html"><span class="doc">the tutorial on tests</span></a> for a detailed
+explanation of specific tests for an application.</p>
+<section id="identifying-tests">
+<h2>Identifying Tests<a class="headerlink" href="#identifying-tests" title="Link to this heading">¶</a></h2>
+<p>Tests are typically located in the <code class="docutils literal notranslate"><span class="pre">tests</span></code> folder. Tests are functions
+that start with <code class="docutils literal notranslate"><span class="pre">test_</span></code>, in Python modules that start with <code class="docutils literal notranslate"><span class="pre">test_</span></code>.
+Tests can also be further grouped in classes that start with <code class="docutils literal notranslate"><span class="pre">Test</span></code>.</p>
+<p>It can be difficult to know what to test. Generally, try to test the
+code that you write, not the code of libraries that you use, since they
+are already tested. Try to extract complex behaviors as separate
+functions to test individually.</p>
+</section>
+<section id="fixtures">
+<h2>Fixtures<a class="headerlink" href="#fixtures" title="Link to this heading">¶</a></h2>
+<p>Pytest <em>fixtures</em> allow writing pieces of code that are reusable across
+tests. A simple fixture returns a value, but a fixture can also do
+setup, yield a value, then do teardown. Fixtures for the application,
+test client, and CLI runner are shown below, they can be placed in
+<code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code>.</p>
+<p>If you’re using an
+<a class="reference internal" href="patterns/appfactories.html"><span class="doc">application factory</span></a>, define an <code class="docutils literal notranslate"><span class="pre">app</span></code>
+fixture to create and configure an app instance. You can add code before
+and after the <code class="docutils literal notranslate"><span class="pre">yield</span></code> to set up and tear down other resources, such as
+creating and clearing a database.</p>
+<p>If you’re not using a factory, you already have an app object you can
+import and configure directly. You can still use an <code class="docutils literal notranslate"><span class="pre">app</span></code> fixture to
+set up and tear down resources.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">my_project</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">app</span><span class="p">():</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s2">&quot;TESTING&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">})</span>
+
+    <span class="c1"># other setup can go here</span>
+
+    <span class="k">yield</span> <span class="n">app</span>
+
+    <span class="c1"># clean up / reset resources here</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">client</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">test_client</span><span class="p">()</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">runner</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">test_cli_runner</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="sending-requests-with-the-test-client">
+<h2>Sending Requests with the Test Client<a class="headerlink" href="#sending-requests-with-the-test-client" title="Link to this heading">¶</a></h2>
+<p>The test client makes requests to the application without running a live
+server. Flask’s client extends
+<a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/test/" title="(in Werkzeug v3.1.x)"><span class="xref std std-doc">Werkzeug’s client</span></a>, see those docs for additional
+information.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">client</span></code> has methods that match the common HTTP request methods,
+such as <code class="docutils literal notranslate"><span class="pre">client.get()</span></code> and <code class="docutils literal notranslate"><span class="pre">client.post()</span></code>. They take many arguments
+for building the request; you can find the full documentation in
+<a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/test/#werkzeug.test.EnvironBuilder" title="(in Werkzeug v3.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnvironBuilder</span></code></a>. Typically you’ll use <code class="docutils literal notranslate"><span class="pre">path</span></code>,
+<code class="docutils literal notranslate"><span class="pre">query_string</span></code>, <code class="docutils literal notranslate"><span class="pre">headers</span></code>, and <code class="docutils literal notranslate"><span class="pre">data</span></code> or <code class="docutils literal notranslate"><span class="pre">json</span></code>.</p>
+<p>To make a request, call the method the request should use with the path
+to the route to test. A <a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/test/#werkzeug.test.TestResponse" title="(in Werkzeug v3.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestResponse</span></code></a> is returned
+to examine the response data. It has all the usual properties of a
+response object. You’ll usually look at <code class="docutils literal notranslate"><span class="pre">response.data</span></code>, which is the
+bytes returned by the view. If you want to use text, Werkzeug 2.1
+provides <code class="docutils literal notranslate"><span class="pre">response.text</span></code>, or use <code class="docutils literal notranslate"><span class="pre">response.get_data(as_text=True)</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_request_example</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/posts&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="sa">b</span><span class="s2">&quot;&lt;h2&gt;Hello, World!&lt;/h2&gt;&quot;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+<p>Pass a dict <code class="docutils literal notranslate"><span class="pre">query_string={&quot;key&quot;:</span> <span class="pre">&quot;value&quot;,</span> <span class="pre">...}</span></code> to set arguments in
+the query string (after the <code class="docutils literal notranslate"><span class="pre">?</span></code> in the URL). Pass a dict
+<code class="docutils literal notranslate"><span class="pre">headers={}</span></code> to set request headers.</p>
+<p>To send a request body in a POST or PUT request, pass a value to
+<code class="docutils literal notranslate"><span class="pre">data</span></code>. If raw bytes are passed, that exact body is used. Usually,
+you’ll pass a dict to set form data.</p>
+<section id="form-data">
+<h3>Form Data<a class="headerlink" href="#form-data" title="Link to this heading">¶</a></h3>
+<p>To send form data, pass a dict to <code class="docutils literal notranslate"><span class="pre">data</span></code>. The <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> header
+will be set to <code class="docutils literal notranslate"><span class="pre">multipart/form-data</span></code> or
+<code class="docutils literal notranslate"><span class="pre">application/x-www-form-urlencoded</span></code> automatically.</p>
+<p>If a value is a file object opened for reading bytes (<code class="docutils literal notranslate"><span class="pre">&quot;rb&quot;</span></code> mode), it
+will be treated as an uploaded file. To change the detected filename and
+content type, pass a <code class="docutils literal notranslate"><span class="pre">(file,</span> <span class="pre">filename,</span> <span class="pre">content_type)</span></code> tuple. File
+objects will be closed after making the request, so they do not need to
+use the usual <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">open()</span> <span class="pre">as</span> <span class="pre">f:</span></code> pattern.</p>
+<p>It can be useful to store files in a <code class="docutils literal notranslate"><span class="pre">tests/resources</span></code> folder, then
+use <code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code> to get files relative to the current test file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="c1"># get the resources folder in the tests folder</span>
+<span class="n">resources</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;resources&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_edit_user</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/user/2/edit&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Flask&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;theme&quot;</span><span class="p">:</span> <span class="s2">&quot;dark&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;picture&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">resources</span> <span class="o">/</span> <span class="s2">&quot;picture.png&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;rb&quot;</span><span class="p">),</span>
+    <span class="p">})</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+</pre></div>
+</div>
+</section>
+<section id="json-data">
+<h3>JSON Data<a class="headerlink" href="#json-data" title="Link to this heading">¶</a></h3>
+<p>To send JSON data, pass an object to <code class="docutils literal notranslate"><span class="pre">json</span></code>. The <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code>
+header will be set to <code class="docutils literal notranslate"><span class="pre">application/json</span></code> automatically.</p>
+<p>Similarly, if the response contains JSON data, the <code class="docutils literal notranslate"><span class="pre">response.json</span></code>
+attribute will contain the deserialized object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_json_data</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/graphql&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            query User($id: String!) {</span>
+<span class="s2">                user(id: $id) {</span>
+<span class="s2">                    name</span>
+<span class="s2">                    theme</span>
+<span class="s2">                    picture_url</span>
+<span class="s2">                }</span>
+<span class="s2">            }</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">variables</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+    <span class="p">})</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;user&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Flask&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="following-redirects">
+<h2>Following Redirects<a class="headerlink" href="#following-redirects" title="Link to this heading">¶</a></h2>
+<p>By default, the client does not make additional requests if the response
+is a redirect. By passing <code class="docutils literal notranslate"><span class="pre">follow_redirects=True</span></code> to a request method,
+the client will continue to make requests until a non-redirect response
+is returned.</p>
+<p><a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/test/#werkzeug.test.TestResponse.history" title="(in Werkzeug v3.1.x)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">TestResponse.history</span></code></a> is
+a tuple of the responses that led up to the final response. Each
+response has a <a class="reference external" href="https://werkzeug.palletsprojects.com/en/stable/test/#werkzeug.test.TestResponse.request" title="(in Werkzeug v3.1.x)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">request</span></code></a> attribute
+which records the request that produced that response.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_logout_redirect</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/logout&quot;</span><span class="p">,</span> <span class="n">follow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Check that there was one redirect response.</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">history</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="c1"># Check that the second request was to the index page.</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;/index&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="accessing-and-modifying-the-session">
+<h2>Accessing and Modifying the Session<a class="headerlink" href="#accessing-and-modifying-the-session" title="Link to this heading">¶</a></h2>
+<p>To access Flask’s context variables, mainly
+<a class="reference internal" href="api.html#flask.session" title="flask.session"><code class="xref py py-data docutils literal notranslate"><span class="pre">session</span></code></a>, use the client in a <code class="docutils literal notranslate"><span class="pre">with</span></code> statement.
+The app and request context will remain active <em>after</em> making a request,
+until the <code class="docutils literal notranslate"><span class="pre">with</span></code> block ends.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">session</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_access_session</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/auth/login&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;flask&quot;</span><span class="p">})</span>
+        <span class="c1"># session is still accessible</span>
+        <span class="k">assert</span> <span class="n">session</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+
+    <span class="c1"># session is no longer accessible</span>
+</pre></div>
+</div>
+<p>If you want to access or set a value in the session <em>before</em> making a
+request, use the client’s
+<a class="reference internal" href="api.html#flask.testing.FlaskClient.session_transaction" title="flask.testing.FlaskClient.session_transaction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">session_transaction()</span></code></a> method in a
+<code class="docutils literal notranslate"><span class="pre">with</span></code> statement. It returns a session object, and will save the
+session once the block ends.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">session</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_modify_session</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">session_transaction</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+        <span class="c1"># set a user id without going through the login route</span>
+        <span class="n">session</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="c1"># session is saved now</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/users/me&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;flask&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="running-commands-with-the-cli-runner">
+<span id="testing-cli"></span><h2>Running Commands with the CLI Runner<a class="headerlink" href="#running-commands-with-the-cli-runner" title="Link to this heading">¶</a></h2>
+<p>Flask provides <a class="reference internal" href="api.html#flask.Flask.test_cli_runner" title="flask.Flask.test_cli_runner"><code class="xref py py-meth docutils literal notranslate"><span class="pre">test_cli_runner()</span></code></a> to create a
+<a class="reference internal" href="api.html#flask.testing.FlaskCliRunner" title="flask.testing.FlaskCliRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskCliRunner</span></code></a>, which runs CLI commands in
+isolation and captures the output in a <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.testing.Result" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Result</span></code></a>
+object. Flask’s runner extends <a class="reference external" href="https://click.palletsprojects.com/en/stable/testing/" title="(in Click v8.1.x)"><span class="xref std std-doc">Click’s runner</span></a>,
+see those docs for additional information.</p>
+<p>Use the runner’s <a class="reference internal" href="api.html#flask.testing.FlaskCliRunner.invoke" title="flask.testing.FlaskCliRunner.invoke"><code class="xref py py-meth docutils literal notranslate"><span class="pre">invoke()</span></code></a> method to
+call commands in the same way they would be called with the <code class="docutils literal notranslate"><span class="pre">flask</span></code>
+command from the command line.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--name&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;World&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hello_command</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hello, </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_hello_command</span><span class="p">(</span><span class="n">runner</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="s2">&quot;hello&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s2">&quot;World&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">output</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="s2">&quot;--name&quot;</span><span class="p">,</span> <span class="s2">&quot;Flask&quot;</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="s2">&quot;Flask&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">output</span>
+</pre></div>
+</div>
+</section>
+<section id="tests-that-depend-on-an-active-context">
+<h2>Tests that depend on an Active Context<a class="headerlink" href="#tests-that-depend-on-an-active-context" title="Link to this heading">¶</a></h2>
+<p>You may have functions that are called from views or commands, that
+expect an active <a class="reference internal" href="appcontext.html"><span class="doc">application context</span></a> or
+<a class="reference internal" href="reqcontext.html"><span class="doc">request context</span></a> because they access <code class="docutils literal notranslate"><span class="pre">request</span></code>,
+<code class="docutils literal notranslate"><span class="pre">session</span></code>, or <code class="docutils literal notranslate"><span class="pre">current_app</span></code>. Rather than testing them by making a
+request or invoking the command, you can create and activate a context
+directly.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">app.app_context()</span></code> to push an application context. For
+example, database extensions usually require an active app context to
+make queries.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_db_post_model</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+        <span class="n">post</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Post</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">app.test_request_context()</span></code> to push a request context. It
+takes the same arguments as the test client’s request methods.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_validate_user_edit</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">test_request_context</span><span class="p">(</span>
+        <span class="s2">&quot;/user/2/edit&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>
+    <span class="p">):</span>
+        <span class="c1"># call a function that accesses `request`</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="n">validate_edit_user</span><span class="p">()</span>
+
+    <span class="k">assert</span> <span class="n">messages</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Name cannot be empty.&quot;</span>
+</pre></div>
+</div>
+<p>Creating a test request context doesn’t run any of the Flask dispatching
+code, so <code class="docutils literal notranslate"><span class="pre">before_request</span></code> functions are not called. If you need to
+call these, usually it’s better to make a full request instead. However,
+it’s possible to call them manually.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_auth_token</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">test_request_context</span><span class="p">(</span><span class="s2">&quot;/user/2/edit&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-Auth-Token&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">}):</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">preprocess_request</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Flask&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+
+
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/flask-vertical.png" alt="Logo of Flask"/>
+            </a></p>
+
+
+  <h3>Contents</h3>
+  <ul>
+<li><a class="reference internal" href="#">Testing Flask Applications</a><ul>
+<li><a class="reference internal" href="#identifying-tests">Identifying Tests</a></li>
+<li><a class="reference internal" href="#fixtures">Fixtures</a></li>
+<li><a class="reference internal" href="#sending-requests-with-the-test-client">Sending Requests with the Test Client</a><ul>
+<li><a class="reference internal" href="#form-data">Form Data</a></li>
+<li><a class="reference internal" href="#json-data">JSON Data</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#following-redirects">Following Redirects</a></li>
+<li><a class="reference internal" href="#accessing-and-modifying-the-session">Accessing and Modifying the Session</a></li>
+<li><a class="reference internal" href="#running-commands-with-the-cli-runner">Running Commands with the CLI Runner</a></li>
+<li><a class="reference internal" href="#tests-that-depend-on-an-active-context">Tests that depend on an Active Context</a></li>
+</ul>
+</li>
+</ul>
+<h3>Navigation</h3>
+<ul>
+  <li><a href="index.html">Overview</a>
+    <ul>
+          <li>Previous: <a href="templating.html" title="previous chapter">Templates</a>
+          <li>Next: <a href="errorhandling.html" title="next chapter">Handling Application Errors</a>
+    </ul>
+  </li>
+</ul>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2010 Pallets.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>
