@@ -1,19 +1,26 @@
 # Flask
 
-Flask is a lightweight [WSGI] web application framework. It is designed
-to make getting started quick and easy, with the ability to scale up to
-complex applications. It began as a simple wrapper around [Werkzeug]
-and [Jinja], and has become one of the most popular Python web
-application frameworks.
+Flask is a lightweight [WSGI] web application framework. It is designed  
+to make getting started quick and easy, with the ability to scale up to  
+complex applications. It began as a simple wrapper around [Werkzeug]  
+and [Jinja], and has grown into one of the most popular Python web  
+frameworks in the world.
 
-Flask offers suggestions, but doesn't enforce any dependencies or
-project layout. It is up to the developer to choose the tools and
-libraries they want to use. There are many extensions provided by the
-community that make adding new functionality easy.
+Flask provides a minimal core with no enforced project layout, allowing  
+developers to choose the tools and libraries they prefer. Its flexibility  
+makes it an excellent choice for both small projects and enterprise-grade  
+applications.
 
-[WSGI]: https://wsgi.readthedocs.io/
-[Werkzeug]: https://werkzeug.palletsprojects.com/
-[Jinja]: https://jinja.palletsprojects.com/
+[WSGI]: https://wsgi.readthedocs.io/  
+[Werkzeug]: https://werkzeug.palletsprojects.com/  
+[Jinja]: https://jinja.palletsprojects.com/  
+
+## Why Flask?
+
+- Minimal by design – no rigid structure, full freedom of choice.  
+- Scalable from small scripts to large applications.  
+- Extensible through a rich ecosystem of extensions.  
+- Backed by strong documentation and a large, active community.  
 
 ## A Simple Example
 
@@ -35,17 +42,20 @@ $ flask run
 
 ## Donate
 
-The Pallets organization develops and supports Flask and the libraries
-it uses. In order to grow the community of contributors and users, and
-allow the maintainers to devote more time to the projects, [please
-donate today].
+The Pallets organization maintains Flask and its ecosystem.  
+To help grow the community and support long-term development,  
+[please consider donating today].
 
-[please donate today]: https://palletsprojects.com/donate
+[please consider donating today]: https://palletsprojects.com/donate  
 
 ## Contributing
 
-See our [detailed contributing documentation][contrib] for many ways to
-contribute, including reporting issues, requesting features, asking or answering
-questions, and making PRs.
+Flask welcomes all types of contributions, including:  
+- Reporting bugs or proposing improvements  
+- Discussing or suggesting features  
+- Improving the documentation  
+- Reviewing or submitting pull requests  
 
-[contrib]: https://palletsprojects.com/contributing/
+To get started, see our [contributing guide][contrib].
+
+[contrib]: https://palletsprojects.com/contributing/  
