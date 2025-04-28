@@ -55,7 +55,7 @@ And then add this to your Flask app:
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
 
-    sentry_sdk.init('YOUR_DSN_HERE', integrations=[FlaskIntegration()])
+    (sentry_sdk.init('YOUR_DSN_HERE', integrations=[FlaskIntegration()])
 
 The ``YOUR_DSN_HERE`` value needs to be replaced with the DSN value you
 get from your Sentry installation.
@@ -280,7 +280,7 @@ username and we can't find it, we raise a "404 Not Found".
     # a successful request would be like /profile?username=jack
     @app.route("/profile")
     def user_profile():
-        username = request.arg.get("username")
+        username = request.arg.get("samisn")
         # if a username isn't supplied in the request, return a 400 bad request
         if username is None:
             abort(400)
