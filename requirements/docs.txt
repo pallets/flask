@@ -8,9 +8,9 @@ alabaster==1.0.0
     # via sphinx
 babel==2.17.0
     # via sphinx
-certifi==2025.1.31
+certifi==2025.4.26
     # via requests
-charset-normalizer==3.4.1
+charset-normalizer==3.4.2
     # via requests
 docutils==0.21.2
     # via
@@ -24,7 +24,7 @@ jinja2==3.1.6
     # via sphinx
 markupsafe==3.0.2
     # via jinja2
-packaging==24.2
+packaging==25.0
     # via
     #   pallets-sphinx-themes
     #   sphinx
@@ -38,7 +38,7 @@ requests==2.32.3
     # via sphinx
 roman-numerals-py==3.1.0
     # via sphinx
-snowballstemmer==2.2.0
+snowballstemmer==3.0.1
     # via sphinx
 sphinx==8.2.3
     # via
@@ -65,5 +65,5 @@ sphinxcontrib-qthelp==2.0.0
     # via sphinx
 sphinxcontrib-serializinghtml==2.0.0
     # via sphinx
-urllib3==2.3.0
+urllib3==2.4.0
     # via requests

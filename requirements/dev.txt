@@ -18,7 +18,7 @@ babel==2.17.0
     #   sphinx
 cachetools==5.5.2
     # via tox
-certifi==2025.1.31
+certifi==2025.4.26
     # via
     #   -r /Users/david/Projects/flask/requirements/docs.txt
     #   requests
@@ -30,13 +30,13 @@ cfgv==3.4.0
     # via pre-commit
 chardet==5.2.0
     # via tox
-charset-normalizer==3.4.1
+charset-normalizer==3.4.2
     # via
     #   -r /Users/david/Projects/flask/requirements/docs.txt
     #   requests
 colorama==0.4.6
     # via tox
-cryptography==44.0.2
+cryptography==44.0.3
     # via -r /Users/david/Projects/flask/requirements/typing.txt
 distlib==0.3.9
     # via virtualenv
@@ -49,7 +49,7 @@ filelock==3.18.0
     # via
     #   tox
     #   virtualenv
-identify==2.6.9
+identify==2.6.10
     # via pre-commit
 idna==3.10
     # via
@@ -74,7 +74,7 @@ markupsafe==3.0.2
     #   jinja2
 mypy==1.15.0
     # via -r /Users/david/Projects/flask/requirements/typing.txt
-mypy-extensions==1.0.0
+mypy-extensions==1.1.0
     # via
     #   -r /Users/david/Projects/flask/requirements/typing.txt
     #   mypy
@@ -83,7 +83,7 @@ nodeenv==1.9.1
     #   -r /Users/david/Projects/flask/requirements/typing.txt
     #   pre-commit
     #   pyright
-packaging==24.2
+packaging==25.0
     # via
     #   -r /Users/david/Projects/flask/requirements/docs.txt
     #   -r /Users/david/Projects/flask/requirements/tests.txt
@@ -95,7 +95,7 @@ packaging==24.2
     #   tox
 pallets-sphinx-themes==2.3.0
     # via -r /Users/david/Projects/flask/requirements/docs.txt
-platformdirs==4.3.7
+platformdirs==4.3.8
     # via
     #   tox
     #   virtualenv
@@ -118,7 +118,7 @@ pygments==2.19.1
     #   sphinx-tabs
 pyproject-api==1.9.0
     # via tox
-pyright==1.1.398
+pyright==1.1.400
     # via -r /Users/david/Projects/flask/requirements/typing.txt
 pytest==8.3.5
     # via
@@ -138,7 +138,7 @@ roman-numerals-py==3.1.0
     # via
     #   -r /Users/david/Projects/flask/requirements/docs.txt
     #   sphinx
-snowballstemmer==2.2.0
+snowballstemmer==3.0.1
     # via
     #   -r /Users/david/Projects/flask/requirements/docs.txt
     #   sphinx
@@ -187,16 +187,16 @@ types-contextvars==2.4.7.3
     # via -r /Users/david/Projects/flask/requirements/typing.txt
 types-dataclasses==0.6.6
     # via -r /Users/david/Projects/flask/requirements/typing.txt
-typing-extensions==4.13.0
+typing-extensions==4.13.2
     # via
     #   -r /Users/david/Projects/flask/requirements/typing.txt
     #   mypy
     #   pyright
-urllib3==2.3.0
+urllib3==2.4.0
     # via
     #   -r /Users/david/Projects/flask/requirements/docs.txt
     #   requests
-virtualenv==20.29.3
+virtualenv==20.31.2
     # via
     #   pre-commit
     #   tox

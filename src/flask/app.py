@@ -1222,7 +1222,7 @@ class Flask(App):
                 # waiting to do it manually, so that the class can handle any
                 # special logic
                 rv = self.response_class(
-                    rv,
+                    rv,  # pyright: ignore
                     status=status,
                     headers=headers,  # type: ignore[arg-type]
                 )
