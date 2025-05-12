@@ -1,4 +1,0 @@
-pytest
-asgiref
-greenlet ; python_version < "3.11"
-python-dotenv
