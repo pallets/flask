@@ -1,5 +1,0 @@
--r docs.txt
--r tests.txt
--r typing.txt
-pre-commit
-tox
