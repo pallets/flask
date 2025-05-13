@@ -213,7 +213,7 @@ class App(Scaffold):
     #:
     #: This attribute can also be configured from the config with the
     #: :data:`SECRET_KEY` configuration key. Defaults to ``None``.
-    secret_key = ConfigAttribute[t.Union[str, bytes, None]]("SECRET_KEY")
+    secret_key = ConfigAttribute[str | bytes | None]("SECRET_KEY")
 
     #: A :class:`~datetime.timedelta` which is used to set the expiration
     #: date of a permanent session.  The default is 31 days which makes a

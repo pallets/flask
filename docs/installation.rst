@@ -5,7 +5,7 @@ Installation
 Python Version
 --------------
 
-We recommend using the latest version of Python. Flask supports Python 3.9 and newer.
+We recommend using the latest version of Python. Flask supports Python 3.10 and newer.
 
 
 Dependencies
