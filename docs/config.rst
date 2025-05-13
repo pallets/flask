@@ -127,12 +127,15 @@ The following configuration values are used internally by Flask:
 
 .. py:data:: SECRET_KEY_FALLBACKS
 
-    A list of old secret keys that can still be used for unsigning, most recent
-    first. This allows a project to implement key rotation without invalidating
-    active sessions or other recently-signed secrets.
+    A list of old secret keys that can still be used for unsigning. This allows
+    a project to implement key rotation without invalidating active sessions or
+    other recently-signed secrets.
 
     Keys should be removed after an appropriate period of time, as checking each
     additional key adds some overhead.
+
+    Order should not matter, but the default implementation will test the last
+    key in the list first, so it might make sense to order oldest to newest.
 
     Flask's built-in secure cookie session supports this. Extensions that use
     :data:`SECRET_KEY` may not support this yet.
