@@ -23,8 +23,7 @@ ResponseValue = t.Union[
 ]
 
 # the possible types for an individual HTTP header
-# This should be a Union, but mypy doesn't pass unless it's a TypeVar.
-HeaderValue = t.Union[str, list[str], tuple[str, ...]]
+HeaderValue = str | list[str] | tuple[str, ...]
 
 # the possible types for HTTP headers
 HeadersValue = t.Union[
@@ -47,34 +46,29 @@ ResponseReturnValue = t.Union[
 # callback annotated with flask.Response fail type checking.
 ResponseClass = t.TypeVar("ResponseClass", bound="Response")
 
-AppOrBlueprintKey = t.Optional[str]  # The App key is None, whereas blueprints are named
-AfterRequestCallable = t.Union[
-    t.Callable[[ResponseClass], ResponseClass],
-    t.Callable[[ResponseClass], t.Awaitable[ResponseClass]],
-]
-BeforeFirstRequestCallable = t.Union[
-    t.Callable[[], None], t.Callable[[], t.Awaitable[None]]
-]
-BeforeRequestCallable = t.Union[
-    t.Callable[[], t.Optional[ResponseReturnValue]],
-    t.Callable[[], t.Awaitable[t.Optional[ResponseReturnValue]]],
-]
+AppOrBlueprintKey = str | None  # The App key is None, whereas blueprints are named
+AfterRequestCallable = (
+    t.Callable[[ResponseClass], ResponseClass]
+    | t.Callable[[ResponseClass], t.Awaitable[ResponseClass]]
+)
+BeforeFirstRequestCallable = t.Callable[[], None] | t.Callable[[], t.Awaitable[None]]
+BeforeRequestCallable = (
+    t.Callable[[], ResponseReturnValue | None]
+    | t.Callable[[], t.Awaitable[ResponseReturnValue | None]]
+)
 ShellContextProcessorCallable = t.Callable[[], dict[str, t.Any]]
-TeardownCallable = t.Union[
-    t.Callable[[t.Optional[BaseException]], None],
-    t.Callable[[t.Optional[BaseException]], t.Awaitable[None]],
-]
-TemplateContextProcessorCallable = t.Union[
-    t.Callable[[], dict[str, t.Any]],
-    t.Callable[[], t.Awaitable[dict[str, t.Any]]],
-]
+TeardownCallable = (
+    t.Callable[[BaseException | None], None]
+    | t.Callable[[BaseException | None], t.Awaitable[None]]
+)
+TemplateContextProcessorCallable = (
+    t.Callable[[], dict[str, t.Any]] | t.Callable[[], t.Awaitable[dict[str, t.Any]]]
+)
 TemplateFilterCallable = t.Callable[..., t.Any]
 TemplateGlobalCallable = t.Callable[..., t.Any]
 TemplateTestCallable = t.Callable[..., bool]
 URLDefaultCallable = t.Callable[[str, dict[str, t.Any]], None]
-URLValuePreprocessorCallable = t.Callable[
-    [t.Optional[str], t.Optional[dict[str, t.Any]]], None
-]
+URLValuePreprocessorCallable = t.Callable[[str | None, dict[str, t.Any] | None], None]
 
 # This should take Exception, but that either breaks typing the argument
 # with a specific exception, or decorating multiple times with different
@@ -82,12 +76,12 @@ URLValuePreprocessorCallable = t.Callable[
 # https://github.com/pallets/flask/issues/4095
 # https://github.com/pallets/flask/issues/4295
 # https://github.com/pallets/flask/issues/4297
-ErrorHandlerCallable = t.Union[
-    t.Callable[[t.Any], ResponseReturnValue],
-    t.Callable[[t.Any], t.Awaitable[ResponseReturnValue]],
-]
+ErrorHandlerCallable = (
+    t.Callable[[t.Any], ResponseReturnValue]
+    | t.Callable[[t.Any], t.Awaitable[ResponseReturnValue]]
+)
 
-RouteCallable = t.Union[
-    t.Callable[..., ResponseReturnValue],
-    t.Callable[..., t.Awaitable[ResponseReturnValue]],
-]
+RouteCallable = (
+    t.Callable[..., ResponseReturnValue]
+    | t.Callable[..., t.Awaitable[ResponseReturnValue]]
+)
