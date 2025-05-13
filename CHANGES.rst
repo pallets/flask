@@ -1,7 +1,7 @@
 Version 3.1.1
 -------------
 
-Unreleased
+Released 2025-05-13
 
 -   Fix signing key selection order when key rotation is enabled via
     ``SECRET_KEY_FALLBACKS``. :ghsa:`4grg-w6v8-c28g`
