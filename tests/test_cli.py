@@ -462,7 +462,7 @@ class TestRoutes:
 
     def expect_order(self, order, output):
         # skip the header and match the start of each row
-        for expect, line in zip(order, output.splitlines()[2:]):
+        for expect, line in zip(order, output.splitlines()[2:], strict=False):
             # do this instead of startswith for nicer pytest output
             assert line[: len(expect)] == expect
 

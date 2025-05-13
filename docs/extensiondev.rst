@@ -294,11 +294,13 @@ ecosystem remain consistent and compatible.
     indicate minimum compatibility support. For example,
     ``sqlalchemy>=1.4``.
 9.  Indicate the versions of Python supported using ``python_requires=">=version"``.
-    Flask itself supports Python >=3.9 as of October 2024, and this will update
-    over time.
+    Flask and Pallets policy is to support all Python versions that are not
+    within six months of end of life (EOL). See Python's `EOL calendar`_ for
+    timing.
 
 .. _PyPI: https://pypi.org/search/?c=Framework+%3A%3A+Flask
 .. _Discord Chat: https://discord.gg/pallets
 .. _GitHub Discussions: https://github.com/pallets/flask/discussions
 .. _Official Pallets Themes: https://pypi.org/project/Pallets-Sphinx-Themes/
 .. _Pallets-Eco: https://github.com/pallets-eco
+.. _EOL calendar: https://devguide.python.org/versions/
