@@ -2,7 +2,7 @@ version: 2
 build:
   os: ubuntu-24.04
   tools:
-    python: '3.11'  # safer stable version
+    python: '3.11'
   commands:
-    - pip install sphinx sphinx-rtd-theme
+    - pip install sphinx sphinx-rtd-theme pallets_sphinx_themes
     - sphinx-build -b dirhtml docs $READTHEDOCS_OUTPUT/html
