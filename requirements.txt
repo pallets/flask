@@ -1,0 +1,5 @@
+sphinx
+sphinx-rtd-theme
+pallets_sphinx_themes
+sphinxcontrib-log-cabinet
+

@@ -4,6 +4,5 @@ build:
   tools:
     python: '3.11'
   commands:
-    - pip install -e .  # install the package itself
-    - pip install sphinx sphinx-rtd-theme pallets_sphinx_themes  # install doc dependencies
+    - pip install -r requirements.txt
     - sphinx-build -b dirhtml docs $READTHEDOCS_OUTPUT/html
