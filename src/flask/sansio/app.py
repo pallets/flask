@@ -664,37 +664,30 @@ class App(Scaffold):
     def template_filter(
         self, name: str | None = None
     ) -> t.Callable[[T_template_filter], T_template_filter]:
-        """A decorator that is used to register custom template filter.
-        You can specify a name for the filter, otherwise the function
-        name will be used. Example::
+        """A decorator that is used to register custom template filters.
+              You can use this with or without parentheses. Example::
 
-          @app.template_filter()
-          def reverse(s):
-              return s[::-1]
+              @app.template_filter
+              def double(x):
+                  return x * 2
 
-        :param name: the optional name of the filter, otherwise the
-                     function name will be used.
+              @app.template_filter()
+              def reverse(s):
+                  return s[::-1]
 
+            :param name: the optional name of the filter, otherwise the
+                         function name will be used.
         """
+
         if callable(name):
             func = name
-            name = func.__name__  # Use function name as default
-            self.add_template_filter(func, name=name)  # Register filter with Flask
-
-            @wraps(func)
-            def wrapper(*args, **kwargs):
-                return func(*args, **kwargs)
-
-            return wrapper
+            name = func.__name__
+            self.add_template_filter(func, name=name)
+            return func  # ✅ return original function (not a wrapper)
 
         def decorator(func: T_template_filter) -> T_template_filter:
-            self.add_template_filter(func, name=name)  # Register filter with Flask
-
-            @wraps(func)
-            def wrapper(*args, **kwargs):
-                return func(*args, **kwargs)
-
-            return wrapper
+            self.add_template_filter(func, name=name)
+            return func  # ✅ return original function (not a wrapper)
 
         return decorator
 
