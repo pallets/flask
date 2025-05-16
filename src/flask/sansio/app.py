@@ -32,7 +32,7 @@ from .scaffold import _endpoint_from_view_func
 from .scaffold import find_package
 from .scaffold import Scaffold
 from .scaffold import setupmethod
-
+from functools import wraps
 if t.TYPE_CHECKING:  # pragma: no cover
     from werkzeug.wrappers import Response as BaseResponse
 
@@ -674,11 +674,27 @@ class App(Scaffold):
 
         :param name: the optional name of the filter, otherwise the
                      function name will be used.
-        """
 
-        def decorator(f: T_template_filter) -> T_template_filter:
-            self.add_template_filter(f, name=name)
-            return f
+        """
+        if callable(name):
+            func = name
+            name = func.__name__  # Use function name as default
+            self.add_template_filter(func, name=name)  # Register filter with Flask
+
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                return func(*args, **kwargs)
+
+            return wrapper
+
+        def decorator(func: T_template_filter) -> T_template_filter:
+            self.add_template_filter(func, name=name)  # Register filter with Flask
+
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                return func(*args, **kwargs)
+
+            return wrapper
 
         return decorator
 
