@@ -4,4 +4,5 @@ build:
   tools:
     python: '3.11'  # safer stable version
   commands:
+    - pip install sphinx sphinx-rtd-theme
     - sphinx-build -b dirhtml docs $READTHEDOCS_OUTPUT/html
