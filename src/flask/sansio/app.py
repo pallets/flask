@@ -680,7 +680,7 @@ class App(Scaffold):
         """
 
         if callable(name):
-            func = name
+            func = t.cast(t.Callable[..., t.Any], name)
             name = func.__name__
             self.add_template_filter(func, name=name)
             return func  # ✅ return original function (not a wrapper)
