@@ -1,5 +1,6 @@
-import pytest
-from flask import Flask, render_template_string
+from flask import Flask
+from flask import render_template_string
+
 
 def test_template_filter_without_parentheses():
     app = Flask(__name__)
@@ -11,6 +12,7 @@ def test_template_filter_without_parentheses():
     with app.app_context():
         output = render_template_string("{{ 2 | double }}")
         assert output == "4"
+
 
 def test_template_filter_with_parentheses():
     app = Flask(__name__)

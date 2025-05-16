@@ -32,7 +32,7 @@ from .scaffold import _endpoint_from_view_func
 from .scaffold import find_package
 from .scaffold import Scaffold
 from .scaffold import setupmethod
-from functools import wraps
+
 if t.TYPE_CHECKING:  # pragma: no cover
     from werkzeug.wrappers import Response as BaseResponse
 
@@ -665,18 +665,18 @@ class App(Scaffold):
         self, name: str | None = None
     ) -> t.Callable[[T_template_filter], T_template_filter]:
         """A decorator that is used to register custom template filters.
-              You can use this with or without parentheses. Example::
+          You can use this with or without parentheses. Example::
 
-              @app.template_filter
-              def double(x):
-                  return x * 2
+          @app.template_filter
+          def double(x):
+              return x * 2
 
-              @app.template_filter()
-              def reverse(s):
-                  return s[::-1]
+          @app.template_filter()
+          def reverse(s):
+              return s[::-1]
 
-            :param name: the optional name of the filter, otherwise the
-                         function name will be used.
+        :param name: the optional name of the filter, otherwise the
+                     function name will be used.
         """
 
         if callable(name):
