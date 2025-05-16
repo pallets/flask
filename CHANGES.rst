@@ -7,7 +7,7 @@ Unreleased
 -   Remove previously deprecated code: ``__version__``. :pr:`5648`
 
 -   Fix template_filter decorator to correctly register filters and support usage with or without parentheses.
--   Improve docstring for `template_filter` decorator for better clarity and examples.
+-   Improve docstring for template_filter decorator for better clarity and examples.
 
 Version 3.1.1
 -------------

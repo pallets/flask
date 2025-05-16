@@ -4,5 +4,4 @@ build:
   tools:
     python: '3.11'  # safer stable version
   commands:
-    - pip install -r requirements.txt  # if you have a requirements file for docs
     - sphinx-build -b dirhtml docs $READTHEDOCS_OUTPUT/html
