@@ -442,14 +442,24 @@ class Blueprint(Scaffold):
 
     @setupmethod
     def app_template_filter(
-        self, name: str | None = None
-    ) -> t.Callable[[T_template_filter], T_template_filter]:
+        self, name: t.Callable[..., t.Any] | str | None = None
+    ) -> t.Callable[[T_template_filter], T_template_filter] | T_template_filter:
         """Register a template filter, available in any template rendered by the
         application. Equivalent to :meth:`.Flask.template_filter`.
 
         :param name: the optional name of the filter, otherwise the
                      function name will be used.
         """
+
+        if callable(name):
+            # If name is callable, it is the function to register.
+            # This is a shortcut for the common case of
+            # @bp.add_template_filter
+            # def func():
+
+            func = name
+            self.add_app_template_filter(func)
+            return func
 
         def decorator(f: T_template_filter) -> T_template_filter:
             self.add_app_template_filter(f, name=name)
@@ -476,8 +486,8 @@ class Blueprint(Scaffold):
 
     @setupmethod
     def app_template_test(
-        self, name: str | None = None
-    ) -> t.Callable[[T_template_test], T_template_test]:
+        self, name: t.Callable[..., t.Any] | str | None = None
+    ) -> t.Callable[[T_template_test], T_template_test] | T_template_filter:
         """Register a template test, available in any template rendered by the
         application. Equivalent to :meth:`.Flask.template_test`.
 
@@ -486,6 +496,16 @@ class Blueprint(Scaffold):
         :param name: the optional name of the test, otherwise the
                      function name will be used.
         """
+
+        if callable(name):
+            # If name is callable, it is the function to register.
+            # This is a shortcut for the common case of
+            # @bp.add_template_test
+            # def func():
+
+            func = name
+            self.add_app_template_test(func)
+            return func
 
         def decorator(f: T_template_test) -> T_template_test:
             self.add_app_template_test(f, name=name)
@@ -514,8 +534,8 @@ class Blueprint(Scaffold):
 
     @setupmethod
     def app_template_global(
-        self, name: str | None = None
-    ) -> t.Callable[[T_template_global], T_template_global]:
+        self, name: t.Callable[..., t.Any] | str | None = None
+    ) -> t.Callable[[T_template_global], T_template_global] | T_template_filter:
         """Register a template global, available in any template rendered by the
         application. Equivalent to :meth:`.Flask.template_global`.
 
@@ -524,6 +544,15 @@ class Blueprint(Scaffold):
         :param name: the optional name of the global, otherwise the
                      function name will be used.
         """
+        if callable(name):
+            # If name is callable, it is the function to register.
+            # This is a shortcut for the common case of
+            # @bp.add_template_global
+            # def func():
+
+            func = name
+            self.add_app_template_global(func)
+            return func
 
         def decorator(f: T_template_global) -> T_template_global:
             self.add_app_template_global(f, name=name)

@@ -145,7 +145,11 @@ that.  You can either put them by hand into the
 :attr:`~flask.Flask.jinja_env` of the application or use the
 :meth:`~flask.Flask.template_filter` decorator.
 
-The two following examples work the same and both reverse an object::
+The following examples work the same and all reverse an object::
+
+    @app.template_filter # use the function name as filter name
+    def reverse_filter(s):
+        return s[::-1]
 
     @app.template_filter('reverse')
     def reverse_filter(s):

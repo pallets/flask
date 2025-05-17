@@ -662,19 +662,35 @@ class App(Scaffold):
 
     @setupmethod
     def template_filter(
-        self, name: str | None = None
-    ) -> t.Callable[[T_template_filter], T_template_filter]:
+        self, name: t.Callable[..., t.Any] | str | None = None
+    ) -> t.Callable[[T_template_filter], T_template_filter] | T_template_filter:
         """A decorator that is used to register custom template filter.
         You can specify a name for the filter, otherwise the function
         name will be used. Example::
 
-          @app.template_filter()
-          def reverse(s):
-              return s[::-1]
+            @app.template_filter()
+            def reverse(s):
+                return s[::-1]
+
+        The decorator also can be used without parentheses::
+
+            @app.template_filter
+            def reverse(s):
+                return s[::-1]
 
         :param name: the optional name of the filter, otherwise the
                      function name will be used.
         """
+
+        if callable(name):
+            # If name is callable, it is the function to register.
+            # This is a shortcut for the common case of
+            # @app.template_filter
+            # def func():
+
+            func = name
+            self.add_template_filter(func)
+            return func
 
         def decorator(f: T_template_filter) -> T_template_filter:
             self.add_template_filter(f, name=name)
@@ -696,26 +712,46 @@ class App(Scaffold):
 
     @setupmethod
     def template_test(
-        self, name: str | None = None
-    ) -> t.Callable[[T_template_test], T_template_test]:
+        self, name: t.Callable[..., t.Any] | str | None = None
+    ) -> t.Callable[[T_template_test], T_template_test] | T_template_filter:
         """A decorator that is used to register custom template test.
         You can specify a name for the test, otherwise the function
         name will be used. Example::
 
-          @app.template_test()
-          def is_prime(n):
-              if n == 2:
-                  return True
-              for i in range(2, int(math.ceil(math.sqrt(n))) + 1):
-                  if n % i == 0:
-                      return False
+            @app.template_test()
+            def is_prime(n):
+                if n == 2:
+                    return True
+                for i in range(2, int(math.ceil(math.sqrt(n))) + 1):
+                    if n % i == 0:
+                        return False
               return True
+
+        The decorator also can be used without parentheses::
+
+            @app.template_test
+            def is_prime(n):
+                if n == 2:
+                    return True
+                for i in range(2, int(math.ceil(math.sqrt(n))) + 1):
+                    if n % i == 0:
+                        return False
 
         .. versionadded:: 0.10
 
         :param name: the optional name of the test, otherwise the
                      function name will be used.
         """
+
+        if callable(name):
+            # If name is callable, it is the function to register.
+            # This is a shortcut for the common case of
+            # @app.template_test
+            # def func():
+
+            func = name
+            self.add_template_test(func)
+            return func
 
         def decorator(f: T_template_test) -> T_template_test:
             self.add_template_test(f, name=name)
@@ -739,8 +775,8 @@ class App(Scaffold):
 
     @setupmethod
     def template_global(
-        self, name: str | None = None
-    ) -> t.Callable[[T_template_global], T_template_global]:
+        self, name: t.Callable[..., t.Any] | str | None = None
+    ) -> t.Callable[[T_template_global], T_template_global] | T_template_filter:
         """A decorator that is used to register a custom template global function.
         You can specify a name for the global function, otherwise the function
         name will be used. Example::
@@ -749,11 +785,27 @@ class App(Scaffold):
             def double(n):
                 return 2 * n
 
+        The decorator also can be used without parentheses::
+
+            @app.template_global
+            def double(n):
+                return 2 * n
+
         .. versionadded:: 0.10
 
         :param name: the optional name of the global function, otherwise the
                      function name will be used.
         """
+
+        if callable(name):
+            # If name is callable, it is the function to register.
+            # This is a shortcut for the common case of
+            # @app.template_global
+            # def func():
+
+            func = name
+            self.add_template_global(func)
+            return func
 
         def decorator(f: T_template_global) -> T_template_global:
             self.add_template_global(f, name=name)
