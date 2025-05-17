@@ -129,6 +129,30 @@ def test_template_filter(app):
     assert app.jinja_env.filters["my_reverse"] == my_reverse
     assert app.jinja_env.filters["my_reverse"]("abcd") == "dcba"
 
+    @app.template_filter
+    def my_reverse_2(s):
+        return s[::-1]
+
+    assert "my_reverse_2" in app.jinja_env.filters.keys()
+    assert app.jinja_env.filters["my_reverse_2"] == my_reverse_2
+    assert app.jinja_env.filters["my_reverse_2"]("abcd") == "dcba"
+
+    @app.template_filter("my_reverse_custom_name")
+    def my_reverse_3(s):
+        return s[::-1]
+
+    assert "my_reverse_custom_name" in app.jinja_env.filters.keys()
+    assert app.jinja_env.filters["my_reverse_custom_name"] == my_reverse_3
+    assert app.jinja_env.filters["my_reverse_custom_name"]("abcd") == "dcba"
+
+    @app.template_filter(name="my_reverse_custom_name_2")
+    def my_reverse_4(s):
+        return s[::-1]
+
+    assert "my_reverse_custom_name_2" in app.jinja_env.filters.keys()
+    assert app.jinja_env.filters["my_reverse_custom_name_2"] == my_reverse_4
+    assert app.jinja_env.filters["my_reverse_custom_name_2"]("abcd") == "dcba"
+
 
 def test_add_template_filter(app):
     def my_reverse(s):
