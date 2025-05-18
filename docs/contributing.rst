@@ -1,7 +1,7 @@
 Contributing
 ============
 
-See the Pallets `detailed contributing documentation <_contrib>`_ for many ways
+See the Pallets `detailed contributing documentation <contrib_>`_ for many ways
 to contribute, including reporting issues, requesting features, asking or
 answering questions, and making PRs.
 
