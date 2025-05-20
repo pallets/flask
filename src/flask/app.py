@@ -158,10 +158,10 @@ class Flask(App):
         Defaults to False.
     :param subdomain_matching: consider the subdomain relative to
         :data:`SERVER_NAME` when matching routes. Defaults to False.
-    :param template_folder: the folder that contains the templates that should
-                            be used by the application.  Defaults to
-                            ``'templates'`` folder in the root path of the
-                            application.
+    :param template_folder: the folder or list of folders that contains the
+                            templates that should be used by the application.
+                            Defaults to ``'templates'`` folder in the root
+                            path of the application.
     :param instance_path: An alternative instance path for the application.
                           By default the folder ``'instance'`` next to the
                           package or module is assumed to be the instance
@@ -231,7 +231,10 @@ class Flask(App):
         static_host: str | None = None,
         host_matching: bool = False,
         subdomain_matching: bool = False,
-        template_folder: str | os.PathLike[str] | None = "templates",
+        template_folder: (
+            str | os.PathLike[str] |
+            t.Sequence[t.Union[str, "os.PathLike[str]"]] | None
+        ) = "templates",
         instance_path: str | None = None,
         instance_relative_config: bool = False,
         root_path: str | None = None,

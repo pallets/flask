@@ -145,9 +145,10 @@ class Blueprint(Scaffold):
         Defaults to ``static_folder``. If the blueprint does not have
         a ``url_prefix``, the app's static route will take precedence,
         and the blueprint's static files won't be accessible.
-    :param template_folder: A folder with templates that should be added
-        to the app's template search path. The path is relative to the
-        blueprint's root path. Blueprint templates are disabled by
+    :param template_folder: A folder or list of folders with templates
+        that should be added to the app's template search path.
+        The path is relative to the blueprint's root path is absolute
+        paths is not presented. Blueprint templates are disabled by
         default. Blueprint templates have a lower precedence than those
         in the app's templates folder.
     :param url_prefix: A path to prepend to all of the blueprint's URLs,
@@ -177,7 +178,10 @@ class Blueprint(Scaffold):
         import_name: str,
         static_folder: str | os.PathLike[str] | None = None,
         static_url_path: str | None = None,
-        template_folder: str | os.PathLike[str] | None = None,
+        template_folder: (
+            str | os.PathLike[str] |
+            t.Sequence[t.Union[str, "os.PathLike[str]"]] | None
+        ) = None,
         url_prefix: str | None = None,
         subdomain: str | None = None,
         url_defaults: dict[str, t.Any] | None = None,

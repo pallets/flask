@@ -6,6 +6,7 @@ import pathlib
 import sys
 import typing as t
 from collections import defaultdict
+from collections.abc import Sequence
 from functools import update_wrapper
 
 from jinja2 import BaseLoader
@@ -58,7 +59,7 @@ class Scaffold:
     :param static_folder: Path to a folder of static files to serve.
         If this is set, a static route will be added.
     :param static_url_path: URL prefix for the static route.
-    :param template_folder: Path to a folder containing template files.
+    :param template_folder: Path or list of paths to a folder containing template files.
         for rendering. If this is set, a Jinja loader will be added.
     :param root_path: The path that static, template, and resource files
         are relative to. Typically not set, it is discovered based on
@@ -77,7 +78,10 @@ class Scaffold:
         import_name: str,
         static_folder: str | os.PathLike[str] | None = None,
         static_url_path: str | None = None,
-        template_folder: str | os.PathLike[str] | None = None,
+        template_folder: (
+            str | os.PathLike[str] |
+            t.Sequence[t.Union[str, "os.PathLike[str]"]] | None
+        ) = None,
         root_path: str | None = None,
     ):
         #: The name of the package or module that this object belongs
@@ -276,10 +280,18 @@ class Scaffold:
 
         .. versionadded:: 0.5
         """
-        if self.template_folder is not None:
-            return FileSystemLoader(os.path.join(self.root_path, self.template_folder))
-        else:
+
+        if self.template_folder is None:
             return None
+        if isinstance(self.template_folder, str):
+            return FileSystemLoader(
+                os.path.join(self.root_path, self.template_folder)
+            )
+        return FileSystemLoader([
+            folder if isinstance(folder, os.PathLike)
+            else os.path.join(self.root_path, folder)
+            for folder in self.template_folder
+        ])
 
     def _method_route(
         self,

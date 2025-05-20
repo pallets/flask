@@ -22,7 +22,10 @@ class Blueprint(SansioBlueprint):
         import_name: str,
         static_folder: str | os.PathLike[str] | None = None,
         static_url_path: str | None = None,
-        template_folder: str | os.PathLike[str] | None = None,
+        template_folder: (
+            str | os.PathLike[str] | None |
+            t.Sequence[t.Union[str, "os.PathLike[str]"]] | None
+        )= None,
         url_prefix: str | None = None,
         subdomain: str | None = None,
         url_defaults: dict[str, t.Any] | None = None,
