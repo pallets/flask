@@ -232,8 +232,7 @@ class Flask(App):
         host_matching: bool = False,
         subdomain_matching: bool = False,
         template_folder: (
-            str | os.PathLike[str] |
-            t.Sequence[t.Union[str, "os.PathLike[str]"]] | None
+            str | os.PathLike[str] | t.Sequence[str | os.PathLike[str]] | None
         ) = "templates",
         instance_path: str | None = None,
         instance_relative_config: bool = False,

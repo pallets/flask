@@ -6,7 +6,6 @@ import pathlib
 import sys
 import typing as t
 from collections import defaultdict
-from collections.abc import Sequence
 from functools import update_wrapper
 
 from jinja2 import BaseLoader
@@ -79,8 +78,7 @@ class Scaffold:
         static_folder: str | os.PathLike[str] | None = None,
         static_url_path: str | None = None,
         template_folder: (
-            str | os.PathLike[str] |
-            t.Sequence[t.Union[str, "os.PathLike[str]"]] | None
+            str | os.PathLike[str] | t.Sequence[str | os.PathLike[str]] | None
         ) = None,
         root_path: str | None = None,
     ):
@@ -284,14 +282,15 @@ class Scaffold:
         if self.template_folder is None:
             return None
         if isinstance(self.template_folder, str):
-            return FileSystemLoader(
-                os.path.join(self.root_path, self.template_folder)
-            )
-        return FileSystemLoader([
-            folder if isinstance(folder, os.PathLike)
-            else os.path.join(self.root_path, folder)
-            for folder in self.template_folder
-        ])
+            return FileSystemLoader(os.path.join(self.root_path, self.template_folder))
+        return FileSystemLoader(
+            [
+                folder
+                if isinstance(folder, os.PathLike)
+                else os.path.join(self.root_path, folder)
+                for folder in self.template_folder
+            ]
+        )
 
     def _method_route(
         self,
