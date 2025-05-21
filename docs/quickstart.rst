@@ -141,7 +141,7 @@ how you're using untrusted data.
 
     from markupsafe import escape
 
-    @app.route("/<name>")
+    @app.route("/<path:name>")
     def hello(name):
         return f"Hello, {escape(name)}!"
 
