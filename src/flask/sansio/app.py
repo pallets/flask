@@ -662,8 +662,8 @@ class App(Scaffold):
 
     @setupmethod
     def template_filter(
-        self, name: str | None = None
-    ) -> t.Callable[[T_template_filter], T_template_filter]:
+        self, name_or_function: str | T_template_filter | None = None
+    ) -> t.Callable[[T_template_filter], T_template_filter] | T_template_filter:
         """A decorator that is used to register custom template filter.
         You can specify a name for the filter, otherwise the function
         name will be used. Example::
@@ -672,12 +672,19 @@ class App(Scaffold):
           def reverse(s):
               return s[::-1]
 
-        :param name: the optional name of the filter, otherwise the
-                     function name will be used.
+        :param name_or_function: the optional name of the filter, otherwise the
+                     function name will be used. Or the function itself when
+                     used as ``@app.template_filter`` without parentheses.
         """
+        # Check if the decorator was called without parentheses
+        # (name_or_function is the actual function to decorate)
+        if callable(name_or_function):
+            self.add_template_filter(name_or_function)
+            return name_or_function
 
+        # Otherwise, the decorator was called with a name or empty parentheses
         def decorator(f: T_template_filter) -> T_template_filter:
-            self.add_template_filter(f, name=name)
+            self.add_template_filter(f, name=name_or_function)
             return f
 
         return decorator
@@ -696,8 +703,8 @@ class App(Scaffold):
 
     @setupmethod
     def template_test(
-        self, name: str | None = None
-    ) -> t.Callable[[T_template_test], T_template_test]:
+        self, name_or_function: str | T_template_test | None = None
+    ) -> t.Callable[[T_template_test], T_template_test] | T_template_test:
         """A decorator that is used to register custom template test.
         You can specify a name for the test, otherwise the function
         name will be used. Example::
@@ -713,12 +720,19 @@ class App(Scaffold):
 
         .. versionadded:: 0.10
 
-        :param name: the optional name of the test, otherwise the
-                     function name will be used.
+        :param name_or_function: the optional name of the test, otherwise the
+                     function name will be used. Or the function itself when
+                     used as ``@app.template_test`` without parentheses.
         """
+        # Check if the decorator was called without parentheses
+        # (name_or_function is the actual function to decorate)
+        if callable(name_or_function):
+            self.add_template_test(name_or_function)
+            return name_or_function
 
+        # Otherwise, the decorator was called with a name or empty parentheses
         def decorator(f: T_template_test) -> T_template_test:
-            self.add_template_test(f, name=name)
+            self.add_template_test(f, name=name_or_function)
             return f
 
         return decorator
@@ -739,8 +753,8 @@ class App(Scaffold):
 
     @setupmethod
     def template_global(
-        self, name: str | None = None
-    ) -> t.Callable[[T_template_global], T_template_global]:
+        self, name_or_function: str | T_template_global | None = None
+    ) -> t.Callable[[T_template_global], T_template_global] | T_template_global:
         """A decorator that is used to register a custom template global function.
         You can specify a name for the global function, otherwise the function
         name will be used. Example::
@@ -751,12 +765,19 @@ class App(Scaffold):
 
         .. versionadded:: 0.10
 
-        :param name: the optional name of the global function, otherwise the
-                     function name will be used.
+        :param name_or_function: the optional name of the global function, otherwise the
+                     function name will be used. Or the function itself when
+                     used as ``@app.template_global`` without parentheses.
         """
+        # Check if the decorator was called without parentheses
+        # (name_or_function is the actual function to decorate)
+        if callable(name_or_function):
+            self.add_template_global(name_or_function)
+            return name_or_function
 
+        # Otherwise, the decorator was called with a name or empty parentheses
         def decorator(f: T_template_global) -> T_template_global:
-            self.add_template_global(f, name=name)
+            self.add_template_global(f, name=name_or_function)
             return f
 
         return decorator

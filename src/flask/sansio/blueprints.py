@@ -442,17 +442,24 @@ class Blueprint(Scaffold):
 
     @setupmethod
     def app_template_filter(
-        self, name: str | None = None
-    ) -> t.Callable[[T_template_filter], T_template_filter]:
+        self, name_or_function: str | T_template_filter | None = None
+    ) -> t.Callable[[T_template_filter], T_template_filter] | T_template_filter:
         """Register a template filter, available in any template rendered by the
         application. Equivalent to :meth:`.Flask.template_filter`.
 
-        :param name: the optional name of the filter, otherwise the
-                     function name will be used.
+        :param name_or_function: the optional name of the filter, otherwise the
+                     function name will be used. Or the function itself when
+                     used as ``@blueprint.app_template_filter`` without parentheses.
         """
+        # Check if the decorator was called without parentheses
+        # (name_or_function is the actual function to decorate)
+        if callable(name_or_function):
+            self.add_app_template_filter(name_or_function)
+            return name_or_function
 
+        # Otherwise, the decorator was called with a name or empty parentheses
         def decorator(f: T_template_filter) -> T_template_filter:
-            self.add_app_template_filter(f, name=name)
+            self.add_app_template_filter(f, name=name_or_function)
             return f
 
         return decorator
@@ -476,19 +483,26 @@ class Blueprint(Scaffold):
 
     @setupmethod
     def app_template_test(
-        self, name: str | None = None
-    ) -> t.Callable[[T_template_test], T_template_test]:
+        self, name_or_function: str | T_template_test | None = None
+    ) -> t.Callable[[T_template_test], T_template_test] | T_template_test:
         """Register a template test, available in any template rendered by the
         application. Equivalent to :meth:`.Flask.template_test`.
 
         .. versionadded:: 0.10
 
-        :param name: the optional name of the test, otherwise the
-                     function name will be used.
+        :param name_or_function: the optional name of the test, otherwise the
+                     function name will be used. Or the function itself when
+                     used as ``@blueprint.app_template_test`` without parentheses.
         """
+        # Check if the decorator was called without parentheses
+        # (name_or_function is the actual function to decorate)
+        if callable(name_or_function):
+            self.add_app_template_test(name_or_function)
+            return name_or_function
 
+        # Otherwise, the decorator was called with a name or empty parentheses
         def decorator(f: T_template_test) -> T_template_test:
-            self.add_app_template_test(f, name=name)
+            self.add_app_template_test(f, name=name_or_function)
             return f
 
         return decorator
@@ -514,19 +528,26 @@ class Blueprint(Scaffold):
 
     @setupmethod
     def app_template_global(
-        self, name: str | None = None
-    ) -> t.Callable[[T_template_global], T_template_global]:
+        self, name_or_function: str | T_template_global | None = None
+    ) -> t.Callable[[T_template_global], T_template_global] | T_template_global:
         """Register a template global, available in any template rendered by the
         application. Equivalent to :meth:`.Flask.template_global`.
 
         .. versionadded:: 0.10
 
-        :param name: the optional name of the global, otherwise the
-                     function name will be used.
+        :param name_or_function: the optional name of the global, otherwise the
+                     function name will be used. Or the function itself when
+                     used as ``@blueprint.app_template_global`` without parentheses.
         """
+        # Check if the decorator was called without parentheses
+        # (name_or_function is the actual function to decorate)
+        if callable(name_or_function):
+            self.add_app_template_global(name_or_function)
+            return name_or_function
 
+        # Otherwise, the decorator was called with a name or empty parentheses
         def decorator(f: T_template_global) -> T_template_global:
-            self.add_app_template_global(f, name=name)
+            self.add_app_template_global(f, name=name_or_function)
             return f
 
         return decorator
