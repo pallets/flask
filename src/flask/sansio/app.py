@@ -662,19 +662,35 @@ class App(Scaffold):
 
     @setupmethod
     def template_filter(
-        self, name: str | None = None
-    ) -> t.Callable[[T_template_filter], T_template_filter]:
+        self, name: t.Callable[..., t.Any] | str | None = None
+    ) -> t.Callable[[T_template_filter], T_template_filter] | T_template_filter:
         """A decorator that is used to register custom template filter.
         You can specify a name for the filter, otherwise the function
         name will be used. Example::
 
-          @app.template_filter()
-          def reverse(s):
-              return s[::-1]
+            @app.template_filter()
+            def reverse(s):
+                return s[::-1]
+
+        The decorator also can be used without parentheses::
+
+            @app.template_filter
+            def reverse(s):
+                return s[::-1]
 
         :param name: the optional name of the filter, otherwise the
                      function name will be used.
         """
+
+        if callable(name):
+            # If name is callable, it is the function to register.
+            # This is a shortcut for the common case of
+            # @app.template_filter
+            # def func():
+
+            func = name
+            self.add_template_filter(func)
+            return func
 
         def decorator(f: T_template_filter) -> T_template_filter:
             self.add_template_filter(f, name=name)
