@@ -1,10 +1,9 @@
-import pytest
-
 import flask
 
 
 def test_template_filter_no_parens(app):
     """Test that @app.template_filter works without parentheses."""
+
     @app.template_filter
     def double(x):
         return x * 2
@@ -16,6 +15,7 @@ def test_template_filter_no_parens(app):
 
 def test_template_test_no_parens(app):
     """Test that @app.template_test works without parentheses."""
+
     @app.template_test
     def is_even(x):
         return x % 2 == 0
@@ -28,6 +28,7 @@ def test_template_test_no_parens(app):
 
 def test_template_global_no_parens(app):
     """Test that @app.template_global works without parentheses."""
+
     @app.template_global
     def get_answer():
         return 42
