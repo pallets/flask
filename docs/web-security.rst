@@ -293,3 +293,22 @@ pasting, so this isn't strictly necessary. It's also possible to craft
 dangerous commands in other ways that aren't possible to filter.
 Depending on your site's use case, it may be good to show a warning
 about copying code in general.
+
+Host Header Injection
+---------------------
+
+Flask’s ``url_for(..., _external=True)`` function generates full URLs based on
+the request’s ``Host`` header. If your app does not explicitly set the
+``SERVER_NAME`` config or validate incoming host headers, it may be vulnerable
+to **host header injection**. This is especially critical when generating external
+URLs used in password reset links or redirects, where an attacker can modify
+the Host header to inject malicious links.
+
+.. warning::
+
+   Always configure ``SERVER_NAME`` and/or use middleware such as Werkzeug’s
+   ``ProxyFix`` to sanitize headers when deploying behind a proxy or load
+   balancer. You may also consider validating the ``Host`` header or using
+   `trusted_hosts` to prevent this class of attack.
+
+   See also: :doc:`deploying/proxy_fix`
