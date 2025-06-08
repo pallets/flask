@@ -85,7 +85,7 @@ class EnvironBuilder(werkzeug.test.EnvironBuilder):
         self.app = app
         super().__init__(path, base_url, *args, **kwargs)
 
-    def json_dumps(self, obj: t.Any, **kwargs: t.Any) -> str:  # type: ignore
+    def json_dumps(self, obj: t.Any, **kwargs: t.Any) -> str:
         """Serialize ``obj`` to a JSON-formatted string.
 
         The serialization will be configured according to the config associated

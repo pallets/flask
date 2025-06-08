@@ -107,7 +107,7 @@ class NullSession(SecureCookieSession):
             "application to something unique and secret."
         )
 
-    __setitem__ = __delitem__ = clear = pop = popitem = update = setdefault = _fail  # type: ignore # noqa: B950
+    __setitem__ = __delitem__ = clear = pop = popitem = update = setdefault = _fail  # noqa: B950
     del _fail
 
 
