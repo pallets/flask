@@ -166,11 +166,6 @@ select = [
 force-single-line = true
 order-by-type = false
 
-[tool.gha-update]
-tag-only = [
-    "slsa-framework/slsa-github-generator",
-]
-
 [tool.tox]
 env_list = [
     "py3.13", "py3.12", "py3.11", "py3.10", "py3.9",
