@@ -84,7 +84,7 @@ class Scaffold:
         #: to. Do not change this once it is set by the constructor.
         self.import_name = import_name
 
-        self.static_folder = static_folder  # type: ignore
+        self.static_folder = static_folder
         self.static_url_path = static_url_path
 
         #: The path to the templates folder, relative to
