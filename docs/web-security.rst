@@ -9,6 +9,30 @@ will depend on each application's specific needs and threat model. Many hosting
 platforms may take care of certain types of problems without the need for the
 Flask application to handle them.
 
+Host Header Injection and External URLs
+---------------------------------------
+
+When generating external URLs using :func:`url_for` with the ``_external=True`` argument,
+Flask constructs the URL using the requeust's ``Host`` header by default. If your application
+does not explicitly set the :data:`SERVER_NAME` configuration or use :data:`trusted_hosts`,
+this can make your app vulnerable to host header injection attacks. This is especially
+critical when generating links for password resets or other sensitive actions that may be
+sent to users.
+
+.. warning::
+
+    **Host Header Injection Risk:** If an attacker can control the ``Host`` header in a request,
+    they may be able to generate links pointing to malicious domains. This is a risk when
+    using ``url_for(..., _external=True)`` without proper configuration.
+
+**Best Practices:**
+
+- Always set :data:`SERVER_NAME` in your configuration for production deployments.
+- Consider using :data:`trusted_hosts` to restrict which hosts are accepted.
+- Review the :doc:`/deploying/proxy_fix` documentation for more details on handling proxies and headers securely.
+
+For more information, see :issue:`5718`.
+
 Resource Use
 ------------
 
