@@ -3,7 +3,7 @@
 Welcome to Flask
 ================
 
-.. image:: _static/flask-horizontal.svg
+.. image:: _static/flask-name.svg
     :align: center
     :height: 200px
 
