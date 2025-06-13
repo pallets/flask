@@ -5,6 +5,7 @@ Unreleased
 
 -   Drop support for Python 3.9. :pr:`5730`
 -   Remove previously deprecated code: ``__version__``. :pr:`5648`
+-   Support for using @app.template_filter, @app.template_test, and @app.template_global decorators without parentheses. :pr:`5736`
 
 
 Version 3.1.1
