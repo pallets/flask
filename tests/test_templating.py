@@ -130,6 +130,14 @@ def test_template_filter(app):
     assert app.jinja_env.filters["my_reverse"]("abcd") == "dcba"
 
 
+def test_template_filter_requires_parentheses(app):
+    with pytest.raises(TypeError):
+
+        @app.template_filter
+        def my_reverse(s):
+            return s[::-1]
+
+
 def test_add_template_filter(app):
     def my_reverse(s):
         return s[::-1]

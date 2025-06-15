@@ -672,9 +672,18 @@ class App(Scaffold):
           def reverse(s):
               return s[::-1]
 
+        You must include parentheses when using this decorator,
+        even if no arguments are provided.
+
         :param name: the optional name of the filter, otherwise the
                      function name will be used.
         """
+
+        if callable(name):
+            raise TypeError(
+                "Did you mean to use @app.template_filter()? "
+                "Missing parentheses () in decorator"
+            )
 
         def decorator(f: T_template_filter) -> T_template_filter:
             self.add_template_filter(f, name=name)
