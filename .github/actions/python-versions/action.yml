@@ -1,0 +1,26 @@
+name: get test environments
+description: Inspect a Python project and generate a test environment matrix.
+inputs:
+  windows-env:
+    description: Include a Windows environment with the latest Python version.
+    required: false
+    default: 'false'
+  macos-env:
+    description: Include a macOS environment with the latest Python version.
+    required: false
+    default: 'false'
+  extra-envs:
+    description: Add these additional environments to the output.
+    required: false
+    default: ''
+outputs:
+  matrix:
+    description: A JSON list of test environments.
+    value: ${{ steps.run.outputs.matrix }}
+runs:
+  using: composite
+  steps:
+    - name: get test environments
+      id: run
+      shell: bash
+      run: python3 -Iu '${{github.action_path}}/run.py'

@@ -1,4 +1,4 @@
-name: pre-commit
+name: shared
 on:
   pull_request:
   push:
@@ -16,10 +16,4 @@ jobs:
         id: setup-python
         with:
           python-version-file: pyproject.toml
-      - uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        with:
-          path: ~/.cache/pre-commit
-          key: pre-commit|${{ hashFiles('pyproject.toml', '.pre-commit-config.yaml') }}
-      - run: uv run --locked --group pre-commit pre-commit run --show-diff-on-failure --color=always --all-files
-      - uses: pre-commit-ci/lite-action@5d6cc0eb514c891a40562a58a8e71576c5c7fb43 # v1.1.0
-        if: ${{ !cancelled() }}
+      - uses: ./.github/actions/python-versions
