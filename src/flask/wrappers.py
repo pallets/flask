@@ -4,7 +4,7 @@ import typing as t
 
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import HTTPException
-from werkzeug.wrappers import Request as RequestBase
+from werkzeug.wrappers import Request as RB
 from werkzeug.wrappers import Response as ResponseBase
 
 from . import json
@@ -15,7 +15,7 @@ if t.TYPE_CHECKING:  # pragma: no cover
     from werkzeug.routing import Rule
 
 
-class Request(RequestBase):
+class Request(RB):
     """The request object used by default in Flask.  Remembers the
     matched endpoint and view arguments.
 
