@@ -187,8 +187,8 @@ def copy_current_request_context(f: F) -> F:
     ctx = ctx.copy()
 
     def wrapper(*args: t.Any, **kwargs: t.Any) -> t.Any:
-        with ctx:  # type: ignore[union-attr]
-            return ctx.app.ensure_sync(f)(*args, **kwargs)  # type: ignore[union-attr]
+        with ctx:
+            return ctx.app.ensure_sync(f)(*args, **kwargs)
 
     return update_wrapper(wrapper, f)  # type: ignore[return-value]
 

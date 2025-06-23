@@ -3,8 +3,9 @@
 Welcome to Flask
 ================
 
-.. image:: _static/flask-horizontal.png
+.. image:: _static/flask-name.svg
     :align: center
+    :height: 200px
 
 Welcome to Flask's documentation. Flask is a lightweight WSGI web application framework.
 It is designed to make getting started quick and easy, with the ability to scale up to

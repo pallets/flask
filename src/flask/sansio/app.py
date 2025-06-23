@@ -423,7 +423,7 @@ class App(Scaffold):
             )
 
     @cached_property
-    def name(self) -> str:  # type: ignore
+    def name(self) -> str:
         """The name of the application.  This is usually the import name
         with the difference that it's guessed from the run file if the
         import name is main.  This name is used as a display name when
