@@ -139,18 +139,21 @@ how you're using untrusted data.
 
 .. code-block:: python
 
+    from flask import request
     from markupsafe import escape
 
-    @app.route("/<name>")
-    def hello(name):
+    @app.route("/hello")
+    def hello():
+        name = request.args.get("name", "")
         return f"Hello, {escape(name)}!"
 
-If a user managed to submit the name ``<script>alert("bad")</script>``,
+User input can be submitted to the view function via the URL as query parameters,
+like ``/hello?name=Bob``. Refer :ref:`the-request-object` for information on how
+the query parameters are accessed.
+
+If a user managed to submit ``/hello?name=<script>alert("bad")</script>``,
 escaping causes it to be rendered as text, rather than running the
 script in the user's browser.
-
-``<name>`` in the route captures a value from the URL and passes it to
-the view function. These variable rules are explained below.
 
 
 Routing
@@ -503,6 +506,8 @@ The other possibility is passing a whole WSGI environment to the
 
     with app.request_context(environ):
         assert request.method == 'POST'
+
+.. _the-request-object:
 
 The Request Object
 ``````````````````
