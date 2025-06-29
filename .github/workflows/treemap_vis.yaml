@@ -1,0 +1,27 @@
+name: Feather City Analysis
+on:
+  workflow_dispatch:  # Allow manual triggering
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Feather City Analysis
+        uses: livcristi/feather-city-action/python@v0
+        with:
+          input_dir: './src'
+          title: "Fork of flask"
+          project_description: "This is the analysis for my fork of flask testing feather-city"
+          exclude_filenames: "testing.py"
+          theme: 'light'
+          output_dir: 'visual'
+          color_palette: "magma"
+          max_height: "100"
