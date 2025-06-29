@@ -204,7 +204,18 @@ class SessionInterface:
         config var if it's set, and falls back to ``APPLICATION_ROOT`` or
         uses ``/`` if it's ``None``.
         """
-        return app.config["SESSION_COOKIE_PATH"] or app.config["APPLICATION_ROOT"]  # type: ignore[no-any-return]
+        rv = app.config["SESSION_COOKIE_PATH"]
+
+    # If SESSION_COOKIE_PATH is not set, fall back to APPLICATION_ROOT. If
+    # that is also ``None`` (the default), use ``/`` so that the cookie is
+    # valid for the whole application rather than only the current request
+    # path.  A ``None`` path would otherwise limit the session cookie to the
+    # path that set it, which breaks session persistence between different
+    # routes.
+    if rv is None:
+        rv = app.config["APPLICATION_ROOT"] or "/"
+
+    return rv  # type: ignore[no-any-return]
 
     def get_cookie_httponly(self, app: Flask) -> bool:
         """Returns True if the session cookie should be httponly.  This
