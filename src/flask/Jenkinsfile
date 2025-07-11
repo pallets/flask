@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Installing dependencies...'
+                sh 'python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+                sh 'source venv/bin/activate && pytest test_app.py'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying the Flask app...'
+                sh 'source venv/bin/activate && nohup python app.py &'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Build and deployment succeeded!"
+        }
+        failure {
+            echo "Build failed. Please check the console output."
+        }
+    }
+}
