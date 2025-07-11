@@ -1,0 +1,12 @@
+blinker==1.9.0
+click==8.2.1
+Flask==3.1.1
+iniconfig==2.1.0
+itsdangerous==2.2.0
+Jinja2==3.1.6
+MarkupSafe==3.0.2
+packaging==25.0
+pluggy==1.6.0
+Pygments==2.19.2
+pytest==8.4.1
+Werkzeug==3.1.3
