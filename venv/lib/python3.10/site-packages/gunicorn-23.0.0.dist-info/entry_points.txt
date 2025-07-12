@@ -1,0 +1,5 @@
+[console_scripts]
+gunicorn = gunicorn.app.wsgiapp:run
+
+[paste.server_runner]
+main = gunicorn.app.pasterapp:serve

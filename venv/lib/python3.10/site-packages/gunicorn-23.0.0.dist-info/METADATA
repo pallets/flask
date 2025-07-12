@@ -1,0 +1,130 @@
+Metadata-Version: 2.1
+Name: gunicorn
+Version: 23.0.0
+Summary: WSGI HTTP Server for UNIX
+Author-email: Benoit Chesneau <benoitc@gunicorn.org>
+License: MIT
+Project-URL: Homepage, https://gunicorn.org
+Project-URL: Documentation, https://docs.gunicorn.org
+Project-URL: Issue tracker, https://github.com/benoitc/gunicorn/issues
+Project-URL: Source code, https://github.com/benoitc/gunicorn
+Project-URL: Changelog, https://docs.gunicorn.org/en/stable/news.html
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Other Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: Internet
+Classifier: Topic :: Utilities
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: WSGI
+Classifier: Topic :: Internet :: WWW/HTTP :: WSGI :: Server
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Requires-Python: >=3.7
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: packaging
+Requires-Dist: importlib-metadata ; python_version < "3.8"
+Provides-Extra: eventlet
+Requires-Dist: eventlet !=0.36.0,>=0.24.1 ; extra == 'eventlet'
+Provides-Extra: gevent
+Requires-Dist: gevent >=1.4.0 ; extra == 'gevent'
+Provides-Extra: gthread
+Provides-Extra: setproctitle
+Requires-Dist: setproctitle ; extra == 'setproctitle'
+Provides-Extra: testing
+Requires-Dist: gevent ; extra == 'testing'
+Requires-Dist: eventlet ; extra == 'testing'
+Requires-Dist: coverage ; extra == 'testing'
+Requires-Dist: pytest ; extra == 'testing'
+Requires-Dist: pytest-cov ; extra == 'testing'
+Provides-Extra: tornado
+Requires-Dist: tornado >=0.2 ; extra == 'tornado'
+
+Gunicorn
+--------
+
+.. image:: https://img.shields.io/pypi/v/gunicorn.svg?style=flat
+    :alt: PyPI version
+    :target: https://pypi.python.org/pypi/gunicorn
+
+.. image:: https://img.shields.io/pypi/pyversions/gunicorn.svg
+    :alt: Supported Python versions
+    :target: https://pypi.python.org/pypi/gunicorn
+
+.. image:: https://github.com/benoitc/gunicorn/actions/workflows/tox.yml/badge.svg
+    :alt: Build Status
+    :target: https://github.com/benoitc/gunicorn/actions/workflows/tox.yml
+
+.. image:: https://github.com/benoitc/gunicorn/actions/workflows/lint.yml/badge.svg
+    :alt: Lint Status
+    :target: https://github.com/benoitc/gunicorn/actions/workflows/lint.yml
+
+Gunicorn 'Green Unicorn' is a Python WSGI HTTP Server for UNIX. It's a pre-fork
+worker model ported from Ruby's Unicorn_ project. The Gunicorn server is broadly
+compatible with various web frameworks, simply implemented, light on server
+resource usage, and fairly speedy.
+
+Feel free to join us in `#gunicorn`_ on `Libera.chat`_.
+
+Documentation
+-------------
+
+The documentation is hosted at https://docs.gunicorn.org.
+
+Installation
+------------
+
+Gunicorn requires **Python 3.x >= 3.7**.
+
+Install from PyPI::
+
+    $ pip install gunicorn
+
+
+Usage
+-----
+
+Basic usage::
+
+    $ gunicorn [OPTIONS] APP_MODULE
+
+Where ``APP_MODULE`` is of the pattern ``$(MODULE_NAME):$(VARIABLE_NAME)``. The
+module name can be a full dotted path. The variable name refers to a WSGI
+callable that should be found in the specified module.
+
+Example with test app::
+
+    $ cd examples
+    $ gunicorn --workers=2 test:app
+
+
+Contributing
+------------
+
+See `our complete contributor's guide <CONTRIBUTING.md>`_ for more details.
+
+
+License
+-------
+
+Gunicorn is released under the MIT License. See the LICENSE_ file for more
+details.
+
+.. _Unicorn: https://bogomips.org/unicorn/
+.. _`#gunicorn`: https://web.libera.chat/?channels=#gunicorn
+.. _`Libera.chat`: https://libera.chat/
+.. _LICENSE: https://github.com/benoitc/gunicorn/blob/master/LICENSE
