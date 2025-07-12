@@ -248,96 +248,96 @@ SQUARE_DOUBLE_HEAD: Box = Box(
 
 MINIMAL: Box = Box(
     """\
-  ╷ 
-  │ 
+  ╷
+  │
 ╶─┼╴
-  │ 
+  │
 ╶─┼╴
 ╶─┼╴
-  │ 
-  ╵ 
+  │
+  ╵
 """
 )
 
 
 MINIMAL_HEAVY_HEAD: Box = Box(
     """\
-  ╷ 
-  │ 
+  ╷
+  │
 ╺━┿╸
-  │ 
+  │
 ╶─┼╴
 ╶─┼╴
-  │ 
-  ╵ 
+  │
+  ╵
 """
 )
 
 MINIMAL_DOUBLE_HEAD: Box = Box(
     """\
-  ╷ 
-  │ 
- ═╪ 
-  │ 
- ─┼ 
- ─┼ 
-  │ 
-  ╵ 
+  ╷
+  │
+ ═╪
+  │
+ ─┼
+ ─┼
+  │
+  ╵
 """
 )
 
 
 SIMPLE: Box = Box(
     """\
-    
-    
- ── 
-    
-    
- ── 
-    
-    
+
+
+ ──
+
+
+ ──
+
+
 """
 )
 
 SIMPLE_HEAD: Box = Box(
     """\
-    
-    
- ── 
-    
-    
-    
-    
-    
+
+
+ ──
+
+
+
+
+
 """
 )
 
 
 SIMPLE_HEAVY: Box = Box(
     """\
-    
-    
- ━━ 
-    
-    
- ━━ 
-    
-    
+
+
+ ━━
+
+
+ ━━
+
+
 """
 )
 
 
 HORIZONTALS: Box = Box(
     """\
- ── 
-    
- ── 
-    
- ── 
- ── 
-    
- ── 
+ ──
+
+ ──
+
+ ──
+ ──
+
+ ──
 """
 )
 

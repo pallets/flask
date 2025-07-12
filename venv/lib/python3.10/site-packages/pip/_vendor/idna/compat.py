@@ -10,4 +10,3 @@ def ToUnicode(label: Union[bytes, bytearray]) -> str:
 
 def nameprep(s: Any) -> None:
     raise NotImplementedError('IDNA 2008 does not utilise nameprep protocol')
-

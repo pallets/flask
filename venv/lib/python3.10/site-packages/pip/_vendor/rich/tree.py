@@ -214,9 +214,9 @@ if __name__ == "__main__":  # pragma: no cover
 
     code = """\
 class Segment(NamedTuple):
-    text: str = ""    
-    style: Optional[Style] = None    
-    is_control: bool = False    
+    text: str = ""
+    style: Optional[Style] = None
+    is_control: bool = False
 """
     syntax = Syntax(code, "python", theme="monokai", line_numbers=True)
 
@@ -224,7 +224,7 @@ class Segment(NamedTuple):
         """\
 ### example.md
 > Hello, World!
-> 
+>
 > Markdown _all_ the things
 """
     )
