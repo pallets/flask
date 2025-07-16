@@ -235,9 +235,11 @@ class TestNoImports:
 
 class TestStreaming:
     def test_stream_with_context_fails_with_async_route(self):
-        import flask
-        import pytest
         import gc
+
+        import pytest
+
+        import flask
 
         app = flask.Flask(__name__)
 
@@ -246,17 +248,19 @@ class TestStreaming:
             @flask.stream_with_context
             def generate():
                 yield "hello"
+
             return flask.Response(generate())
 
         with app.test_request_context("/stream"):
-            with pytest.raises(RuntimeError, match="Install Flask with the 'async' extra"):
+            with pytest.raises(
+                RuntimeError, match="Install Flask with the 'async' extra"
+            ):
                 # This forces Flask to run the async view and raise the RuntimeError
                 app.ensure_sync(app.view_functions["stream"])()
 
         # Clean up coroutine warnings
         gc.collect()
 
-   
     def test_streaming_with_context_as_decorator(self, app, client):
         @app.route("/")
         def index():
