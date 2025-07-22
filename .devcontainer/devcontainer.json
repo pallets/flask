@@ -1,6 +1,8 @@
 {
   "name": "pallets/flask",
-  "image": "mcr.microsoft.com/devcontainers/python:3",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
   "customizations": {
     "vscode": {
       "settings": {
