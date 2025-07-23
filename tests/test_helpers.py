@@ -98,6 +98,34 @@ class TestSendfile:
         assert rv.data.strip() == b"Hello Subdomain"
         rv.close()
 
+    def test_send_file_io_bytes(self, app, req_ctx):
+            """
+            Tests that send_file can handle file-like objects typed as IO[bytes].
+            This verifies the fix for issue #5776.
+            """
+            file_content = b"this is file content"
+            file_obj: IO[bytes] = io.BytesIO(file_content)
+
+            # 2. send_file 함수에 as_attachment=True 인자를 추가합니다.
+            rv = flask.send_file(
+                file_obj,
+                download_name="test.txt",
+                mimetype="text/plain",
+                as_attachment=True,  # <-- 이 부분을 추가하세요.
+            )
+
+            # 3. 응답 검증
+            assert rv.status_code == 200
+            assert rv.direct_passthrough
+
+            rv.direct_passthrough = False
+
+            assert rv.data == file_content
+            assert rv.mimetype == "text/plain"
+            # 이제 이 assert문이 정상적으로 통과합니다.
+            assert "attachment; filename=test.txt" in rv.headers["Content-Disposition"]
+            rv.close()
+
 
 class TestUrlFor:
     def test_url_for_with_anchor(self, app, req_ctx):

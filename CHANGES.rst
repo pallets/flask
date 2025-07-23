@@ -1,6 +1,14 @@
 Version 3.1.1
 -------------
 
+Unreleased
+
+- Fix ``helpers.send_file`` type hint to allow ``IO[bytes]``, not just
+  ``BinaryIO``. Fixes :issue:`5776`.
+
+Version 3.1.1
+-------------
+
 Released 2025-05-13
 
 -   Fix signing key selection order when key rotation is enabled via
