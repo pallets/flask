@@ -99,29 +99,29 @@ class TestSendfile:
         rv.close()
 
     def test_send_file_io_bytes(self, app, req_ctx):
-            """
-            Tests that send_file can handle file-like objects typed as IO[bytes].
-            This verifies the fix for issue #5776.
-            """
-            file_content = b"this is file content"
-            file_obj: IO[bytes] = io.BytesIO(file_content)
-        
-            rv = flask.send_file(
-                file_obj,
-                download_name="test.txt",
-                mimetype="text/plain",
-                as_attachment=True,
-            )
+        """
+        Tests that send_file can handle file-like objects typed as IO[bytes].
+        This verifies the fix for issue #5776.
+        """
+        file_content = b"this is file content"
+        file_obj: IO[bytes] = io.BytesIO(file_content)
 
-            assert rv.status_code == 200
-            assert rv.direct_passthrough
+        rv = flask.send_file(
+            file_obj,
+            download_name="test.txt",
+            mimetype="text/plain",
+            as_attachment=True,
+        )
 
-            rv.direct_passthrough = False
+        assert rv.status_code == 200
+        assert rv.direct_passthrough
 
-            assert rv.data == file_content
-            assert rv.mimetype == "text/plain"
-            assert "attachment; filename=test.txt" in rv.headers["Content-Disposition"]
-            rv.close()
+        rv.direct_passthrough = False
+
+        assert rv.data == file_content
+        assert rv.mimetype == "text/plain"
+        assert "attachment; filename=test.txt" in rv.headers["Content-Disposition"]
+        rv.close()
 
 
 class TestUrlFor:
