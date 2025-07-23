@@ -1,5 +1,6 @@
 import io
 import os
+from typing import IO
 
 import pytest
 import werkzeug.exceptions
