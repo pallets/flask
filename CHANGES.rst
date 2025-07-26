@@ -1,3 +1,10 @@
+Version 3.1.2
+-------------
+
+Unreleased
+
+- Respect ``autocorrect_location_header`` in ``make_response``. :issue:`5774`
+
 Version 3.1.1
 -------------
 

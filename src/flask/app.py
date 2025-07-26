@@ -1262,8 +1262,20 @@ class Flask(App):
             else:
                 rv.status_code = status
 
-        # extend existing headers with provided headers
         if headers:
+            headers = Headers(headers)
+            # Pop the Location header to handle it separately.
+            # This handles both "Location" and "location" keys.
+            location = headers.pop("Location", None) or headers.pop("location", None)
+
+            # If a Location header was found, set it using the response
+            # .location property. This respects the 'autocorrect_location_header'
+            # flag, which is the purpose of this fix.
+
+            if location is not None:
+                rv.location = location
+
+            # Add the remaining headers to the response.
             rv.headers.update(headers)
 
         return rv
