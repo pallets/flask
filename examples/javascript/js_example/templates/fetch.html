@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block intro %}
+  <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch"><code>fetch</code></a>
+  is the <em>modern</em> plain JavaScript way to make requests. It's
+  supported in all modern browsers.
+{% endblock %}
+
+{% block script %}
+  <script>
+    function addSubmit(ev) {
+      ev.preventDefault();
+      fetch({{ url_for('add')|tojson }}, {
+        method: 'POST',
+        body: new FormData(this)
+      })
+        .then(parseJSON)
+        .then(addShow);
+    }
+
+    function parseJSON(response) {
+      return response.json();
+    }
+
+    function addShow(data) {
+      var span = document.getElementById('result');
+      span.innerText = data.result;
+    }
+
+    var form = document.getElementById('calc');
+    form.addEventListener('submit', addSubmit);
+  </script>
+{% endblock %}

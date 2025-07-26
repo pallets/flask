@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block intro %}
+  <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest"><code>XMLHttpRequest</code></a>
+  is the original JavaScript way to make requests. It's natively supported
+  by all browsers, but has been superseded by
+  <a href="{{ url_for("index", js="fetch") }}"><code>fetch</code></a>.
+{% endblock %}
+
+{% block script %}
+  <script>
+    function addSubmit(ev) {
+      ev.preventDefault();
+      var request = new XMLHttpRequest();
+      request.addEventListener('load', addShow);
+      request.open('POST', {{ url_for('add')|tojson }});
+      request.send(new FormData(this));
+    }
+
+    function addShow() {
+      var data = JSON.parse(this.responseText);
+      var span = document.getElementById('result');
+      span.innerText = data.result;
+    }
+
+    var form = document.getElementById('calc');
+    form.addEventListener('submit', addSubmit);
+  </script>
+{% endblock %}

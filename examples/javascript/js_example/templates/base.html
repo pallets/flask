@@ -1,0 +1,33 @@
+<!doctype html>
+<title>JavaScript Example</title>
+<link rel="stylesheet" href="https://unpkg.com/normalize.css@8.0.1/normalize.css">
+<link rel="stylesheet" href="https://unpkg.com/sakura.css@1.3.1/css/sakura.css">
+<style>
+  ul { margin: 0; padding: 0; display: flex; list-style-type: none; }
+  li > * { padding: 1em; }
+  li.active > a { color: #5e5e5e; border-bottom: 2px solid #4a4a4a; }
+  form { display: flex; }
+  label > input { width: 3em; }
+  form > * { padding-right: 1em; }
+  #result { font-weight: bold; }
+</style>
+<ul>
+  <li><span>Type:</span>
+  <li class="{% if js == 'fetch' %}active{% endif %}">
+    <a href="{{ url_for('index', js='fetch') }}">Fetch</a>
+  <li class="{% if js == 'xhr' %}active{% endif %}">
+    <a href="{{ url_for('index', js='xhr') }}">XHR</a>
+  <li class="{% if js == 'jquery' %}active{% endif %}">
+    <a href="{{ url_for('index', js='jquery') }}">jQuery</a>
+</ul>
+<hr>
+<p>{% block intro %}{% endblock %}</p>
+<hr>
+<form id="calc">
+  <label>a <input name="a"></label>
+  <span>+</span>
+  <label>b <input name="b"></label>
+  <input type="submit" value="Calculate">
+</form>
+<span>= <span id="result"></span></span>
+{% block script %}{% endblock %}

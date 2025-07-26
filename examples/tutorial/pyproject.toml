@@ -1,0 +1,40 @@
+[project]
+name = "flaskr"
+version = "1.0.0"
+description = "The basic blog app built in the Flask tutorial."
+readme = "README.rst"
+license = {file = "LICENSE.txt"}
+maintainers = [{name = "Pallets", email = "contact@palletsprojects.com"}]
+classifiers = ["Private :: Do Not Upload"]
+dependencies = [
+    "flask",
+]
+
+[project.urls]
+Documentation = "https://flask.palletsprojects.com/tutorial/"
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "flaskr"
+
+[tool.flit.sdist]
+include = [
+    "tests/",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+branch = true
+source = ["flaskr", "tests"]
+
+[tool.ruff]
+src = ["src"]

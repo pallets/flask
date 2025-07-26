@@ -1,0 +1,4 @@
+{
+    "TEST_KEY": "foo",
+    "SECRET_KEY": "config"
+}

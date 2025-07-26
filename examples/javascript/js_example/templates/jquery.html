@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block intro %}
+  <a href="https://jquery.com/">jQuery</a> is a popular library that
+  adds cross browser APIs for common tasks. However, it requires loading
+  an extra library.
+{% endblock %}
+
+{% block script %}
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script>
+    function addSubmit(ev) {
+      ev.preventDefault();
+      $.ajax({
+        method: 'POST',
+        url: {{ url_for('add')|tojson }},
+        data: $(this).serialize()
+      }).done(addShow);
+    }
+
+    function addShow(data) {
+      $('#result').text(data.result);
+    }
+
+    $('#calc').on('submit', addSubmit);
+  </script>
+{% endblock %}

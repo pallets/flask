@@ -1,0 +1,18 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 9aeda5d1f4bbd212c557da1ea78eca9e8c829e19  # frozen: v0.11.13
+    hooks:
+      - id: ruff
+      - id: ruff-format
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: a621b109bab2e7e832d98c88fd3e83399f4e6657  # frozen: 0.7.12
+    hooks:
+      - id: uv-lock
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b  # frozen: v5.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: fix-byte-order-marker
+      - id: trailing-whitespace
+      - id: end-of-file-fixer

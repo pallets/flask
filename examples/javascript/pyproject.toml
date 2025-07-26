@@ -1,0 +1,33 @@
+[project]
+name = "js_example"
+version = "1.1.0"
+description = "Demonstrates making AJAX requests to Flask."
+readme = "README.rst"
+license = {file = "LICENSE.txt"}
+maintainers = [{name = "Pallets", email = "contact@palletsprojects.com"}]
+classifiers = ["Private :: Do Not Upload"]
+dependencies = ["flask"]
+
+[project.urls]
+Documentation = "https://flask.palletsprojects.com/patterns/javascript/"
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "js_example"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+branch = true
+source = ["js_example", "tests"]
+
+[tool.ruff]
+src = ["src"]

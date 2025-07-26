@@ -1,0 +1,17 @@
+[project]
+name = "flask-example-celery"
+version = "1.0.0"
+description = "Example Flask application with Celery background tasks."
+readme = "README.md"
+classifiers = ["Private :: Do Not Upload"]
+dependencies = ["flask", "celery[redis]"]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "task_app"
+
+[tool.ruff]
+src = ["src"]

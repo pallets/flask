@@ -1,0 +1,10 @@
+version: 2
+build:
+  os: ubuntu-24.04
+  tools:
+    python: '3.13'
+  commands:
+    - asdf plugin add uv
+    - asdf install uv latest
+    - asdf global uv latest
+    - uv run --group docs sphinx-build -W -b dirhtml docs $READTHEDOCS_OUTPUT/html

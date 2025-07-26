@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security issue
+    url: https://github.com/pallets/flask/security/advisories/new
+    about: Do not report security issues publicly. Create a private advisory.
+  - name: Questions on GitHub Discussions
+    url: https://github.com/pallets/flask/discussions/
+    about: Ask questions about your own code on the Discussions tab.
+  - name: Questions on Discord
+    url: https://discord.gg/pallets
+    about: Ask questions about your own code on our Discord chat.
