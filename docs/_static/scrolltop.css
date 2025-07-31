@@ -1,0 +1,15 @@
+#scrollToTop {
+  position: fixed;
+  top: 20px;       
+  right: 20px;       
+  background-color: #5EABD6;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 1000;
+  display: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}

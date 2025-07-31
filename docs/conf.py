@@ -62,6 +62,10 @@ html_favicon = "_static/flask-icon.svg"
 html_logo = "_static/flask-logo.svg"
 html_title = f"Flask Documentation ({version})"
 html_show_sourcelink = False
+html_static_path = ['_static']
+html_js_files = ['scrolltop.js']
+html_css_files = ['scrolltop.css']
+
 
 gettext_uuid = True
 gettext_compact = False
