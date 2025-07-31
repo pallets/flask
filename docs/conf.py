@@ -66,7 +66,6 @@ html_static_path = ["_static"]
 html_js_files = ["scrolltop.js"]
 html_css_files = ["scrolltop.css"]
 
-
 gettext_uuid = True
 gettext_compact = False
 
