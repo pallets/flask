@@ -1,3 +1,12 @@
+Version 3.2.0
+-------------
+
+Unreleased
+
+-   Drop support for Python 3.9. :pr:`5730`
+-   Remove previously deprecated code: ``__version__``. :pr:`5648`
+
+
 Version 3.1.1
 -------------
 
