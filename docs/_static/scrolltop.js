@@ -1,3 +1,6 @@
+// Injects a scroll-to-top button that appears after scrolling down 300px.
+// When clicked, it smoothly scrolls the page back to the top.
+
 window.addEventListener("scroll", function () {
   const btn = document.getElementById("scrollToTop");
   btn.style.display = window.scrollY > 300 ? "block" : "none";
