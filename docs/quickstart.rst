@@ -535,7 +535,7 @@ attributes mentioned above::
 
 What happens if the key does not exist in the ``form`` attribute?  In that
 case a special :exc:`KeyError` is raised.  You can catch it like a
-standard :exc:`KeyError` but if you don't do that, a HTTP 400 Bad Request
+standard :exc:`KeyError` but if you don't do that, an HTTP 400 Bad Request
 error page is shown instead.  So for many situations you don't have to
 deal with that problem.
 

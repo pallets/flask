@@ -83,7 +83,7 @@ will return data that is translated into an HTTP response.
     to a view function, handle errors, etc.
 #.  Flask translates View function return into WSGI response data, passes it to WSGI
     server.
-#.  WSGI server creates and send an HTTP response.
+#.  WSGI server creates and sends an HTTP response.
 #.  Client receives the HTTP response.
 
 

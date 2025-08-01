@@ -261,7 +261,7 @@ Custom Error Pages
 Sometimes when building a Flask application, you might want to raise a
 :exc:`~werkzeug.exceptions.HTTPException` to signal to the user that
 something is wrong with the request. Fortunately, Flask comes with a handy
-:func:`~flask.abort` function that aborts a request with a HTTP error from
+:func:`~flask.abort` function that aborts a request with an HTTP error from
 werkzeug as desired. It will also provide a plain black and white error page
 for you with a basic description, but nothing fancy.
 
