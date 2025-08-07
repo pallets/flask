@@ -5,8 +5,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
       - uses: astral-sh/setup-uv@d9e0f98d3fc6adb07d1e3d37f3043649ddad06a1 # v6.5.0
         with:
           enable-cache: true
@@ -17,8 +21,11 @@ jobs:
       - run: echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
       - run: uv build
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        id: upload-artifact
         with:
-          path: ./dist
+          name: dist
+          path: dist/
+          if-no-files-found: error
   create-release:
     needs: [build]
     runs-on: ubuntu-latest
@@ -26,8 +33,11 @@ jobs:
       contents: write
     steps:
       - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact-id }}
+          path: dist/
       - name: create release
-        run: gh release create --draft --repo ${{ github.repository }} ${{ github.ref_name }} artifact/*
+        run: gh release create --draft --repo ${{ github.repository }} ${{ github.ref_name }} dist/*
         env:
           GH_TOKEN: ${{ github.token }}
   publish-pypi:
@@ -40,6 +50,9 @@ jobs:
       id-token: write
     steps:
       - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact-id }}
+          path: dist/
       - uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
         with:
-          packages-dir: artifact/
+          packages-dir: "dist/"
