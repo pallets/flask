@@ -3,10 +3,10 @@
 Command Line Interface
 ======================
 
-Installing Flask installs the ``flask`` script, a `Click`_ command line
-interface, in your virtualenv. Executed from the terminal, this script gives
-access to built-in, extension, and application-defined commands. The ``--help``
-option will give more information about any commands and options.
+When you install Flask, it adds the ``flask`` command-line script (built with `Click`_) to your virtual environment.
+You can run this script from the terminal to access built-in, extension, and application-defined commands.
+The ``--help`` option will give more information about any commands and options.
+
 
 .. _Click: https://click.palletsprojects.com/
 
@@ -80,10 +80,11 @@ replaces the :meth:`Flask.run` method in most cases. ::
     is provided for convenience, but is not designed to be particularly secure,
     stable, or efficient. See :doc:`/deploying/index` for how to run in production.
 
-If another program is already using port 5000, you'll see
+If another program is already using port 5000, you might see
 ``OSError: [Errno 98]`` or ``OSError: [WinError 10013]`` when the
-server tries to start. See :ref:`address-already-in-use` for how to
-handle that.
+server tries to start. See :ref:`address-already-in-use` for instructions on how to
+handle this issue.
+
 
 
 Debug Mode
