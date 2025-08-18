@@ -3,6 +3,9 @@ Version 3.1.2
 
 Unreleased
 
+-   When using ``follow_redirects`` in the test client, the final state
+    of ``session`` is correct. :issue:`5786`
+
 
 Version 3.1.1
 -------------
