@@ -158,7 +158,7 @@ recommend reviewing each of the headers below for use in your application.
 The `Flask-Talisman`_ extension can be used to manage HTTPS and the security
 headers for you.
 
-.. _Flask-Talisman: https://github.com/GoogleCloudPlatform/flask-talisman
+.. _Flask-Talisman: https://github.com/wntrblm/flask-talisman
 
 HTTP Strict Transport Security (HSTS)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
