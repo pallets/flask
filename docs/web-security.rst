@@ -269,6 +269,27 @@ values (or any values that need secure signatures).
 .. _samesite_support: https://caniuse.com/#feat=same-site-cookie-attribute
 
 
+Host Header Validation
+----------------------
+
+The ``Host`` header is used by the client to indicate what host name the request
+was made to. This is used, for example, by ``url_for(..., _external=True)`` to
+generate full URLs, for use in email or other messages outside the browser
+window.
+
+By default the app doesn't know what host(s) it is allowed to be accessed
+through, and assumes any host is valid. Although browsers do not allow setting
+the ``Host`` header, requests made by attackers in other scenarios could set
+the ``Host`` header to a value they want.
+
+When deploying your application, set :data:`TRUSTED_HOSTS` to restrict what
+values the ``Host`` header may be.
+
+The ``Host`` header may be modified by proxies in between the client and your
+application. See :doc:`deploying/proxy_fix` to tell your app which proxy values
+to trust.
+
+
 Copy/Paste to Terminal
 ----------------------
 
