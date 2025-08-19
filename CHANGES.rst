@@ -3,6 +3,7 @@ Version 3.1.2
 
 Unreleased
 
+-   ``stream_with_context`` does not fail inside async views. :issue:`5774`
 -   When using ``follow_redirects`` in the test client, the final state
     of ``session`` is correct. :issue:`5786`
 -   Relax type hint for passing bytes IO to ``send_file``. :issue:`5776`

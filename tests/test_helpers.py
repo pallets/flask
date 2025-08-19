@@ -306,6 +306,29 @@ class TestStreaming:
         rv = client.get("/")
         assert rv.data == b"flask"
 
+    def test_async_view(self, app, client):
+        @app.route("/")
+        async def index():
+            flask.session["test"] = "flask"
+
+            @flask.stream_with_context
+            def gen():
+                yield flask.session["test"]
+
+            return flask.Response(gen())
+
+        # response is closed without reading stream
+        client.get().close()
+        # response stream is read
+        assert client.get().text == "flask"
+
+        # same as above, but with client context preservation
+        with client:
+            client.get().close()
+
+        with client:
+            assert client.get().text == "flask"
+
 
 class TestHelpers:
     @pytest.mark.parametrize(
