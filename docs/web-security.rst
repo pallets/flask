@@ -51,12 +51,12 @@ tags.  For more information on that have a look at the Wikipedia article
 on `Cross-Site Scripting
 <https://en.wikipedia.org/wiki/Cross-site_scripting>`_.
 
-Flask configures Jinja2 to automatically escape all values unless
+Flask configures Jinja to automatically escape all values unless
 explicitly told otherwise.  This should rule out all XSS problems caused
 in templates, but there are still other places where you have to be
 careful:
 
--   generating HTML without the help of Jinja2
+-   generating HTML without the help of Jinja
 -   calling :class:`~markupsafe.Markup` on data submitted by users
 -   sending out HTML from uploaded files, never do that, use the
     ``Content-Disposition: attachment`` header to prevent that problem.
@@ -65,7 +65,7 @@ careful:
     trick a browser to execute HTML.
 
 Another thing that is very important are unquoted attributes.  While
-Jinja2 can protect you from XSS issues by escaping HTML, there is one
+Jinja can protect you from XSS issues by escaping HTML, there is one
 thing it cannot protect you from: XSS by attribute injection.  To counter
 this possible attack vector, be sure to always quote your attributes with
 either double or single quotes when using Jinja expressions in them:

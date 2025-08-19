@@ -29,7 +29,7 @@ debug environments with profilers and other things you might have enabled.
 Streaming from Templates
 ------------------------
 
-The Jinja2 template engine supports rendering a template piece by
+The Jinja template engine supports rendering a template piece by
 piece, returning an iterator of strings. Flask provides the
 :func:`~flask.stream_template` and :func:`~flask.stream_template_string`
 functions to make this easier to use.

@@ -352,7 +352,7 @@ Rendering Templates
 
 Generating HTML from within Python is not fun, and actually pretty
 cumbersome because you have to do the HTML escaping on your own to keep
-the application secure.  Because of that Flask configures the `Jinja2
+the application secure.  Because of that Flask configures the `Jinja
 <https://palletsprojects.com/p/jinja/>`_ template engine for you automatically.
 
 Templates can be used to generate any type of text file. For web applications, you'll
@@ -392,8 +392,8 @@ package it's actually inside your package:
         /templates
             /hello.html
 
-For templates you can use the full power of Jinja2 templates.  Head over
-to the official `Jinja2 Template Documentation
+For templates you can use the full power of Jinja templates.  Head over
+to the official `Jinja Template Documentation
 <https://jinja.palletsprojects.com/templates/>`_ for more information.
 
 Here is an example template:

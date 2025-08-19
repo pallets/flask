@@ -99,7 +99,7 @@ WTForm's field function, which renders the field for us.  The keyword
 arguments will be inserted as HTML attributes.  So, for example, you can
 call ``render_field(form.username, class='username')`` to add a class to
 the input element.  Note that WTForms returns standard Python strings,
-so we have to tell Jinja2 that this data is already HTML-escaped with
+so we have to tell Jinja that this data is already HTML-escaped with
 the ``|safe`` filter.
 
 Here is the :file:`register.html` template for the function we used above, which

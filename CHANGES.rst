@@ -1376,7 +1376,7 @@ Released 2011-09-29, codename Rakija
     of Flask itself and no longer of the test client. This cleaned up
     some internal logic and lowers the odds of runaway request contexts
     in unittests.
--   Fixed the Jinja2 environment's ``list_templates`` method not
+-   Fixed the Jinja environment's ``list_templates`` method not
     returning the correct names when blueprints or modules were
     involved.
 
@@ -1462,7 +1462,7 @@ Released 2010-12-31
 
 -   Fixed an issue where the default ``OPTIONS`` response was not
     exposing all valid methods in the ``Allow`` header.
--   Jinja2 template loading syntax now allows "./" in front of a
+-   Jinja template loading syntax now allows "./" in front of a
     template load path. Previously this caused issues with module
     setups.
 -   Fixed an issue where the subdomain setting for modules was ignored
