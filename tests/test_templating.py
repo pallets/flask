@@ -129,6 +129,30 @@ def test_template_filter(app):
     assert app.jinja_env.filters["my_reverse"] == my_reverse
     assert app.jinja_env.filters["my_reverse"]("abcd") == "dcba"
 
+    @app.template_filter
+    def my_reverse_2(s):
+        return s[::-1]
+
+    assert "my_reverse_2" in app.jinja_env.filters.keys()
+    assert app.jinja_env.filters["my_reverse_2"] == my_reverse_2
+    assert app.jinja_env.filters["my_reverse_2"]("abcd") == "dcba"
+
+    @app.template_filter("my_reverse_custom_name_3")
+    def my_reverse_3(s):
+        return s[::-1]
+
+    assert "my_reverse_custom_name_3" in app.jinja_env.filters.keys()
+    assert app.jinja_env.filters["my_reverse_custom_name_3"] == my_reverse_3
+    assert app.jinja_env.filters["my_reverse_custom_name_3"]("abcd") == "dcba"
+
+    @app.template_filter(name="my_reverse_custom_name_4")
+    def my_reverse_4(s):
+        return s[::-1]
+
+    assert "my_reverse_custom_name_4" in app.jinja_env.filters.keys()
+    assert app.jinja_env.filters["my_reverse_custom_name_4"] == my_reverse_4
+    assert app.jinja_env.filters["my_reverse_custom_name_4"]("abcd") == "dcba"
+
 
 def test_add_template_filter(app):
     def my_reverse(s):
@@ -222,6 +246,30 @@ def test_template_test(app):
     assert "boolean" in app.jinja_env.tests.keys()
     assert app.jinja_env.tests["boolean"] == boolean
     assert app.jinja_env.tests["boolean"](False)
+
+    @app.template_test
+    def boolean_2(value):
+        return isinstance(value, bool)
+
+    assert "boolean_2" in app.jinja_env.tests.keys()
+    assert app.jinja_env.tests["boolean_2"] == boolean_2
+    assert app.jinja_env.tests["boolean_2"](False)
+
+    @app.template_test("my_boolean_custom_name")
+    def boolean_3(value):
+        return isinstance(value, bool)
+
+    assert "my_boolean_custom_name" in app.jinja_env.tests.keys()
+    assert app.jinja_env.tests["my_boolean_custom_name"] == boolean_3
+    assert app.jinja_env.tests["my_boolean_custom_name"](False)
+
+    @app.template_test(name="my_boolean_custom_name_2")
+    def boolean_4(value):
+        return isinstance(value, bool)
+
+    assert "my_boolean_custom_name_2" in app.jinja_env.tests.keys()
+    assert app.jinja_env.tests["my_boolean_custom_name_2"] == boolean_4
+    assert app.jinja_env.tests["my_boolean_custom_name_2"](False)
 
 
 def test_add_template_test(app):
@@ -319,6 +367,39 @@ def test_add_template_global(app, app_ctx):
 
     rv = flask.render_template_string("{{ get_stuff() }}")
     assert rv == "42"
+
+    @app.template_global
+    def get_stuff_1():
+        return "get_stuff_1"
+
+    assert "get_stuff_1" in app.jinja_env.globals.keys()
+    assert app.jinja_env.globals["get_stuff_1"] == get_stuff_1
+    assert app.jinja_env.globals["get_stuff_1"](), "get_stuff_1"
+
+    rv = flask.render_template_string("{{ get_stuff_1() }}")
+    assert rv == "get_stuff_1"
+
+    @app.template_global("my_get_stuff_custom_name_2")
+    def get_stuff_2():
+        return "get_stuff_2"
+
+    assert "my_get_stuff_custom_name_2" in app.jinja_env.globals.keys()
+    assert app.jinja_env.globals["my_get_stuff_custom_name_2"] == get_stuff_2
+    assert app.jinja_env.globals["my_get_stuff_custom_name_2"](), "get_stuff_2"
+
+    rv = flask.render_template_string("{{ my_get_stuff_custom_name_2() }}")
+    assert rv == "get_stuff_2"
+
+    @app.template_global(name="my_get_stuff_custom_name_3")
+    def get_stuff_3():
+        return "get_stuff_3"
+
+    assert "my_get_stuff_custom_name_3" in app.jinja_env.globals.keys()
+    assert app.jinja_env.globals["my_get_stuff_custom_name_3"] == get_stuff_3
+    assert app.jinja_env.globals["my_get_stuff_custom_name_3"](), "get_stuff_3"
+
+    rv = flask.render_template_string("{{ my_get_stuff_custom_name_3() }}")
+    assert rv == "get_stuff_3"
 
 
 def test_custom_template_loader(client):

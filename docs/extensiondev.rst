@@ -67,7 +67,7 @@ application instance.
 It is important that the app is not stored on the extension, don't do
 ``self.app = app``. The only time the extension should have direct
 access to an app is during ``init_app``, otherwise it should use
-:data:`current_app`.
+:data:`.current_app`.
 
 This allows the extension to support the application factory pattern,
 avoids circular import issues when importing the extension instance
@@ -105,7 +105,7 @@ during an extension's ``init_app`` method.
 A common pattern is to use :meth:`~Flask.before_request` to initialize
 some data or a connection at the beginning of each request, then
 :meth:`~Flask.teardown_request` to clean it up at the end. This can be
-stored on :data:`g`, discussed more below.
+stored on :data:`.g`, discussed more below.
 
 A more lazy approach is to provide a method that initializes and caches
 the data or connection. For example, a ``ext.get_db`` method could
@@ -179,13 +179,12 @@ name as a prefix, or as a namespace.
     g._hello = SimpleNamespace()
     g._hello.user_id = 2
 
-The data in ``g`` lasts for an application context. An application
-context is active when a request context is, or when a CLI command is
-run. If you're storing something that should be closed, use
-:meth:`~flask.Flask.teardown_appcontext` to ensure that it gets closed
-when the application context ends. If it should only be valid during a
-request, or would not be used in the CLI outside a request, use
-:meth:`~flask.Flask.teardown_request`.
+The data in ``g`` lasts for an application context. An application context is
+active during a request, CLI command, or ``with app.app_context()`` block. If
+you're storing something that should be closed, use
+:meth:`~flask.Flask.teardown_appcontext` to ensure that it gets closed when the
+app context ends. If it should only be valid during a request, or would not be
+used in the CLI outside a request, use :meth:`~flask.Flask.teardown_request`.
 
 
 Views and Models
@@ -294,11 +293,13 @@ ecosystem remain consistent and compatible.
     indicate minimum compatibility support. For example,
     ``sqlalchemy>=1.4``.
 9.  Indicate the versions of Python supported using ``python_requires=">=version"``.
-    Flask itself supports Python >=3.9 as of October 2024, and this will update
-    over time.
+    Flask and Pallets policy is to support all Python versions that are not
+    within six months of end of life (EOL). See Python's `EOL calendar`_ for
+    timing.
 
 .. _PyPI: https://pypi.org/search/?c=Framework+%3A%3A+Flask
 .. _Discord Chat: https://discord.gg/pallets
 .. _GitHub Discussions: https://github.com/pallets/flask/discussions
 .. _Official Pallets Themes: https://pypi.org/project/Pallets-Sphinx-Themes/
 .. _Pallets-Eco: https://github.com/pallets-eco
+.. _EOL calendar: https://devguide.python.org/versions/

@@ -169,19 +169,20 @@ infrastructure, packages with dependencies are no longer an issue and
 there are very few reasons against having libraries that depend on others.
 
 
-Thread Locals
--------------
+Context Locals
+--------------
 
-Flask uses thread local objects (context local objects in fact, they
-support greenlet contexts as well) for request, session and an extra
-object you can put your own things on (:data:`~flask.g`).  Why is that and
-isn't that a bad idea?
+Flask uses special context locals and proxies to provide access to the
+current app and request data to any code running during a request, CLI command,
+etc. Context locals are specific to the worker handling the activity, such as a
+thread, process, coroutine, or greenlet.
 
-Yes it is usually not such a bright idea to use thread locals.  They cause
-troubles for servers that are not based on the concept of threads and make
-large applications harder to maintain.  However Flask is just not designed
-for large applications or asynchronous servers.  Flask wants to make it
-quick and easy to write a traditional web application.
+The context and proxies help solve two development issues: circular imports, and
+passing around global data. :data:`.current_app` can be used to access the
+application object without needing to import the app object directly, avoiding
+circular import issues. :data:`.request`, :data:`.session`, and :data:`.g` can
+be imported to access the current data for the request, rather than needing to
+pass them as arguments through every single function in your project.
 
 
 Async/await and ASGI support

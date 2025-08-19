@@ -107,10 +107,10 @@ def _get_werkzeug_version() -> str:
 
 
 class FlaskClient(Client):
-    """Works like a regular Werkzeug test client but has knowledge about
-    Flask's contexts to defer the cleanup of the request context until
-    the end of a ``with`` block. For general information about how to
-    use this class refer to :class:`werkzeug.test.Client`.
+    """Works like a regular Werkzeug test client, with additional behavior for
+    Flask. Can defer the cleanup of the request context until the end of a
+    ``with`` block. For general information about how to use this class refer to
+    :class:`werkzeug.test.Client`.
 
     .. versionchanged:: 0.12
        `app.test_client()` includes preset default environment, which can be

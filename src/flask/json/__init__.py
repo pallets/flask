@@ -141,7 +141,7 @@ def jsonify(*args: t.Any, **kwargs: t.Any) -> Response:
     mimetype. A dict or list returned from a view will be converted to a
     JSON response automatically without needing to call this.
 
-    This requires an active request or application context, and calls
+    This requires an active app context, and calls
     :meth:`app.json.response() <flask.json.provider.JSONProvider.response>`.
 
     In debug mode, the output is formatted with indentation to make it

@@ -208,13 +208,13 @@ There are a few differences from the ``register`` view:
     password in the same way as the stored hash and securely compares
     them. If they match, the password is valid.
 
-#.  :data:`session` is a :class:`dict` that stores data across requests.
+#.  :data:`.session` is a :class:`dict` that stores data across requests.
     When validation succeeds, the user's ``id`` is stored in a new
     session. The data is stored in a *cookie* that is sent to the
     browser, and the browser then sends it back with subsequent requests.
     Flask securely *signs* the data so that it can't be tampered with.
 
-Now that the user's ``id`` is stored in the :data:`session`, it will be
+Now that the user's ``id`` is stored in the :data:`.session`, it will be
 available on subsequent requests. At the beginning of each request, if
 a user is logged in their information should be loaded and made
 available to other views.
@@ -236,7 +236,7 @@ available to other views.
 :meth:`bp.before_app_request() <Blueprint.before_app_request>` registers
 a function that runs before the view function, no matter what URL is
 requested. ``load_logged_in_user`` checks if a user id is stored in the
-:data:`session` and gets that user's data from the database, storing it
+:data:`.session` and gets that user's data from the database, storing it
 on :data:`g.user <g>`, which lasts for the length of the request. If
 there is no user id, or if the id doesn't exist, ``g.user`` will be
 ``None``.
@@ -245,7 +245,7 @@ there is no user id, or if the id doesn't exist, ``g.user`` will be
 Logout
 ------
 
-To log out, you need to remove the user id from the :data:`session`.
+To log out, you need to remove the user id from the :data:`.session`.
 Then ``load_logged_in_user`` won't load a user on subsequent requests.
 
 .. code-block:: python
