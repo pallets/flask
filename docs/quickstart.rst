@@ -139,18 +139,16 @@ how you're using untrusted data.
 
 .. code-block:: python
 
+    from flask import request
     from markupsafe import escape
 
-    @app.route("/<name>")
-    def hello(name):
+    @app.route("/hello")
+    def hello():
+        name = request.args.get("name", "Flask")
         return f"Hello, {escape(name)}!"
 
-If a user managed to submit the name ``<script>alert("bad")</script>``,
-escaping causes it to be rendered as text, rather than running the
-script in the user's browser.
-
-``<name>`` in the route captures a value from the URL and passes it to
-the view function. These variable rules are explained below.
+If a user submits ``/hello?name=<script>alert("bad")</script>``, escaping causes
+it to be rendered as text, rather than running the script in the user's browser.
 
 
 Routing
@@ -354,7 +352,7 @@ Rendering Templates
 
 Generating HTML from within Python is not fun, and actually pretty
 cumbersome because you have to do the HTML escaping on your own to keep
-the application secure.  Because of that Flask configures the `Jinja2
+the application secure.  Because of that Flask configures the `Jinja
 <https://palletsprojects.com/p/jinja/>`_ template engine for you automatically.
 
 Templates can be used to generate any type of text file. For web applications, you'll
@@ -394,8 +392,8 @@ package it's actually inside your package:
         /templates
             /hello.html
 
-For templates you can use the full power of Jinja2 templates.  Head over
-to the official `Jinja2 Template Documentation
+For templates you can use the full power of Jinja templates.  Head over
+to the official `Jinja Template Documentation
 <https://jinja.palletsprojects.com/templates/>`_ for more information.
 
 Here is an example template:

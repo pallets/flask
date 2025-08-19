@@ -51,12 +51,12 @@ tags.  For more information on that have a look at the Wikipedia article
 on `Cross-Site Scripting
 <https://en.wikipedia.org/wiki/Cross-site_scripting>`_.
 
-Flask configures Jinja2 to automatically escape all values unless
+Flask configures Jinja to automatically escape all values unless
 explicitly told otherwise.  This should rule out all XSS problems caused
 in templates, but there are still other places where you have to be
 careful:
 
--   generating HTML without the help of Jinja2
+-   generating HTML without the help of Jinja
 -   calling :class:`~markupsafe.Markup` on data submitted by users
 -   sending out HTML from uploaded files, never do that, use the
     ``Content-Disposition: attachment`` header to prevent that problem.
@@ -65,7 +65,7 @@ careful:
     trick a browser to execute HTML.
 
 Another thing that is very important are unquoted attributes.  While
-Jinja2 can protect you from XSS issues by escaping HTML, there is one
+Jinja can protect you from XSS issues by escaping HTML, there is one
 thing it cannot protect you from: XSS by attribute injection.  To counter
 this possible attack vector, be sure to always quote your attributes with
 either double or single quotes when using Jinja expressions in them:
@@ -158,7 +158,7 @@ recommend reviewing each of the headers below for use in your application.
 The `Flask-Talisman`_ extension can be used to manage HTTPS and the security
 headers for you.
 
-.. _Flask-Talisman: https://github.com/GoogleCloudPlatform/flask-talisman
+.. _Flask-Talisman: https://github.com/wntrblm/flask-talisman
 
 HTTP Strict Transport Security (HSTS)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -267,6 +267,27 @@ values (or any values that need secure signatures).
 - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
 
 .. _samesite_support: https://caniuse.com/#feat=same-site-cookie-attribute
+
+
+Host Header Validation
+----------------------
+
+The ``Host`` header is used by the client to indicate what host name the request
+was made to. This is used, for example, by ``url_for(..., _external=True)`` to
+generate full URLs, for use in email or other messages outside the browser
+window.
+
+By default the app doesn't know what host(s) it is allowed to be accessed
+through, and assumes any host is valid. Although browsers do not allow setting
+the ``Host`` header, requests made by attackers in other scenarios could set
+the ``Host`` header to a value they want.
+
+When deploying your application, set :data:`TRUSTED_HOSTS` to restrict what
+values the ``Host`` header may be.
+
+The ``Host`` header may be modified by proxies in between the client and your
+application. See :doc:`deploying/proxy_fix` to tell your app which proxy values
+to trust.
 
 
 Copy/Paste to Terminal

@@ -521,7 +521,7 @@ class App(Scaffold):
         return os.path.join(prefix, "var", f"{self.name}-instance")
 
     def create_global_jinja_loader(self) -> DispatchingJinjaLoader:
-        """Creates the loader for the Jinja2 environment.  Can be used to
+        """Creates the loader for the Jinja environment.  Can be used to
         override just the loader and keeping the rest unchanged.  It's
         discouraged to override this function.  Instead one should override
         the :meth:`jinja_loader` function instead.
@@ -744,7 +744,7 @@ class App(Scaffold):
         """
         if callable(name):
             self.add_template_test(name)
-            return name  # type: ignore[return-value]
+            return name
 
         def decorator(f: T_template_test) -> T_template_test:
             self.add_template_test(f, name=name)

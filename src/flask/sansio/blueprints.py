@@ -520,7 +520,7 @@ class Blueprint(Scaffold):
         """
         if callable(name):
             self.add_app_template_test(name)
-            return name  # type: ignore[return-value]
+            return name
 
         def decorator(f: T_template_test) -> T_template_test:
             self.add_app_template_test(f, name=name)

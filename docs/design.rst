@@ -96,10 +96,10 @@ is ambiguous.
 One Template Engine
 -------------------
 
-Flask decides on one template engine: Jinja2.  Why doesn't Flask have a
+Flask decides on one template engine: Jinja.  Why doesn't Flask have a
 pluggable template engine interface?  You can obviously use a different
-template engine, but Flask will still configure Jinja2 for you.  While
-that limitation that Jinja2 is *always* configured will probably go away,
+template engine, but Flask will still configure Jinja for you.  While
+that limitation that Jinja is *always* configured will probably go away,
 the decision to bundle one template engine and use that will not.
 
 Template engines are like programming languages and each of those engines
@@ -107,7 +107,7 @@ has a certain understanding about how things work.  On the surface they
 all work the same: you tell the engine to evaluate a template with a set
 of variables and take the return value as string.
 
-But that's about where similarities end. Jinja2 for example has an
+But that's about where similarities end. Jinja for example has an
 extensive filter system, a certain way to do template inheritance,
 support for reusable blocks (macros) that can be used from inside
 templates and also from Python code, supports iterative template
@@ -118,8 +118,8 @@ other hand treats templates similar to Python modules.
 
 When it comes to connecting a template engine with an application or
 framework there is more than just rendering templates.  For instance,
-Flask uses Jinja2's extensive autoescaping support.  Also it provides
-ways to access macros from Jinja2 templates.
+Flask uses Jinja's extensive autoescaping support.  Also it provides
+ways to access macros from Jinja templates.
 
 A template abstraction layer that would not take the unique features of
 the template engines away is a science on its own and a too large
@@ -150,7 +150,7 @@ authentication technologies, and more. Flask may be "micro", but it's ready for
 production use on a variety of needs.
 
 Why does Flask call itself a microframework and yet it depends on two
-libraries (namely Werkzeug and Jinja2).  Why shouldn't it?  If we look
+libraries (namely Werkzeug and Jinja).  Why shouldn't it?  If we look
 over to the Ruby side of web development there we have a protocol very
 similar to WSGI.  Just that it's called Rack there, but besides that it
 looks very much like a WSGI rendition for Ruby.  But nearly all
@@ -208,7 +208,7 @@ What Flask is, What Flask is Not
 
 Flask will never have a database layer.  It will not have a form library
 or anything else in that direction.  Flask itself just bridges to Werkzeug
-to implement a proper WSGI application and to Jinja2 to handle templating.
+to implement a proper WSGI application and to Jinja to handle templating.
 It also binds to a few common standard library packages such as logging.
 Everything else is up for extensions.
 

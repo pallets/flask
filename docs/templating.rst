@@ -1,21 +1,21 @@
 Templates
 =========
 
-Flask leverages Jinja2 as its template engine.  You are obviously free to use
-a different template engine, but you still have to install Jinja2 to run
+Flask leverages Jinja as its template engine.  You are obviously free to use
+a different template engine, but you still have to install Jinja to run
 Flask itself.  This requirement is necessary to enable rich extensions.
-An extension can depend on Jinja2 being present.
+An extension can depend on Jinja being present.
 
-This section only gives a very quick introduction into how Jinja2
+This section only gives a very quick introduction into how Jinja
 is integrated into Flask.  If you want information on the template
-engine's syntax itself, head over to the official `Jinja2 Template
+engine's syntax itself, head over to the official `Jinja Template
 Documentation <https://jinja.palletsprojects.com/templates/>`_ for
 more information.
 
 Jinja Setup
 -----------
 
-Unless customized, Jinja2 is configured by Flask as follows:
+Unless customized, Jinja is configured by Flask as follows:
 
 -   autoescaping is enabled for all templates ending in ``.html``,
     ``.htm``, ``.xml``, ``.xhtml``, as well as ``.svg`` when using
@@ -25,13 +25,13 @@ Unless customized, Jinja2 is configured by Flask as follows:
 -   a template has the ability to opt in/out autoescaping with the
     ``{% autoescape %}`` tag.
 -   Flask inserts a couple of global functions and helpers into the
-    Jinja2 context, additionally to the values that are present by
+    Jinja context, additionally to the values that are present by
     default.
 
 Standard Context
 ----------------
 
-The following global variables are available within Jinja2 templates
+The following global variables are available within Jinja templates
 by default:
 
 .. data:: config
@@ -237,7 +237,7 @@ strings. This can be used for streaming HTML in chunks to speed up
 initial page load, or to save memory when rendering a very large
 template.
 
-The Jinja2 template engine supports rendering a template piece
+The Jinja template engine supports rendering a template piece
 by piece, returning an iterator of strings. Flask provides the
 :func:`~flask.stream_template` and :func:`~flask.stream_template_string`
 functions to make this easier to use.
