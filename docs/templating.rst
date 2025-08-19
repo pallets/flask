@@ -137,35 +137,57 @@ using in this block.
 
 .. _registering-filters:
 
-Registering Filters
--------------------
+Registering Filters, Tests, and Globals
+---------------------------------------
 
-If you want to register your own filters in Jinja2 you have two ways to do
-that.  You can either put them by hand into the
-:attr:`~flask.Flask.jinja_env` of the application or use the
-:meth:`~flask.Flask.template_filter` decorator.
+The Flask app and blueprints provide decorators and methods to register your own
+filters, tests, and global functions for use in Jinja templates. They all follow
+the same pattern, so the following examples only discuss filters.
 
-The following examples work the same and all reverse an object::
+Decorate a function with :meth:`~.Flask.template_filter` to register it as a
+template filter.
 
-    @app.template_filter # use the function name as filter name
-    def reverse_filter(s):
-        return s[::-1]
+.. code-block:: python
 
-    @app.template_filter('reverse')
-    def reverse_filter(s):
-        return s[::-1]
+    @app.template_filter
+    def reverse(s):
+        return reversed(s)
 
-    def reverse_filter(s):
-        return s[::-1]
-    app.jinja_env.filters['reverse'] = reverse_filter
+.. code-block:: jinja
 
-In case of the decorator the argument is optional if you want to use the
-function name as name of the filter.  Once registered, you can use the filter
-in your templates in the same way as Jinja2's builtin filters, for example if
-you have a Python list in context called `mylist`::
-
-    {% for x in mylist | reverse %}
+    {% for item in data | reverse %}
     {% endfor %}
+
+By default it will use the name of the function as the name of the filter, but
+that can be changed by passing a name to the decorator.
+
+.. code-block:: python
+
+    @app.template_filter("reverse")
+    def reverse_filter(s):
+        return reversed(s)
+
+A filter can be registered separately using :meth:`~.Flask.add_template_filter`.
+The name is optional and will use the function name if not given.
+
+.. code-block:: python
+
+    def reverse_filter(s):
+        return reversed(s)
+
+    app.add_template_filter(reverse_filter, "reverse")
+
+For template tests, use the :meth:`~.Flask.template_test` decorator or
+:meth:`~.Flask.add_template_test` method. For template global functions, use the
+:meth:`~.Flask.template_global` decorator or :meth:`~.Flask.add_template_global`
+method.
+
+The same methods also exist on :class:`.Blueprint`, prefixed with ``app_`` to
+indicate that the registered functions will be avaialble to all templates, not
+only when rendering from within the blueprint.
+
+The Jinja environment is also available as :attr:`~.Flask.jinja_env`. It may be
+modified directly, as you would when using Jinja outside Flask.
 
 
 Context Processors
