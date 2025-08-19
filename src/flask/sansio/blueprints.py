@@ -440,16 +440,31 @@ class Blueprint(Scaffold):
             )
         )
 
-    @setupmethod
+    @t.overload
+    def app_template_filter(self, name: T_template_filter) -> T_template_filter: ...
+    @t.overload
     def app_template_filter(
         self, name: str | None = None
-    ) -> t.Callable[[T_template_filter], T_template_filter]:
-        """Register a template filter, available in any template rendered by the
-        application. Equivalent to :meth:`.Flask.template_filter`.
+    ) -> t.Callable[[T_template_filter], T_template_filter]: ...
+    @setupmethod
+    def app_template_filter(
+        self, name: T_template_filter | str | None = None
+    ) -> T_template_filter | t.Callable[[T_template_filter], T_template_filter]:
+        """Decorate a function to register it as a custom Jinja filter. The name
+        is optional. The decorator may be used without parentheses.
 
-        :param name: the optional name of the filter, otherwise the
-                     function name will be used.
+        The :meth:`add_app_template_filter` method may be used to register a
+        function later rather than decorating.
+
+        The filter is available in all templates, not only those under this
+        blueprint. Equivalent to :meth:`.Flask.template_filter`.
+
+        :param name: The name to register the filter as. If not given, uses the
+            function's name.
         """
+        if callable(name):
+            self.add_app_template_filter(name)
+            return name
 
         def decorator(f: T_template_filter) -> T_template_filter:
             self.add_app_template_filter(f, name=name)
@@ -461,31 +476,51 @@ class Blueprint(Scaffold):
     def add_app_template_filter(
         self, f: ft.TemplateFilterCallable, name: str | None = None
     ) -> None:
-        """Register a template filter, available in any template rendered by the
-        application. Works like the :meth:`app_template_filter` decorator. Equivalent to
-        :meth:`.Flask.add_template_filter`.
+        """Register a function to use as a custom Jinja filter.
 
-        :param name: the optional name of the filter, otherwise the
-                     function name will be used.
+        The :meth:`app_template_filter` decorator can be used to register a
+        function by decorating instead.
+
+        The filter is available in all templates, not only those under this
+        blueprint. Equivalent to :meth:`.Flask.add_template_filter`.
+
+        :param f: The function to register.
+        :param name: The name to register the filter as. If not given, uses the
+            function's name.
         """
 
-        def register_template(state: BlueprintSetupState) -> None:
-            state.app.jinja_env.filters[name or f.__name__] = f
+        def register_template_filter(state: BlueprintSetupState) -> None:
+            state.app.add_template_filter(f, name=name)
 
-        self.record_once(register_template)
+        self.record_once(register_template_filter)
 
-    @setupmethod
+    @t.overload
+    def app_template_test(self, name: T_template_test) -> T_template_test: ...
+    @t.overload
     def app_template_test(
         self, name: str | None = None
-    ) -> t.Callable[[T_template_test], T_template_test]:
-        """Register a template test, available in any template rendered by the
-        application. Equivalent to :meth:`.Flask.template_test`.
+    ) -> t.Callable[[T_template_test], T_template_test]: ...
+    @setupmethod
+    def app_template_test(
+        self, name: T_template_test | str | None = None
+    ) -> T_template_test | t.Callable[[T_template_test], T_template_test]:
+        """Decorate a function to register it as a custom Jinja test. The name
+        is optional. The decorator may be used without parentheses.
+
+        The :meth:`add_app_template_test` method may be used to register a
+        function later rather than decorating.
+
+        The test is available in all templates, not only those under this
+        blueprint. Equivalent to :meth:`.Flask.template_test`.
+
+        :param name: The name to register the filter as. If not given, uses the
+            function's name.
 
         .. versionadded:: 0.10
-
-        :param name: the optional name of the test, otherwise the
-                     function name will be used.
         """
+        if callable(name):
+            self.add_app_template_test(name)
+            return name  # type: ignore[return-value]
 
         def decorator(f: T_template_test) -> T_template_test:
             self.add_app_template_test(f, name=name)
@@ -497,33 +532,53 @@ class Blueprint(Scaffold):
     def add_app_template_test(
         self, f: ft.TemplateTestCallable, name: str | None = None
     ) -> None:
-        """Register a template test, available in any template rendered by the
-        application. Works like the :meth:`app_template_test` decorator. Equivalent to
-        :meth:`.Flask.add_template_test`.
+        """Register a function to use as a custom Jinja test.
+
+        The :meth:`app_template_test` decorator can be used to register a
+        function by decorating instead.
+
+        The test is available in all templates, not only those under this
+        blueprint. Equivalent to :meth:`.Flask.add_template_test`.
+
+        :param f: The function to register.
+        :param name: The name to register the test as. If not given, uses the
+            function's name.
 
         .. versionadded:: 0.10
-
-        :param name: the optional name of the test, otherwise the
-                     function name will be used.
         """
 
-        def register_template(state: BlueprintSetupState) -> None:
-            state.app.jinja_env.tests[name or f.__name__] = f
+        def register_template_test(state: BlueprintSetupState) -> None:
+            state.app.add_template_test(f, name=name)
 
-        self.record_once(register_template)
+        self.record_once(register_template_test)
 
-    @setupmethod
+    @t.overload
+    def app_template_global(self, name: T_template_global) -> T_template_global: ...
+    @t.overload
     def app_template_global(
         self, name: str | None = None
-    ) -> t.Callable[[T_template_global], T_template_global]:
-        """Register a template global, available in any template rendered by the
-        application. Equivalent to :meth:`.Flask.template_global`.
+    ) -> t.Callable[[T_template_global], T_template_global]: ...
+    @setupmethod
+    def app_template_global(
+        self, name: T_template_global | str | None = None
+    ) -> T_template_global | t.Callable[[T_template_global], T_template_global]:
+        """Decorate a function to register it as a custom Jinja global. The name
+        is optional. The decorator may be used without parentheses.
+
+        The :meth:`add_app_template_global` method may be used to register a
+        function later rather than decorating.
+
+        The global is available in all templates, not only those under this
+        blueprint. Equivalent to :meth:`.Flask.template_global`.
+
+        :param name: The name to register the global as. If not given, uses the
+            function's name.
 
         .. versionadded:: 0.10
-
-        :param name: the optional name of the global, otherwise the
-                     function name will be used.
         """
+        if callable(name):
+            self.add_app_template_global(name)
+            return name
 
         def decorator(f: T_template_global) -> T_template_global:
             self.add_app_template_global(f, name=name)
@@ -535,20 +590,25 @@ class Blueprint(Scaffold):
     def add_app_template_global(
         self, f: ft.TemplateGlobalCallable, name: str | None = None
     ) -> None:
-        """Register a template global, available in any template rendered by the
-        application. Works like the :meth:`app_template_global` decorator. Equivalent to
-        :meth:`.Flask.add_template_global`.
+        """Register a function to use as a custom Jinja global.
+
+        The :meth:`app_template_global` decorator can be used to register a function
+        by decorating instead.
+
+        The global is available in all templates, not only those under this
+        blueprint. Equivalent to :meth:`.Flask.add_template_global`.
+
+        :param f: The function to register.
+        :param name: The name to register the global as. If not given, uses the
+            function's name.
 
         .. versionadded:: 0.10
-
-        :param name: the optional name of the global, otherwise the
-                     function name will be used.
         """
 
-        def register_template(state: BlueprintSetupState) -> None:
-            state.app.jinja_env.globals[name or f.__name__] = f
+        def register_template_global(state: BlueprintSetupState) -> None:
+            state.app.add_template_global(f, name=name)
 
-        self.record_once(register_template)
+        self.record_once(register_template_global)
 
     @setupmethod
     def before_app_request(self, f: T_before_request) -> T_before_request:
