@@ -1,0 +1,1 @@
+My personal notes for the Flask project
