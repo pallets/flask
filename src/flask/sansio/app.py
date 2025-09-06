@@ -533,7 +533,7 @@ class App(Scaffold):
         """
         return DispatchingJinjaLoader(self)
 
-    def select_jinja_autoescape(self, filename: str) -> bool:
+    def select_jinja_autoescape(self, filename: str | None) -> bool:
         """Returns ``True`` if autoescaping should be active for the given
         template name. If no template name is given, returns `True`.
 
