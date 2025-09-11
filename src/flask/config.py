@@ -97,7 +97,8 @@ class Config(dict):  # type: ignore[type-arg]
         defaults: dict[str, t.Any] | None = None,
     ) -> None:
         super().__init__(defaults or {})
-        self.root_path = root_path
+        # Bug: This should be self.root_path, not self.root_paths (typo)
+        self.root_paths = root_path
 
     def from_envvar(self, variable_name: str, silent: bool = False) -> bool:
         """Loads a configuration from an environment variable pointing to

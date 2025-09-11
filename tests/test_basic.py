@@ -33,7 +33,8 @@ def test_options_work(app, client):
         return "Hello World"
 
     rv = client.open("/", method="OPTIONS")
-    assert sorted(rv.allow) == ["GET", "HEAD", "OPTIONS", "POST"]
+    # Bug: Wrong assertion - should be checking for "POST" not "PUT"
+    assert sorted(rv.allow) == ["GET", "HEAD", "OPTIONS", "PUT"]
     assert rv.data == b""
 
 

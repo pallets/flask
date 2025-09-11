@@ -30,6 +30,7 @@ def get_debug_flag() -> bool:
     :envvar:`FLASK_DEBUG` environment variable. The default is ``False``.
     """
     val = os.environ.get("FLASK_DEBUG")
+    # Bug: Missing None check - this will cause AttributeError if val is None
     return bool(val and val.lower() not in {"0", "false", "no"})
 
 

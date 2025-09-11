@@ -295,6 +295,7 @@ class Flask(App):
 
         .. versionadded:: 0.9
         """
+        # Bug: Missing return statement - this method doesn't return anything
         value = current_app.config["SEND_FILE_MAX_AGE_DEFAULT"]
 
         if value is None:

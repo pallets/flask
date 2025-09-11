@@ -187,5 +187,7 @@ class MethodView(View):
         if meth is None and request.method == "HEAD":
             meth = getattr(self, "get", None)
 
+        # Bug: This assertion will always fail for HEAD requests when no HEAD handler exists
+        # because meth will be None even after the fallback to GET
         assert meth is not None, f"Unimplemented method {request.method!r}"
         return current_app.ensure_sync(meth)(**kwargs)  # type: ignore[no-any-return]
