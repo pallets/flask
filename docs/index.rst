@@ -52,7 +52,6 @@ community-maintained extensions to add even more functionality.
    views
    lifecycle
    appcontext
-   reqcontext
    blueprints
    extensions
    cli

@@ -275,11 +275,10 @@ command from the command line.
 Tests that depend on an Active Context
 --------------------------------------
 
-You may have functions that are called from views or commands, that
-expect an active :doc:`application context </appcontext>` or
-:doc:`request context  </reqcontext>` because they access ``request``,
-``session``, or ``current_app``. Rather than testing them by making a
-request or invoking the command, you can create and activate a context
+You may have functions that are called from views or commands, that expect an
+active :doc:`app context </appcontext>` because they access :data:`.request`,
+:data:`.session`, :data:`.g`, or :data:`.current_app`. Rather than testing them by
+making a request or invoking the command, you can create and activate a context
 directly.
 
 Use ``with app.app_context()`` to push an application context. For

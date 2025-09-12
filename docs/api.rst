@@ -31,17 +31,15 @@ Incoming Request Data
     :inherited-members:
     :exclude-members: json_module
 
-.. attribute:: request
+.. data:: request
 
-   To access incoming request data, you can use the global `request`
-   object. Flask parses incoming request data for you and gives you
-   access to it through that global object. Internally Flask makes
-   sure that you always get the correct data for the active thread if you
-   are in a multithreaded environment.
+    A proxy to the request data for the current request, an instance of
+    :class:`.Request`.
 
-   This is a proxy. See :ref:`notes-on-proxies` for more information.
+    This is only available when a :doc:`request context </appcontext>` is
+    active.
 
-   The request object is an instance of a :class:`~flask.Request`.
+    This is a proxy. See :ref:`context-visibility` for more information.
 
 
 Response Objects
@@ -62,40 +60,33 @@ does this is by using a signed cookie. The user can look at the session
 contents, but can't modify it unless they know the secret key, so make sure to
 set that to something complex and unguessable.
 
-To access the current session you can use the :class:`session` object:
+To access the current session you can use the :data:`.session` proxy.
 
-.. class:: session
+.. data:: session
 
-   The session object works pretty much like an ordinary dict, with the
-   difference that it keeps track of modifications.
+    A proxy to the session data for the current request, an instance of
+    :class:`.SessionMixin`.
 
-   This is a proxy. See :ref:`notes-on-proxies` for more information.
+    This is only available when a :doc:`request context </appcontext>` is
+    active.
 
-   The following attributes are interesting:
+    This is a proxy. See :ref:`context-visibility` for more information.
 
-   .. attribute:: new
+    The session object works like a dict but tracks assignment and access to its
+    keys. It cannot track modifications to mutable values, you need to set
+    :attr:`~.SessionMixin.modified` manually when modifying a list, dict, etc.
 
-      ``True`` if the session is new, ``False`` otherwise.
+    .. code-block:: python
 
-   .. attribute:: modified
-
-      ``True`` if the session object detected a modification. Be advised
-      that modifications on mutable structures are not picked up
-      automatically, in that situation you have to explicitly set the
-      attribute to ``True`` yourself. Here an example::
-
-          # this change is not picked up because a mutable object (here
-          # a list) is changed.
-          session['objects'].append(42)
+          # appending to a list is not detected
+          session["numbers"].append(42)
           # so mark it as modified yourself
           session.modified = True
 
-   .. attribute:: permanent
-
-      If set to ``True`` the session lives for
-      :attr:`~flask.Flask.permanent_session_lifetime` seconds. The
-      default is 31 days. If set to ``False`` (which is the default) the
-      session will be deleted when the user closes the browser.
+    The session is persisted across requests using a cookie. By default the
+    users's browser will clear the cookie when it is closed. Set
+    :attr:`~.SessionMixin.permanent` to ``True`` to persist the cookie for
+    :data:`PERMANENT_SESSION_LIFETIME`.
 
 
 Session Interface
@@ -158,20 +149,21 @@ another, a global variable is not good enough because it would break in
 threaded environments. Flask provides you with a special object that
 ensures it is only valid for the active request and that will return
 different values for each request. In a nutshell: it does the right
-thing, like it does for :class:`request` and :class:`session`.
+thing, like it does for :data:`.request` and :data:`.session`.
 
 .. data:: g
 
-    A namespace object that can store data during an
-    :doc:`application context </appcontext>`. This is an instance of
-    :attr:`Flask.app_ctx_globals_class`, which defaults to
-    :class:`ctx._AppCtxGlobals`.
+    A proxy to a namespace object used to store data during a single request or
+    app context. An instance of :attr:`.Flask.app_ctx_globals_class`, which
+    defaults to :class:`._AppCtxGlobals`.
 
-    This is a good place to store resources during a request. For
-    example, a ``before_request`` function could load a user object from
-    a session id, then set ``g.user`` to be used in the view function.
+    This is a good place to store resources during a request. For example, a
+    :meth:`~.Flask.before_request` function could load a user object from a
+    session id, then set ``g.user`` to be used in the view function.
 
-    This is a proxy. See :ref:`notes-on-proxies` for more information.
+    This is only available when an :doc:`app context </appcontext>` is active.
+
+    This is a proxy. See :ref:`context-visibility` for more information.
 
     .. versionchanged:: 0.10
         Bound to the application context instead of the request context.
@@ -185,17 +177,16 @@ Useful Functions and Classes
 
 .. data:: current_app
 
-    A proxy to the application handling the current request. This is
-    useful to access the application without needing to import it, or if
-    it can't be imported, such as when using the application factory
-    pattern or in blueprints and extensions.
+    A proxy to the :class:`.Flask` application handling the current request or
+    other activity.
 
-    This is only available when an
-    :doc:`application context </appcontext>` is pushed. This happens
-    automatically during requests and CLI commands. It can be controlled
-    manually with :meth:`~flask.Flask.app_context`.
+    This is useful to access the application without needing to import it, or if
+    it can't be imported, such as when using the application factory pattern or
+    in blueprints and extensions.
 
-    This is a proxy. See :ref:`notes-on-proxies` for more information.
+    This is only available when an :doc:`app context </appcontext>` is active.
+
+    This is a proxy. See :ref:`context-visibility` for more information.
 
 .. autofunction:: has_request_context
 
@@ -299,31 +290,31 @@ Stream Helpers
 Useful Internals
 ----------------
 
-.. autoclass:: flask.ctx.RequestContext
-   :members:
-
-.. data:: flask.globals.request_ctx
-
-    The current :class:`~flask.ctx.RequestContext`. If a request context
-    is not active, accessing attributes on this proxy will raise a
-    ``RuntimeError``.
-
-    This is an internal object that is essential to how Flask handles
-    requests. Accessing this should not be needed in most cases. Most
-    likely you want :data:`request` and :data:`session` instead.
-
 .. autoclass:: flask.ctx.AppContext
    :members:
 
 .. data:: flask.globals.app_ctx
 
-    The current :class:`~flask.ctx.AppContext`. If an app context is not
-    active, accessing attributes on this proxy will raise a
-    ``RuntimeError``.
+    A proxy to the active :class:`.AppContext`.
 
-    This is an internal object that is essential to how Flask handles
-    requests. Accessing this should not be needed in most cases. Most
-    likely you want :data:`current_app` and :data:`g` instead.
+    This is an internal object that is essential to how Flask handles requests.
+    Accessing this should not be needed in most cases. Most likely you want
+    :data:`.current_app`, :data:`.g`, :data:`.request`, and :data:`.session` instead.
+
+    This is only available when a :doc:`request context </appcontext>` is
+    active.
+
+    This is a proxy. See :ref:`context-visibility` for more information.
+
+.. class:: flask.ctx.RequestContext
+
+    .. deprecated:: 3.2
+        Merged with :class:`AppContext`. This alias will be removed in Flask 4.0.
+
+.. data:: flask.globals.request_ctx
+
+    .. deprecated:: 3.2
+        Merged with :data:`.app_ctx`. This alias will be removed in Flask 4.0.
 
 .. autoclass:: flask.blueprints.BlueprintSetupState
    :members:

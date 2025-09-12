@@ -49,13 +49,13 @@ the template.
 Streaming with Context
 ----------------------
 
-The :data:`~flask.request` will not be active while the generator is
-running, because the view has already returned at that point. If you try
-to access ``request``, you'll get a ``RuntimeError``.
+The :data:`.request` proxy will not be active while the generator is
+running, because the app has already returned control to the WSGI server at that
+point. If you try to access ``request``, you'll get a ``RuntimeError``.
 
 If your generator function relies on data in ``request``, use the
-:func:`~flask.stream_with_context` wrapper. This will keep the request
-context active during the generator.
+:func:`.stream_with_context` wrapper. This will keep the request context active
+during the generator.
 
 .. code-block:: python
 

@@ -8,9 +8,7 @@ from jinja2 import Template
 from jinja2 import TemplateNotFound
 
 from .globals import _cv_app
-from .globals import _cv_request
 from .globals import current_app
-from .globals import request
 from .helpers import stream_with_context
 from .signals import before_render_template
 from .signals import template_rendered
@@ -25,14 +23,16 @@ def _default_template_ctx_processor() -> dict[str, t.Any]:
     """Default template context processor.  Injects `request`,
     `session` and `g`.
     """
-    appctx = _cv_app.get(None)
-    reqctx = _cv_request.get(None)
+    ctx = _cv_app.get(None)
     rv: dict[str, t.Any] = {}
-    if appctx is not None:
-        rv["g"] = appctx.g
-    if reqctx is not None:
-        rv["request"] = reqctx.request
-        rv["session"] = reqctx.session
+
+    if ctx is not None:
+        rv["g"] = ctx.g
+
+        if ctx.has_request:
+            rv["request"] = ctx.request
+            rv["session"] = ctx.session
+
     return rv
 
 
@@ -145,7 +145,7 @@ def render_template(
         a list is given, the first name to exist will be rendered.
     :param context: The variables to make available in the template.
     """
-    app = current_app._get_current_object()  # type: ignore[attr-defined]
+    app = current_app._get_current_object()
     template = app.jinja_env.get_or_select_template(template_name_or_list)
     return _render(app, template, context)
 
@@ -157,7 +157,7 @@ def render_template_string(source: str, **context: t.Any) -> str:
     :param source: The source code of the template to render.
     :param context: The variables to make available in the template.
     """
-    app = current_app._get_current_object()  # type: ignore[attr-defined]
+    app = current_app._get_current_object()
     template = app.jinja_env.from_string(source)
     return _render(app, template, context)
 
@@ -176,13 +176,7 @@ def _stream(
             app, _async_wrapper=app.ensure_sync, template=template, context=context
         )
 
-    rv = generate()
-
-    # If a request context is active, keep it while generating.
-    if request:
-        rv = stream_with_context(rv)
-
-    return rv
+    return stream_with_context(generate())
 
 
 def stream_template(
@@ -199,7 +193,7 @@ def stream_template(
 
     .. versionadded:: 2.2
     """
-    app = current_app._get_current_object()  # type: ignore[attr-defined]
+    app = current_app._get_current_object()
     template = app.jinja_env.get_or_select_template(template_name_or_list)
     return _stream(app, template, context)
 
@@ -214,6 +208,6 @@ def stream_template_string(source: str, **context: t.Any) -> t.Iterator[str]:
 
     .. versionadded:: 2.2
     """
-    app = current_app._get_current_object()  # type: ignore[attr-defined]
+    app = current_app._get_current_object()
     template = app.jinja_env.from_string(source)
     return _stream(app, template, context)

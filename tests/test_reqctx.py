@@ -3,7 +3,7 @@ import warnings
 import pytest
 
 import flask
-from flask.globals import request_ctx
+from flask.globals import app_ctx
 from flask.sessions import SecureCookieSessionInterface
 from flask.sessions import SessionInterface
 
@@ -153,12 +153,12 @@ class TestGreenletContextCopying:
         @app.route("/")
         def index():
             flask.session["fizz"] = "buzz"
-            reqctx = request_ctx.copy()
+            ctx = app_ctx.copy()
 
             def g():
                 assert not flask.request
                 assert not flask.current_app
-                with reqctx:
+                with ctx:
                     assert flask.request
                     assert flask.current_app == app
                     assert flask.request.path == "/"

@@ -71,7 +71,7 @@ specific sections.
       {% block content %}{% endblock %}
     </section>
 
-:data:`g` is automatically available in templates. Based on if
+:data:`.g` is automatically available in templates. Based on if
 ``g.user`` is set (from ``load_logged_in_user``), either the username
 and a log out link are displayed, or links to register and log in
 are displayed. :func:`url_for` is also automatically available, and is

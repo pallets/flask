@@ -2,7 +2,6 @@ import pytest
 
 import flask
 from flask.globals import app_ctx
-from flask.globals import request_ctx
 
 
 def test_basic_url_generation(app):
@@ -107,7 +106,8 @@ def test_app_tearing_down_with_handled_exception_by_app_handler(app, client):
     with app.app_context():
         client.get("/")
 
-    assert cleanup_stuff == [None]
+    # teardown request context, and with block context
+    assert cleanup_stuff == [None, None]
 
 
 def test_app_tearing_down_with_unhandled_exception(app, client):
@@ -126,9 +126,11 @@ def test_app_tearing_down_with_unhandled_exception(app, client):
         with app.app_context():
             client.get("/")
 
-    assert len(cleanup_stuff) == 1
+    assert len(cleanup_stuff) == 2
     assert isinstance(cleanup_stuff[0], ValueError)
     assert str(cleanup_stuff[0]) == "dummy"
+    # exception propagated, seen by request context and with block context
+    assert cleanup_stuff[0] is cleanup_stuff[1]
 
 
 def test_app_ctx_globals_methods(app, app_ctx):
@@ -178,8 +180,7 @@ def test_context_refcounts(app, client):
     @app.route("/")
     def index():
         with app_ctx:
-            with request_ctx:
-                pass
+            pass
 
         assert flask.request.environ["werkzeug.request"] is not None
         return ""

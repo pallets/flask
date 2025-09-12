@@ -507,8 +507,8 @@ class Scaffold:
     @setupmethod
     def teardown_request(self, f: T_teardown) -> T_teardown:
         """Register a function to be called when the request context is
-        popped. Typically this happens at the end of each request, but
-        contexts may be pushed manually as well during testing.
+        popped. Typically, this happens at the end of each request, but
+        contexts may be pushed manually during testing.
 
         .. code-block:: python
 

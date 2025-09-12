@@ -177,11 +177,8 @@ class App(Scaffold):
     #: 3. Return None instead of AttributeError on unexpected attributes.
     #: 4. Raise exception if an unexpected attr is set, a "controlled" flask.g.
     #:
-    #: In Flask 0.9 this property was called `request_globals_class` but it
-    #: was changed in 0.10 to :attr:`app_ctx_globals_class` because the
-    #: flask.g object is now application context scoped.
-    #:
     #: .. versionadded:: 0.10
+    #:     Renamed from ``request_globals_class`.
     app_ctx_globals_class = _AppCtxGlobals
 
     #: The class that is used for the ``config`` attribute of this app.
@@ -825,10 +822,9 @@ class App(Scaffold):
 
     @setupmethod
     def teardown_appcontext(self, f: T_teardown) -> T_teardown:
-        """Registers a function to be called when the application
-        context is popped. The application context is typically popped
-        after the request context for each request, at the end of CLI
-        commands, or after a manually pushed context ends.
+        """Registers a function to be called when the app context is popped. The
+        context is popped at the end of a request, CLI command, or manual ``with``
+        block.
 
         .. code-block:: python
 
@@ -837,9 +833,7 @@ class App(Scaffold):
 
         When the ``with`` block exits (or ``ctx.pop()`` is called), the
         teardown functions are called just before the app context is
-        made inactive. Since a request context typically also manages an
-        application context it would also be called when you pop a
-        request context.
+        made inactive.
 
         When a teardown function was called because of an unhandled
         exception it will be passed an error object. If an

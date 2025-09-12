@@ -5,6 +5,10 @@ Unreleased
 
 -   Drop support for Python 3.9. :pr:`5730`
 -   Remove previously deprecated code: ``__version__``. :pr:`5648`
+-   ``RequestContext`` has merged with ``AppContext``. ``RequestContext`` is now
+    a deprecated alias. If an app context is already pushed, it is not reused
+    when dispatching a request. This greatly simplifies the internal code for tracking
+    the active context. :issue:`5639`
 -   ``template_filter``, ``template_test``, and ``template_global`` decorators
     can be used without parentheses. :issue:`5729`
 

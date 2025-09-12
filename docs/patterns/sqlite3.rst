@@ -1,9 +1,9 @@
 Using SQLite 3 with Flask
 =========================
 
-In Flask you can easily implement the opening of database connections on
-demand and closing them when the context dies (usually at the end of the
-request).
+You can implement a few functions to work with a SQLite connection during a
+request context. The connection is created the first time it's accessed,
+reused on subsequent access, until it is closed when the request context ends.
 
 Here is a simple example of how you can use SQLite 3 with Flask::
 
