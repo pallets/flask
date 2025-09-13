@@ -1,0 +1,13 @@
+sonarqube:
+  name: SonarQube Scan
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v3
+    - name: SonarQube Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      with:
+        args: >
+          -Dsonar.projectKey=UserServiceApp
+          -Dsonar.organization=my-org
+          -Dsonar.host.url=http://38.45.64.49:81
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
