@@ -5,7 +5,7 @@ import pytest
 from _pytest import monkeypatch
 
 from flask import Flask
-from flask.globals import request_ctx
+from flask.globals import app_ctx as _app_ctx
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -83,16 +83,17 @@ def test_apps(monkeypatch):
 
 @pytest.fixture(autouse=True)
 def leak_detector():
+    """Fails if any app contexts are still pushed when a test ends. Pops all
+    contexts so subsequent tests are not affected.
+    """
     yield
-
-    # make sure we're not leaking a request context since we are
-    # testing flask internally in debug mode in a few cases
     leaks = []
-    while request_ctx:
-        leaks.append(request_ctx._get_current_object())
-        request_ctx.pop()
 
-    assert leaks == []
+    while _app_ctx:
+        leaks.append(_app_ctx._get_current_object())
+        _app_ctx.pop()
+
+    assert not leaks
 
 
 @pytest.fixture

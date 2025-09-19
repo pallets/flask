@@ -305,7 +305,7 @@ The pattern ``{{ request.form['title'] or post['title'] }}`` is used to
 choose what data appears in the form. When the form hasn't been
 submitted, the original ``post`` data appears, but if invalid form data
 was posted you want to display that so the user can fix the error, so
-``request.form`` is used instead. :data:`request` is another variable
+``request.form`` is used instead. :data:`.request` is another variable
 that's automatically available in templates.
 
 

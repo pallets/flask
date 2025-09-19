@@ -1,40 +1,22 @@
 Working with the Shell
 ======================
 
-.. versionadded:: 0.3
+One of the reasons everybody loves Python is the interactive shell. It allows
+you to play around with code in real time and immediately get results back.
+Flask provides the ``flask shell`` CLI command to start an interactive Python
+shell with some setup done to make working with the Flask app easier.
 
-One of the reasons everybody loves Python is the interactive shell.  It
-basically allows you to execute Python commands in real time and
-immediately get results back.  Flask itself does not come with an
-interactive shell, because it does not require any specific setup upfront,
-just import your application and start playing around.
+.. code-block:: text
 
-There are however some handy helpers to make playing around in the shell a
-more pleasant experience.  The main issue with interactive console
-sessions is that you're not triggering a request like a browser does which
-means that :data:`~flask.g`, :data:`~flask.request` and others are not
-available.  But the code you want to test might depend on them, so what
-can you do?
-
-This is where some helper functions come in handy.  Keep in mind however
-that these functions are not only there for interactive shell usage, but
-also for unit testing and other situations that require a faked request
-context.
-
-Generally it's recommended that you read :doc:`reqcontext` first.
-
-Command Line Interface
-----------------------
-
-Starting with Flask 0.11 the recommended way to work with the shell is the
-``flask shell`` command which does a lot of this automatically for you.
-For instance the shell is automatically initialized with a loaded
-application context.
-
-For more information see :doc:`/cli`.
+    $ flask shell
 
 Creating a Request Context
 --------------------------
+
+``flask shell`` pushes an app context automatically, so :data:`.current_app` and
+:data:`.g` are already available. However, there is no HTTP request being
+handled in the shell, so :data:`.request` and :data:`.session` are not yet
+available.
 
 The easiest way to create a proper request context from the shell is by
 using the :attr:`~flask.Flask.test_request_context` method which creates
@@ -42,15 +24,14 @@ us a :class:`~flask.ctx.RequestContext`:
 
 >>> ctx = app.test_request_context()
 
-Normally you would use the ``with`` statement to make this request object
-active, but in the shell it's easier to use the
-:meth:`~flask.ctx.RequestContext.push` and
-:meth:`~flask.ctx.RequestContext.pop` methods by hand:
+Normally you would use the ``with`` statement to make this context active, but
+in the shell it's easier to call :meth:`~.RequestContext.push` and
+:meth:`~.RequestContext.pop` manually:
 
 >>> ctx.push()
 
-From that point onwards you can work with the request object until you
-call `pop`:
+From that point onwards you can work with the request object until you call
+``pop``:
 
 >>> ctx.pop()
 

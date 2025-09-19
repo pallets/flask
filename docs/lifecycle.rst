@@ -117,15 +117,12 @@ the view function, and pass the return value back to the server. But there are m
 parts that you can use to customize its behavior.
 
 #.  WSGI server calls the Flask object, which calls :meth:`.Flask.wsgi_app`.
-#.  A :class:`.RequestContext` object is created. This converts the WSGI ``environ``
-    dict into a :class:`.Request` object. It also creates an :class:`AppContext` object.
-#.  The :doc:`app context <appcontext>` is pushed, which makes :data:`.current_app` and
-    :data:`.g` available.
+#.  An :class:`.AppContext` object is created. This converts the WSGI ``environ``
+    dict into a :class:`.Request` object.
+#.  The :doc:`app context <appcontext>` is pushed, which makes
+    :data:`.current_app`, :data:`.g`, :data:`.request`, and :data:`.session`
+    available.
 #.  The :data:`.appcontext_pushed` signal is sent.
-#.  The :doc:`request context <reqcontext>` is pushed, which makes :attr:`.request` and
-    :class:`.session` available.
-#.  The session is opened, loading any existing session data using the app's
-    :attr:`~.Flask.session_interface`, an instance of :class:`.SessionInterface`.
 #.  The URL is matched against the URL rules registered with the :meth:`~.Flask.route`
     decorator during application setup. If there is no match, the error - usually a 404,
     405, or redirect - is stored to be handled later.
@@ -141,7 +138,8 @@ parts that you can use to customize its behavior.
     called to handle the error and return a response.
 #.  Whatever returned a response value - a before request function, the view, or an
     error handler, that value is converted to a :class:`.Response` object.
-#.  Any :func:`~.after_this_request` decorated functions are called, then cleared.
+#.  Any :func:`~.after_this_request` decorated functions are called, which can modify
+    the response object. They are then cleared.
 #.  Any :meth:`~.Flask.after_request` decorated functions are called, which can modify
     the response object.
 #.  The session is saved, persisting any modified session data using the app's
@@ -154,13 +152,18 @@ parts that you can use to customize its behavior.
 #.  The response object's status, headers, and body are returned to the WSGI server.
 #.  Any :meth:`~.Flask.teardown_request` decorated functions are called.
 #.  The :data:`.request_tearing_down` signal is sent.
-#.  The request context is popped, :attr:`.request` and :class:`.session` are no longer
-    available.
 #.  Any :meth:`~.Flask.teardown_appcontext` decorated functions are called.
 #.  The :data:`.appcontext_tearing_down` signal is sent.
-#.  The app context is popped, :data:`.current_app` and :data:`.g` are no longer
-    available.
+#.  The app context is popped, :data:`.current_app`, :data:`.g`, :data:`.request`,
+    and :data:`.session` are no longer available.
 #.  The :data:`.appcontext_popped` signal is sent.
+
+When executing a CLI command or plain app context without request data, the same
+order of steps is followed, omitting the steps that refer to the request.
+
+A :class:`Blueprint` can add handlers for these events that are specific to the
+blueprint. The handlers for a blueprint will run if the blueprint
+owns the route that matches the request.
 
 There are even more decorators and customization points than this, but that aren't part
 of every request lifecycle. They're more specific to certain things you might use during

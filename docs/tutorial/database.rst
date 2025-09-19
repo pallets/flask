@@ -60,17 +60,17 @@ response is sent.
         if db is not None:
             db.close()
 
-:data:`g` is a special object that is unique for each request. It is
+:data:`.g` is a special object that is unique for each request. It is
 used to store data that might be accessed by multiple functions during
 the request. The connection is stored and reused instead of creating a
 new connection if ``get_db`` is called a second time in the same
 request.
 
-:data:`current_app` is another special object that points to the Flask
+:data:`.current_app` is another special object that points to the Flask
 application handling the request. Since you used an application factory,
 there is no application object when writing the rest of your code.
 ``get_db`` will be called when the application has been created and is
-handling a request, so :data:`current_app` can be used.
+handling a request, so :data:`.current_app` can be used.
 
 :func:`sqlite3.connect` establishes a connection to the file pointed at
 by the ``DATABASE`` configuration key. This file doesn't have to exist

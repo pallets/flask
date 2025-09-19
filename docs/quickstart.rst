@@ -258,7 +258,7 @@ Why would you want to build URLs using the URL reversing function
 For example, here we use the :meth:`~flask.Flask.test_request_context` method
 to try out :func:`~flask.url_for`. :meth:`~flask.Flask.test_request_context`
 tells Flask to behave as though it's handling a request even while we use a
-Python shell. See :ref:`context-locals`.
+Python shell. See :doc:`/appcontext`.
 
 .. code-block:: python
 
@@ -449,105 +449,58 @@ Here is a basic introduction to how the :class:`~markupsafe.Markup` class works:
 Accessing Request Data
 ----------------------
 
-For web applications it's crucial to react to the data a client sends to
-the server.  In Flask this information is provided by the global
-:class:`~flask.request` object.  If you have some experience with Python
-you might be wondering how that object can be global and how Flask
-manages to still be threadsafe.  The answer is context locals:
+For web applications it's crucial to react to the data a client sends to the
+server. In Flask this information is provided by the global :data:`.request`
+object, which is an instance of :class:`.Request`. This object has many
+attributes and methods to work with the incoming request data, but here is a
+broad overview. First it needs to be imported.
 
-
-.. _context-locals:
-
-Context Locals
-``````````````
-
-.. admonition:: Insider Information
-
-   If you want to understand how that works and how you can implement
-   tests with context locals, read this section, otherwise just skip it.
-
-Certain objects in Flask are global objects, but not of the usual kind.
-These objects are actually proxies to objects that are local to a specific
-context.  What a mouthful.  But that is actually quite easy to understand.
-
-Imagine the context being the handling thread.  A request comes in and the
-web server decides to spawn a new thread (or something else, the
-underlying object is capable of dealing with concurrency systems other
-than threads).  When Flask starts its internal request handling it
-figures out that the current thread is the active context and binds the
-current application and the WSGI environments to that context (thread).
-It does that in an intelligent way so that one application can invoke another
-application without breaking.
-
-So what does this mean to you?  Basically you can completely ignore that
-this is the case unless you are doing something like unit testing.  You
-will notice that code which depends on a request object will suddenly break
-because there is no request object.  The solution is creating a request
-object yourself and binding it to the context.  The easiest solution for
-unit testing is to use the :meth:`~flask.Flask.test_request_context`
-context manager.  In combination with the ``with`` statement it will bind a
-test request so that you can interact with it.  Here is an example::
+.. code-block:: python
 
     from flask import request
 
-    with app.test_request_context('/hello', method='POST'):
-        # now you can do something with the request until the
-        # end of the with block, such as basic assertions:
-        assert request.path == '/hello'
-        assert request.method == 'POST'
+If you have some experience with Python you might be wondering how that object
+can be global when Flask handles multiple requests at a time. The answer is
+that :data:`.request` is actually a proxy, pointing at whatever request is
+currently being handled by a given worker, which is managed interanlly by Flask
+and Python. See :doc:`/appcontext` for much more information.
 
-The other possibility is passing a whole WSGI environment to the
-:meth:`~flask.Flask.request_context` method::
+The current request method is available in the :attr:`~.Request.method`
+attribute. To access form data (data transmitted in a ``POST`` or ``PUT``
+request), use the :attr:`~flask.Request.form` attribute, which behaves like a
+dict.
 
-    with app.request_context(environ):
-        assert request.method == 'POST'
+.. code-block:: python
 
-The Request Object
-``````````````````
-
-The request object is documented in the API section and we will not cover
-it here in detail (see :class:`~flask.Request`). Here is a broad overview of
-some of the most common operations.  First of all you have to import it from
-the ``flask`` module::
-
-    from flask import request
-
-The current request method is available by using the
-:attr:`~flask.Request.method` attribute.  To access form data (data
-transmitted in a ``POST`` or ``PUT`` request) you can use the
-:attr:`~flask.Request.form` attribute.  Here is a full example of the two
-attributes mentioned above::
-
-    @app.route('/login', methods=['POST', 'GET'])
+    @app.route("/login", methods=["GET", "POST"])
     def login():
         error = None
-        if request.method == 'POST':
-            if valid_login(request.form['username'],
-                           request.form['password']):
-                return log_the_user_in(request.form['username'])
+
+        if request.method == "POST":
+            if valid_login(request.form["username"], request.form["password"]):
+                return store_login(request.form["username"])
             else:
-                error = 'Invalid username/password'
-        # the code below is executed if the request method
-        # was GET or the credentials were invalid
-        return render_template('login.html', error=error)
+                error = "Invalid username or password"
 
-What happens if the key does not exist in the ``form`` attribute?  In that
-case a special :exc:`KeyError` is raised.  You can catch it like a
-standard :exc:`KeyError` but if you don't do that, a HTTP 400 Bad Request
-error page is shown instead.  So for many situations you don't have to
-deal with that problem.
+        # Executed if the request method was GET or the credentials were invalid.
+        return render_template("login.html", error=error)
 
-To access parameters submitted in the URL (``?key=value``) you can use the
-:attr:`~flask.Request.args` attribute::
+If the key does not exist in ``form``, a special :exc:`KeyError` is raised. You
+can catch it like a normal ``KeyError``, otherwise it will return a HTTP 400
+Bad Request error page. You can also use the
+:meth:`~werkzeug.datastructures.MultiDict.get` method to get a default
+instead of an error.
+
+To access parameters submitted in the URL (``?key=value``), use the
+:attr:`~.Request.args` attribute. Key errors behave the same as ``form``,
+returning a 400 response if not caught.
+
+.. code-block:: python
 
     searchword = request.args.get('key', '')
 
-We recommend accessing URL parameters with `get` or by catching the
-:exc:`KeyError` because users might change the URL and presenting them a 400
-bad request page in that case is not user friendly.
-
-For a full list of methods and attributes of the request object, head over
-to the :class:`~flask.Request` documentation.
+For a full list of methods and attributes of the request object, see the
+:class:`~.Request` documentation.
 
 
 File Uploads

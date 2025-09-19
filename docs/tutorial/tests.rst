@@ -311,7 +311,7 @@ input and error messages without writing the same code three times.
 
 The tests for the ``login`` view are very similar to those for
 ``register``. Rather than testing the data in the database,
-:data:`session` should have ``user_id`` set after logging in.
+:data:`.session` should have ``user_id`` set after logging in.
 
 .. code-block:: python
     :caption: ``tests/test_auth.py``
@@ -336,10 +336,10 @@ The tests for the ``login`` view are very similar to those for
         assert message in response.data
 
 Using ``client`` in a ``with`` block allows accessing context variables
-such as :data:`session` after the response is returned. Normally,
+such as :data:`.session` after the response is returned. Normally,
 accessing ``session`` outside of a request would raise an error.
 
-Testing ``logout`` is the opposite of ``login``. :data:`session` should
+Testing ``logout`` is the opposite of ``login``. :data:`.session` should
 not contain ``user_id`` after logging out.
 
 .. code-block:: python

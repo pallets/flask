@@ -6,7 +6,7 @@ from jinja2.loaders import BaseLoader
 from werkzeug.routing import RequestRedirect
 
 from .blueprints import Blueprint
-from .globals import request_ctx
+from .globals import _cv_app
 from .sansio.app import App
 
 if t.TYPE_CHECKING:
@@ -136,8 +136,9 @@ def explain_template_loading_attempts(
     info = [f"Locating template {template!r}:"]
     total_found = 0
     blueprint = None
-    if request_ctx and request_ctx.request.blueprint is not None:
-        blueprint = request_ctx.request.blueprint
+
+    if (ctx := _cv_app.get(None)) is not None and ctx.has_request:
+        blueprint = ctx.request.blueprint
 
     for idx, (loader, srcobj, triple) in enumerate(attempts):
         if isinstance(srcobj, App):
