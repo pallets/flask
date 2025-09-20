@@ -9,6 +9,11 @@ Unreleased
     a deprecated alias. If an app context is already pushed, it is not reused
     when dispatching a request. This greatly simplifies the internal code for tracking
     the active context. :issue:`5639`
+-   Many ``Flask`` methods involved in request dispatch now take the current
+    ``AppContext`` as the first parameter, instead of using the proxy objects.
+    If subclasses were overriding these methods, the old signature is detected,
+    shows a deprecation warning, and will continue to work during the
+    deprecation period. :issue:`5815`
 -   ``template_filter``, ``template_test``, and ``template_global`` decorators
     can be used without parentheses. :issue:`5729`
 
