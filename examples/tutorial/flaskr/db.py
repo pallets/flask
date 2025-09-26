@@ -5,8 +5,10 @@ import click
 from flask import current_app
 from flask import g
 
+from flask import Flask
 
-def get_db():
+
+def get_db() -> sqlite3.Connection:
     """Connect to the application's configured database. The connection
     is unique for each request and will be reused if this is called
     again.
@@ -20,7 +22,7 @@ def get_db():
     return g.db
 
 
-def close_db(e=None):
+def close_db(e=None) -> None:
     """If this request connected to the database, close the
     connection.
     """
@@ -30,7 +32,7 @@ def close_db(e=None):
         db.close()
 
 
-def init_db():
+def init_db() -> None:
     """Clear existing data and create new tables."""
     db = get_db()
 
@@ -39,7 +41,7 @@ def init_db():
 
 
 @click.command("init-db")
-def init_db_command():
+def init_db_command() -> None:
     """Clear existing data and create new tables."""
     init_db()
     click.echo("Initialized the database.")
@@ -48,7 +50,7 @@ def init_db_command():
 sqlite3.register_converter("timestamp", lambda v: datetime.fromisoformat(v.decode()))
 
 
-def init_app(app):
+def init_app(app: Flask) -> None:
     """Register database functions with the Flask app. This is called by
     the application factory.
     """

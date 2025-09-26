@@ -1,18 +1,19 @@
 from flask import jsonify
 from flask import render_template
 from flask import request
+from flask import Response
 
 from . import app
 
 
 @app.route("/", defaults={"js": "fetch"})
 @app.route("/<any(xhr, jquery, fetch):js>")
-def index(js):
+def index(js: str) -> str:
     return render_template(f"{js}.html", js=js)
 
 
 @app.route("/add", methods=["POST"])
-def add():
+def add() -> Response:
     a = request.form.get("a", 0, type=float)
     b = request.form.get("b", 0, type=float)
     return jsonify(result=a + b)

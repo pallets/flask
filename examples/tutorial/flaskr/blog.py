@@ -1,3 +1,7 @@
+import sqlite3
+from typing import Optional, Union
+
+from werkzeug.wrappers import Response
 from flask import Blueprint
 from flask import flash
 from flask import g
@@ -14,7 +18,7 @@ bp = Blueprint("blog", __name__)
 
 
 @bp.route("/")
-def index():
+def index() -> str:
     """Show all the posts, most recent first."""
     db = get_db()
     posts = db.execute(
@@ -25,7 +29,7 @@ def index():
     return render_template("blog/index.html", posts=posts)
 
 
-def get_post(id, check_author=True):
+def get_post(id: int, check_author: bool = True) -> Optional[sqlite3.Row]:
     """Get a post and its author by id.
 
     Checks that the id exists and optionally that the current user is
@@ -59,7 +63,7 @@ def get_post(id, check_author=True):
 
 @bp.route("/create", methods=("GET", "POST"))
 @login_required
-def create():
+def create() -> Union[str, Response]:
     """Create a new post for the current user."""
     if request.method == "POST":
         title = request.form["title"]
@@ -85,7 +89,7 @@ def create():
 
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
 @login_required
-def update(id):
+def update(id: int) -> Union[str, Response]:
     """Update a post if the current user is the author."""
     post = get_post(id)
 
@@ -112,7 +116,7 @@ def update(id):
 
 @bp.route("/<int:id>/delete", methods=("POST",))
 @login_required
-def delete(id):
+def delete(id: int) -> Union[str, Response]:
     """Delete a post.
 
     Ensures that the post exists and that the logged in user is the
