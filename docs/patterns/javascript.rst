@@ -136,7 +136,8 @@ In general, prefer sending request data as form data, as would be used
 when submitting an HTML form. JSON can represent more complex data, but
 unless you need that it's better to stick with the simpler format. When
 sending JSON data, the ``Content-Type: application/json`` header must be
-sent as well, otherwise Flask will return a 400 error.
+sent as well, otherwise Flask will return a 415 Unsupported Media Type
+error.
 
 .. code-block:: javascript
 
