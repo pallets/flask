@@ -111,7 +111,7 @@ categories.  The loop looks slightly different in that situation then:
 
    {% with messages = get_flashed_messages(with_categories=true) %}
      {% if messages %}
-       <ul class=flashes>
+       <ul class="flashes">
        {% for category, message in messages %}
          <li class="{{ category }}">{{ message }}</li>
        {% endfor %}
