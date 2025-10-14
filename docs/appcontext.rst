@@ -141,8 +141,8 @@ real object, rather than the proxy. Use the
     my_signal.send(app)
 
 
-Lifcycle of the Context
------------------------
+Lifecycle of the Context
+------------------------
 
 Flask dispatches a request in multiple stages which can affect the request,
 response, and how errors are handled. See :doc:`/lifecycle` for a list of all
