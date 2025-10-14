@@ -178,10 +178,10 @@ etc. Context locals are specific to the worker handling the activity, such as a
 thread, process, coroutine, or greenlet.
 
 The context and proxies help solve two development issues: circular imports, and
-passing around global data. :data:`.current_app: can be used to access the
+passing around global data. :data:`.current_app` can be used to access the
 application object without needing to import the app object directly, avoiding
-circular import issues. :data:`.request`, :data:`.session`, and :data`.g` can be
-imported to access the current data for the request, rather than needing to
+circular import issues. :data:`.request`, :data:`.session`, and :data:`.g` can
+be imported to access the current data for the request, rather than needing to
 pass them as arguments through every single function in your project.
 
 
