@@ -131,7 +131,9 @@ environment.
 
 PowerShell scripts such as the venv activation script are blocked by default in Windows.
 To fix this, run the Set-ExecutionPolicy command to set the policy to AllSigned or another policy that allows scripts.
-Learn more at https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.5
+Learn more at `this Microsoft Learn page <powershell>`_.
+
+.. _powershell: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.5
 
 
 Install Flask
