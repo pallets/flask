@@ -129,6 +129,8 @@ Before you work on your project, activate the corresponding environment:
 Your shell prompt will change to show the name of the activated
 environment.
 
+In windows, PowerShell scripts such as the venv activation script are blocked by default. To fix this, you should open PowerShell and run the command Set-ExecutionPolicy AllSigned or another policy that allows PowerShell scripts. Learn more at https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.5
+
 
 Install Flask
 -------------
