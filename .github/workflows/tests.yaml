@@ -13,15 +13,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - {python: '3.14t'}
+          - {python: '3.14'}
+          - {name: Windows, python: '3.14', os: windows-latest}
+          - {name: Mac, python: '3.14', os: macos-latest}
           - {python: '3.13'}
-          - {name: Windows, python: '3.13', os: windows-latest}
-          - {name: Mac, python: '3.13', os: macos-latest}
           - {python: '3.12'}
           - {python: '3.11'}
           - {python: '3.10'}
           - {python: '3.9'}
           - {name: PyPy, python: 'pypy-3.11', tox: pypy3.11}
-          - {name: Minimum Versions, python: '3.13', tox: tests-min}
+          - {name: Minimum Versions, python: '3.14t', tox: tests-min}
           - {name: Development Versions, python: '3.10', tox: tests-dev}
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
