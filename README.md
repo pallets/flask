@@ -341,11 +341,11 @@ pip install flask flask-sqlalchemy flask-wtf flask-login flask-mail
 
 We welcome contributions from the community! Please see our [contribution guide][contrib] for information on:
 
-- Reporting bugs and issues  
-- Requesting new features  
-- Asking or answering questions  
-- Submitting pull requests  
-- Code style and guidelines  
+- Reporting bugs and issues
+- Requesting new features
+- Asking or answering questions
+- Submitting pull requests
+- Code style and guidelines
 
 [contrib]: https://palletsprojects.com/contributing/
 
@@ -369,12 +369,12 @@ Complete documentation is available at [https://flask.palletsprojects.com/](http
 
 Popular Flask extensions:
 
-- **Flask-SQLAlchemy** – Database integration  
-- **Flask-WTF** – Form handling  
-- **Flask-Login** – User session management  
-- **Flask-Mail** – Email support  
-- **Flask-RESTful** – Building REST APIs  
-- **Flask-SocketIO** – WebSocket support  
+- **Flask-SQLAlchemy** – Database integration
+- **Flask-WTF** – Form handling
+- **Flask-Login** – User session management
+- **Flask-Mail** – Email support
+- **Flask-RESTful** – Building REST APIs
+- **Flask-SocketIO** – WebSocket support
 
 ---
 
