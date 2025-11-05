@@ -183,7 +183,7 @@ For template tests, use the :meth:`~.Flask.template_test` decorator or
 method.
 
 The same methods also exist on :class:`.Blueprint`, prefixed with ``app_`` to
-indicate that the registered functions will be avaialble to all templates, not
+indicate that the registered functions will be available to all templates, not
 only when rendering from within the blueprint.
 
 The Jinja environment is also available as :attr:`~.Flask.jinja_env`. It may be
