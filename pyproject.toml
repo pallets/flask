@@ -166,6 +166,9 @@ select = [
 force-single-line = true
 order-by-type = false
 
+[tool.codespell]
+ignore-words-list = "te"
+
 [tool.tox]
 env_list = [
     "py3.14", "py3.14t",
