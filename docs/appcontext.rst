@@ -119,7 +119,7 @@ The context will have the same lifetime as an activity, such as a request, CLI
 command, or ``with`` block. Various callbacks and signals registered with the
 app will be run during the context.
 
-When a Flask application handles a request, it pushes a requet context
+When a Flask application handles a request, it pushes a request context
 to set the active application and request data. When it handles a CLI command,
 it pushes an app context to set the active application. When the activity ends,
 it pops that context. Proxy objects like :data:`.request`, :data:`.session`,
