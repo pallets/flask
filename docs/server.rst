@@ -112,13 +112,13 @@ Flask uses one of two reloader backends:
     Watches for file changes using your operating system's native file system events.
     This is faster and more efficient than polling. Flask automatically uses watchdog
     if it's installed.
-    
+
     Install it for better performance:
-    
+
     .. code-block:: text
-    
+
         $ pip install watchdog
-    
+
     The text in parentheses (like ``inotify``, ``windowsapi``, or ``kqueue``) shows
     which operating system API watchdog is using. This is informational only and varies
     by platform.
@@ -135,7 +135,7 @@ reloader (for example, for debugging), you can do so:
 
     app.run(debug=True, reloader_type='stat')
 
-For more technical details about the reloader implementation, see the 
+For more technical details about the reloader implementation, see the
 `Werkzeug serving documentation
 <https://werkzeug.palletsprojects.com/en/stable/serving/>`_.
 
