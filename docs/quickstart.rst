@@ -116,6 +116,11 @@ To enable debug mode, use the ``--debug`` option.
      * Debugger is active!
      * Debugger PIN: nnn-nnn-nnn
 
+.. note::
+    When the reloader starts, you'll see a message like ``Restarting with stat`` or 
+    ``Restarting with watchdog``. This indicates which file monitoring backend is being 
+    used. See :doc:`server` for more details about reloader types.
+
 See also:
 
 -   :doc:`/server` and :doc:`/cli` for information about running in debug mode.

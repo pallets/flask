@@ -94,6 +94,52 @@ site is accessed. This is intended to make errors more visible initially
 while still allowing the server to handle errors on reload.
 
 
+Understanding the Reloader
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When running Flask in debug mode, the development server automatically reloads when you
+change your code. You'll see a message indicating how the reloader is monitoring for
+changes:
+
+.. code-block:: text
+
+    * Restarting with stat
+    * Restarting with watchdog (inotify)
+
+Flask uses one of two reloader backends:
+
+**watchdog** - Efficient file system monitoring
+    Watches for file changes using your operating system's native file system events.
+    This is faster and more efficient than polling. Flask automatically uses watchdog
+    if it's installed.
+    
+    Install it for better performance:
+    
+    .. code-block:: text
+    
+        $ pip install watchdog
+    
+    The text in parentheses (like ``inotify``, ``windowsapi``, or ``kqueue``) shows
+    which operating system API watchdog is using. This is informational only and varies
+    by platform.
+
+**stat** - Fallback polling method
+    Checks files periodically for changes. This is the default when watchdog is not
+    installed. It works everywhere but uses more resources.
+
+In most cases, you don't need to worry about which reloader is being used - Flask
+chooses the best option automatically. However, if you need to force a specific
+reloader (for example, for debugging), you can do so:
+
+.. code-block:: python
+
+    app.run(debug=True, reloader_type='stat')
+
+For more technical details about the reloader implementation, see the 
+`Werkzeug serving documentation
+<https://werkzeug.palletsprojects.com/en/stable/serving/>`_.
+
+
 In Code
 -------
 
