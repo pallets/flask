@@ -860,7 +860,7 @@ def _validate_key(ctx: click.Context, param: click.Parameter, value: t.Any) -> t
     else:
         if (
             cert is not None
-            and cert != click._utils.UNSET
+            and cert != click.utils.UNSET
             and not (is_adhoc or is_context)
         ):
             raise click.BadParameter('Required when using "--cert".', ctx, param)
