@@ -6,19 +6,25 @@ Follow :doc:`installation` to set up a project and install Flask first.
 
 
 A Minimal Application
----------------------
+=====================
 
-A minimal Flask application looks something like this:
+A minimal Flask application looks something like this.
 
-.. code-block:: python
+Save this code in a file named ``app.py``::
 
     from flask import Flask
 
+    # Create a Flask application instance
     app = Flask(__name__)
 
-    @app.route("/")
-    def hello_world():
-        return "<p>Hello, World!</p>"
+    @app.route('/')
+    def hello():
+        return 'Hello, World!'
+
+    # Run the application
+    if __name__ == '__main__':
+        app.run(debug=True)
+
 
 So what did that code do?
 
