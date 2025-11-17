@@ -13,10 +13,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {python: '3.14', tox: 'py3.14,py3.14t'}
+          - {python: '3.14'}
+          - {python: '3.14t'}
           - {name: Windows, python: '3.14', os: windows-latest}
           - {name: Mac, python: '3.14', os: macos-latest}
-          - {python: '3.13', tox: 'py3.13,py3.13t'}
+          - {python: '3.13'}
+          - {python: '3.13t'}
           - {python: '3.12'}
           - {python: '3.11'}
           - {python: '3.10'}
