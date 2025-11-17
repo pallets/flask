@@ -7,14 +7,13 @@ from jinja2 import Environment as BaseEnvironment
 from jinja2 import Template
 from jinja2 import TemplateNotFound
 
-from .globals import _cv_app
-from .globals import current_app
+from .ctx import AppContext
+from .globals import app_ctx
 from .helpers import stream_with_context
 from .signals import before_render_template
 from .signals import template_rendered
 
 if t.TYPE_CHECKING:  # pragma: no cover
-    from .app import Flask
     from .sansio.app import App
     from .sansio.scaffold import Scaffold
 
@@ -23,15 +22,12 @@ def _default_template_ctx_processor() -> dict[str, t.Any]:
     """Default template context processor.  Injects `request`,
     `session` and `g`.
     """
-    ctx = _cv_app.get(None)
-    rv: dict[str, t.Any] = {}
+    ctx = app_ctx._get_current_object()
+    rv: dict[str, t.Any] = {"g": ctx.g}
 
-    if ctx is not None:
-        rv["g"] = ctx.g
-
-        if ctx.has_request:
-            rv["request"] = ctx.request
-            rv["session"] = ctx.session
+    if ctx.has_request:
+        rv["request"] = ctx.request
+        rv["session"] = ctx.session
 
     return rv
 
@@ -123,8 +119,9 @@ class DispatchingJinjaLoader(BaseLoader):
         return list(result)
 
 
-def _render(app: Flask, template: Template, context: dict[str, t.Any]) -> str:
-    app.update_template_context(context)
+def _render(ctx: AppContext, template: Template, context: dict[str, t.Any]) -> str:
+    app = ctx.app
+    app.update_template_context(ctx, context)
     before_render_template.send(
         app, _async_wrapper=app.ensure_sync, template=template, context=context
     )
@@ -145,9 +142,9 @@ def render_template(
         a list is given, the first name to exist will be rendered.
     :param context: The variables to make available in the template.
     """
-    app = current_app._get_current_object()
-    template = app.jinja_env.get_or_select_template(template_name_or_list)
-    return _render(app, template, context)
+    ctx = app_ctx._get_current_object()
+    template = ctx.app.jinja_env.get_or_select_template(template_name_or_list)
+    return _render(ctx, template, context)
 
 
 def render_template_string(source: str, **context: t.Any) -> str:
@@ -157,15 +154,16 @@ def render_template_string(source: str, **context: t.Any) -> str:
     :param source: The source code of the template to render.
     :param context: The variables to make available in the template.
     """
-    app = current_app._get_current_object()
-    template = app.jinja_env.from_string(source)
-    return _render(app, template, context)
+    ctx = app_ctx._get_current_object()
+    template = ctx.app.jinja_env.from_string(source)
+    return _render(ctx, template, context)
 
 
 def _stream(
-    app: Flask, template: Template, context: dict[str, t.Any]
+    ctx: AppContext, template: Template, context: dict[str, t.Any]
 ) -> t.Iterator[str]:
-    app.update_template_context(context)
+    app = ctx.app
+    app.update_template_context(ctx, context)
     before_render_template.send(
         app, _async_wrapper=app.ensure_sync, template=template, context=context
     )
@@ -193,9 +191,9 @@ def stream_template(
 
     .. versionadded:: 2.2
     """
-    app = current_app._get_current_object()
-    template = app.jinja_env.get_or_select_template(template_name_or_list)
-    return _stream(app, template, context)
+    ctx = app_ctx._get_current_object()
+    template = ctx.app.jinja_env.get_or_select_template(template_name_or_list)
+    return _stream(ctx, template, context)
 
 
 def stream_template_string(source: str, **context: t.Any) -> t.Iterator[str]:
@@ -208,6 +206,6 @@ def stream_template_string(source: str, **context: t.Any) -> t.Iterator[str]:
 
     .. versionadded:: 2.2
     """
-    app = current_app._get_current_object()
-    template = app.jinja_env.from_string(source)
-    return _stream(app, template, context)
+    ctx = app_ctx._get_current_object()
+    template = ctx.app.jinja_env.from_string(source)
+    return _stream(ctx, template, context)
