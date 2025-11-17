@@ -27,7 +27,7 @@ class SessionMixin(MutableMapping[str, t.Any]):
     @property
     def permanent(self) -> bool:
         """This reflects the ``'_permanent'`` key in the dict."""
-        return self.get("_permanent", False)
+        return self.get("_permanent", False)  # type: ignore[no-any-return]
 
     @permanent.setter
     def permanent(self, value: bool) -> None:
