@@ -111,6 +111,9 @@ filterwarnings = [
     "error",
 ]
 
+[tool.codespell]
+ignore-words-list = "te"
+
 [tool.coverage.run]
 branch = true
 source = ["flask", "tests"]
