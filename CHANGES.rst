@@ -16,6 +16,8 @@ Unreleased
     deprecation period. :issue:`5815`
 -   ``template_filter``, ``template_test``, and ``template_global`` decorators
     can be used without parentheses. :issue:`5729`
+-   Documentation builds now include copy-to-clipboard buttons for code blocks
+    via ``sphinx-copybutton``. :issue:`0`
 
 
 Version 3.1.2

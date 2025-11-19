@@ -13,6 +13,9 @@ Copy-to-Clipboard Buttons
 The Flask docs are built with Sphinx. Follow the steps below to add a copy
 button to every code block by using the ``sphinx-copybutton`` extension.
 
+.. versionchanged:: 3.2
+   Added copy button setup instructions for the documentation build.
+
 1. Install the extension in your activated virtual environment:
 
    .. code-block:: console
