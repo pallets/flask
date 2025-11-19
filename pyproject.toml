@@ -42,6 +42,7 @@ dev = [
 docs = [
     "pallets-sphinx-themes",
     "sphinx",
+    "sphinx-copybutton",
     "sphinx-tabs",
     "sphinxcontrib-log-cabinet",
 ]

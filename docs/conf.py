@@ -16,6 +16,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.extlinks",
     "sphinx.ext.intersphinx",
+    "sphinx_copybutton",
     "sphinxcontrib.log_cabinet",
     "sphinx_tabs.tabs",
     "pallets_sphinx_themes",
@@ -38,6 +39,9 @@ intersphinx_mapping = {
     "wtforms": ("https://wtforms.readthedocs.io/", None),
     "blinker": ("https://blinker.readthedocs.io/", None),
 }
+copybutton_prompt_text = r">>> |\.\.\. |\$ "
+copybutton_prompt_is_regexp = True
+copybutton_only_copy_prompt_lines = False
 
 # HTML -----------------------------------------------------------------
 
