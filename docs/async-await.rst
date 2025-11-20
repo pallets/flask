@@ -29,6 +29,17 @@ well as all the HTTP method handlers in views that inherit from the
     runtime, greenlet>=1.0 is required. When using PyPy, PyPy>=7.3.7 is
     required.
 
+    **Compatibility with Gevent**
+
+    Flask's asynchronous support relies on the ``asgiref`` library, which is
+    not compatible with ``gevent``. When using ``gevent`` or ``eventlet`` to
+    serve a Flask application or patch the runtime, asynchronous operations
+    may not function as expected.
+
+    If you require asynchronous support, consider using an ASGI server like
+    ``uvicorn`` or ``hypercorn``, which are designed to work seamlessly with
+    Flask's async capabilities.
+
 
 Performance
 -----------
