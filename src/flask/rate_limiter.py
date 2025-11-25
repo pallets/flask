@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from collections import defaultdict, deque
+from collections import defaultdict
+from collections import deque
 from threading import Lock
 from time import monotonic
-from typing import Deque, DefaultDict, Tuple
 
 __all__ = ("MemoryRateLimiter",)
 
@@ -24,10 +24,10 @@ class MemoryRateLimiter:
 
         self.limit = limit
         self.window = window
-        self._requests: DefaultDict[str, Deque[float]] = defaultdict(deque)
+        self._requests: defaultdict[str, deque[float]] = defaultdict(deque)
         self._lock = Lock()
 
-    def hit(self, key: str) -> Tuple[bool, float | None]:
+    def hit(self, key: str) -> tuple[bool, float | None]:
         """Record a hit for *key*.
 
         Returns a tuple ``(allowed, retry_after)`` where *allowed* indicates if
@@ -51,4 +51,3 @@ class MemoryRateLimiter:
             bucket.append(now)
 
         return True, None
-

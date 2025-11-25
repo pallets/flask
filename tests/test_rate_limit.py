@@ -34,4 +34,3 @@ def test_rate_limit_blocks_after_threshold():
 
     rv = client.get("/")
     assert rv.status_code == 429
-
