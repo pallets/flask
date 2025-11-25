@@ -19,6 +19,7 @@ from werkzeug.datastructures import ImmutableDict
 from werkzeug.exceptions import BadRequestKeyError
 from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import InternalServerError
+from werkzeug.exceptions import TooManyRequests
 from werkzeug.routing import BuildError
 from werkzeug.routing import MapAdapter
 from werkzeug.routing import RequestRedirect
@@ -40,6 +41,7 @@ from .helpers import get_debug_flag
 from .helpers import get_flashed_messages
 from .helpers import get_load_dotenv
 from .helpers import send_from_directory
+from .rate_limiter import MemoryRateLimiter
 from .sansio.app import App
 from .sessions import SecureCookieSessionInterface
 from .sessions import SessionInterface
@@ -233,6 +235,9 @@ class Flask(App):
             "TEMPLATES_AUTO_RELOAD": None,
             "MAX_COOKIE_SIZE": 4093,
             "PROVIDE_AUTOMATIC_OPTIONS": True,
+            "RATELIMIT_ENABLED": False,
+            "RATELIMIT_REQUESTS": 60,
+            "RATELIMIT_WINDOW": 60,
         }
     )
 
@@ -342,6 +347,9 @@ class Flask(App):
         # the app's commands to another CLI tool.
         self.cli.name = self.name
 
+        self._rate_limiter: MemoryRateLimiter | None = None
+        self._rate_limiter_settings: tuple[int, float] | None = None
+
         # Add a static route using the provided static_url_path, static_host,
         # and static_folder if there is a configured static_folder.
         # Note we do this without checking if static_folder exists.
@@ -409,6 +417,59 @@ class Flask(App):
         return send_from_directory(
             t.cast(str, self.static_folder), filename, max_age=max_age
         )
+
+    def _get_rate_limiter(self) -> MemoryRateLimiter | None:
+        if not self.config.get("RATELIMIT_ENABLED"):
+            return None
+
+        limit = self.config.get("RATELIMIT_REQUESTS")
+        window = self.config.get("RATELIMIT_WINDOW")
+
+        if not isinstance(limit, int) or limit <= 0:
+            return None
+
+        if not isinstance(window, (int, float)) or window <= 0:
+            return None
+
+        settings = (limit, float(window))
+
+        if self._rate_limiter is None or self._rate_limiter_settings != settings:
+            self._rate_limiter = MemoryRateLimiter(limit, float(window))
+            self._rate_limiter_settings = settings
+
+        return self._rate_limiter
+
+    def _build_rate_limit_key(self, ctx: AppContext) -> str | None:
+        req = ctx.request
+
+        if req.access_route:
+            return req.access_route[0]
+
+        if req.remote_addr:
+            return req.remote_addr
+
+        host = req.environ.get("REMOTE_ADDR")
+
+        if host is None:
+            host = get_host(req.environ)
+
+        return host
+
+    def _enforce_rate_limit(self, ctx: AppContext) -> None:
+        limiter = self._get_rate_limiter()
+
+        if limiter is None:
+            return
+
+        key = self._build_rate_limit_key(ctx)
+
+        if key is None:
+            return
+
+        allowed, _ = limiter.hit(key)
+
+        if not allowed:
+            raise TooManyRequests(description="Rate limit exceeded. Try again later.")
 
     def open_resource(
         self, resource: str, mode: str = "rb", encoding: str | None = None
@@ -998,6 +1059,7 @@ class Flask(App):
         self._got_first_request = True
 
         try:
+            self._enforce_rate_limit(ctx)
             request_started.send(self, _async_wrapper=self.ensure_sync)
             rv = self.preprocess_request(ctx)
             if rv is None:
