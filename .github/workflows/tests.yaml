@@ -18,7 +18,6 @@ jobs:
           - {name: Windows, python: '3.14', os: windows-latest}
           - {name: Mac, python: '3.14', os: macos-latest}
           - {python: '3.13'}
-          - {python: '3.13t'}
           - {python: '3.12'}
           - {python: '3.11'}
           - {python: '3.10'}
