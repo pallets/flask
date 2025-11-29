@@ -13,3 +13,10 @@ def test_should_ignore_error_multiple_exceptions(error):
     app = Flask(__name__)
     with pytest.warns(DeprecationWarning):
         assert app.should_ignore_error(error) is False
+
+def test_should_ignore_error_returns_false():
+    """Verify that should_ignore_error always returns False."""
+    app = Flask(__name__)
+    with pytest.warns(DeprecationWarning):
+        result = app.should_ignore_error(Exception())
+        assert result is False
