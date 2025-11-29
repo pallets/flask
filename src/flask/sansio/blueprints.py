@@ -291,7 +291,9 @@ class Blueprint(Scaffold):
         state = self.make_setup_state(app, options, first_bp_registration)
 
         self._register_static(state)
-        self._merge_blueprint_funcs_if_needed(app, name, first_bp_registration, first_name_registration)
+        self._merge_blueprint_funcs_if_needed(
+            app, name, first_bp_registration, first_name_registration
+        )
         self._run_deferred_functions(state)
         self._register_cli(app, name, options)
         self._register_nested_blueprints(app, state, name)
@@ -362,7 +364,7 @@ class Blueprint(Scaffold):
 
     def _compute_nested_blueprint_options(
         self,
-        blueprint: "Blueprint",
+        blueprint: Blueprint,
         state: BlueprintSetupState,
         bp_options: dict[str, t.Any],
         name: str,
@@ -399,7 +401,6 @@ class Blueprint(Scaffold):
             bp_options["url_prefix"] = state.url_prefix
 
         return bp_options
-
 
     def _merge_blueprint_funcs(self, app: App, name: str) -> None:
         def extend(
