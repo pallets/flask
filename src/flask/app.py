@@ -12,6 +12,7 @@ from inspect import iscoroutinefunction
 from itertools import chain
 from types import TracebackType
 from urllib.parse import quote as _url_quote
+import warnings
 
 import click
 from werkzeug.datastructures import Headers
@@ -1589,3 +1590,19 @@ class Flask(App):
         wrapped to apply middleware.
         """
         return self.wsgi_app(environ, start_response)
+
+    def should_ignore_error(self, error):
+        """
+        Deprecated: this method is no longer meaningful in Flask's current
+        context preservation design. It will be removed in a future release.
+
+        Kept for backwards compatibility — it always returns False.
+        """
+        import warnings
+        warnings.warn(
+            "Flask.should_ignore_error is deprecated and will be removed in a "
+            "future release. It currently always returns False and should not be used.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return False
