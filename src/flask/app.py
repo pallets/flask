@@ -5,6 +5,7 @@ import inspect
 import os
 import sys
 import typing as t
+import warnings
 import weakref
 from datetime import timedelta
 from functools import update_wrapper
@@ -12,7 +13,6 @@ from inspect import iscoroutinefunction
 from itertools import chain
 from types import TracebackType
 from urllib.parse import quote as _url_quote
-import warnings
 
 import click
 from werkzeug.datastructures import Headers
@@ -252,8 +252,6 @@ class Flask(App):
     session_interface: SessionInterface = SecureCookieSessionInterface()
 
     def __init_subclass__(cls, **kwargs: t.Any) -> None:
-        import warnings
-
         # These method signatures were updated to take a ctx param. Detect
         # overridden methods in subclasses that still have the old signature.
         # Show a deprecation warning and wrap to call with correct args.
@@ -1598,7 +1596,6 @@ class Flask(App):
 
         Kept for backwards compatibility — it always returns False.
         """
-        import warnings
         warnings.warn(
             "Flask.should_ignore_error is deprecated and will be removed in a "
             "future release. It currently always returns False and should not be used.",
