@@ -37,3 +37,20 @@ from .templating import stream_template as stream_template
 from .templating import stream_template_string as stream_template_string
 from .wrappers import Request as Request
 from .wrappers import Response as Response
+
+# Flask Scheduler Extension
+try:
+    from .scheduler import Scheduler as Scheduler
+    from .scheduler import Task as Task
+    from .scheduler import TaskStatus as TaskStatus
+    from .scheduler import TaskType as TaskType
+    from .scheduler import interval_task as interval_task
+    from .scheduler import delay_task as delay_task
+    from .scheduler import cron_task as cron_task
+    from .scheduler import TaskStorage as TaskStorage
+    from .scheduler import SchedulerError as SchedulerError
+    from .scheduler import TaskError as TaskError
+    from .scheduler import CronParseError as CronParseError
+except ImportError:
+    # 如果scheduler模块不可用，静默处理
+    pass
