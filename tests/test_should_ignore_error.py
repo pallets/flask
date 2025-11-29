@@ -20,3 +20,10 @@ def test_should_ignore_error_returns_false():
     with pytest.warns(DeprecationWarning):
         result = app.should_ignore_error(Exception())
         assert result is False
+
+def test_should_ignore_error_warning_repeated_calls():
+    """Verify repeated calls each trigger a DeprecationWarning."""
+    app = Flask(__name__)
+    for _ in range(3):
+        with pytest.warns(DeprecationWarning):
+            assert app.should_ignore_error(Exception()) is False
