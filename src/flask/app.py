@@ -92,6 +92,7 @@ def remove_ctx(f: F) -> F:
     This is used when a method signature has been updated to take 'ctx',
     but the overridden method in a subclass has not.
     """
+
     def wrapper(self: Flask, *args: t.Any, **kwargs: t.Any) -> t.Any:
         if args and isinstance(args[0], AppContext):
             args = args[1:]
@@ -109,6 +110,7 @@ def add_ctx(f: F) -> F:
     This is used when a method calls a super method that expects 'ctx',
     but the subclass method does not provide it.
     """
+
     def wrapper(self: Flask, *args: t.Any, **kwargs: t.Any) -> t.Any:
         if not args:
             args = (app_ctx._get_current_object(),)

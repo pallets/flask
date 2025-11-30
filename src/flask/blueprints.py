@@ -31,6 +31,7 @@ class Blueprint(SansioBlueprint):
 
     See :doc:`/blueprints` for more information.
     """
+
     def __init__(
         self,
         name: str,
