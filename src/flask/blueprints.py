@@ -16,6 +16,21 @@ if t.TYPE_CHECKING:  # pragma: no cover
 
 
 class Blueprint(SansioBlueprint):
+    """Represents a blueprint, a collection of routes and other
+    app-related functions that can be registered on a real application
+    later.
+
+    A blueprint is an object that allows defining application functions
+    without requiring an application object ahead of time. It uses the
+    same decorators as :class:`~flask.Flask`, but defers the need for an
+    application by recording them for later registration.
+
+    Decorating a function with a blueprint creates a deferred function
+    that is called with :class:`~flask.BlueprintSetupState` when the
+    blueprint is registered on an application.
+
+    See :doc:`/blueprints` for more information.
+    """
     def __init__(
         self,
         name: str,
@@ -77,7 +92,7 @@ class Blueprint(SansioBlueprint):
         if isinstance(value, timedelta):
             return int(value.total_seconds())
 
-        return value  # type: ignore[no-any-return]
+        return t.cast(int, value)
 
     def send_static_file(self, filename: str) -> Response:
         """The view function used to serve files from

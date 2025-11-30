@@ -70,6 +70,11 @@ T_template_test = t.TypeVar("T_template_test", bound=ft.TemplateTestCallable)
 
 
 def _make_timedelta(value: timedelta | int | None) -> timedelta | None:
+    """Coerce the value to a timedelta.
+
+    :param value: The value to coerce. Can be a timedelta, an integer
+        (seconds), or None.
+    """
     if value is None or isinstance(value, timedelta):
         return value
 
@@ -82,6 +87,11 @@ F = t.TypeVar("F", bound=t.Callable[..., t.Any])
 # Other methods may call the overridden method with the new ctx arg. Remove it
 # and call the method with the remaining args.
 def remove_ctx(f: F) -> F:
+    """Decorator that removes the 'ctx' argument from the arguments list.
+
+    This is used when a method signature has been updated to take 'ctx',
+    but the overridden method in a subclass has not.
+    """
     def wrapper(self: Flask, *args: t.Any, **kwargs: t.Any) -> t.Any:
         if args and isinstance(args[0], AppContext):
             args = args[1:]
@@ -94,6 +104,11 @@ def remove_ctx(f: F) -> F:
 # The overridden method may call super().base_method without the new ctx arg.
 # Add it to the args for the call.
 def add_ctx(f: F) -> F:
+    """Decorator that adds the current context to the arguments list.
+
+    This is used when a method calls a super method that expects 'ctx',
+    but the subclass method does not provide it.
+    """
     def wrapper(self: Flask, *args: t.Any, **kwargs: t.Any) -> t.Any:
         if not args:
             args = (app_ctx._get_current_object(),)
@@ -354,11 +369,18 @@ class Flask(App):
             # Use a weakref to avoid creating a reference cycle between the app
             # and the view function (see #3761).
             self_ref = weakref.ref(self)
+
+            def static_view_func(**kw: t.Any) -> Response:
+                app = self_ref()
+                if app is None:
+                    raise RuntimeError("The app has been garbage collected.")
+                return app.send_static_file(**kw)
+
             self.add_url_rule(
                 f"{self.static_url_path}/<path:filename>",
                 endpoint="static",
                 host=static_host,
-                view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore # noqa: B950
+                view_func=static_view_func,
             )
 
     def get_send_file_max_age(self, filename: str | None) -> int | None:
@@ -386,7 +408,7 @@ class Flask(App):
         if isinstance(value, timedelta):
             return int(value.total_seconds())
 
-        return value  # type: ignore[no-any-return]
+        return t.cast(int, value)
 
     def send_static_file(self, filename: str) -> Response:
         """The view function used to serve files from
@@ -580,7 +602,8 @@ class Flask(App):
             or request.routing_exception.code in {307, 308}
             or request.method in {"GET", "HEAD", "OPTIONS"}
         ):
-            raise request.routing_exception  # type: ignore[misc]
+            assert request.routing_exception is not None
+            raise request.routing_exception
 
         from .debughelpers import FormDataRoutingRedirect
 

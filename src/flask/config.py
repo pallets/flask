@@ -18,7 +18,12 @@ T = t.TypeVar("T")
 
 
 class ConfigAttribute(t.Generic[T]):
-    """Makes an attribute forward to the config"""
+    """Makes an attribute forward to the config.
+
+    This descriptor allows accessing configuration values as attributes on
+    the application object. It can optionally convert the value using a
+    converter function.
+    """
 
     def __init__(
         self, name: str, get_converter: t.Callable[[t.Any], T] | None = None
