@@ -1,13 +1,3 @@
-"""
-Refactored convenience export module for the flask package.
-
-Principais mudanças:
-- Removidos aliases redundantes do tipo `from .module import Name as Name`.
-- Agrupados imports relacionados em blocos multi-linha legíveis.
-- Adicionado __all__ explícito para indicar as exportações públicas do pacote
-  (isso ajuda linters a não reclamarem de "imported but unused").
-- Comentário explicando propósito do módulo.
-"""
 
 from . import json
 from .app import Flask
