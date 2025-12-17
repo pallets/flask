@@ -55,6 +55,13 @@ class View:
     #: ``add_url_rule`` by default.
     provide_automatic_options: t.ClassVar[bool | None] = None
 
+    #: Control whether CSRF protection is enabled for this view.
+    #: Uses the same default (``CSRF_PROTECTION`` config) as ``route`` and
+    #: ``add_url_rule`` by default.
+    #:
+    #: .. versionadded:: 3.2
+    csrf_protection: t.ClassVar[bool | None] = None
+
     #: A list of decorators to apply, in order, to the generated view
     #: function. Remember that ``@decorator`` syntax is applied bottom
     #: to top, so the first decorator in the list would be the bottom
@@ -132,6 +139,7 @@ class View:
         view.__module__ = cls.__module__
         view.methods = cls.methods  # type: ignore
         view.provide_automatic_options = cls.provide_automatic_options  # type: ignore
+        view.csrf_protection = cls.csrf_protection  # type: ignore
         return view
 
 

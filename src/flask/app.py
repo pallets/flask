@@ -12,11 +12,13 @@ from inspect import iscoroutinefunction
 from itertools import chain
 from types import TracebackType
 from urllib.parse import quote as _url_quote
+from urllib.parse import urlparse
 
 import click
 from werkzeug.datastructures import Headers
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.exceptions import BadRequestKeyError
+from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import InternalServerError
 from werkzeug.routing import BuildError
@@ -233,6 +235,9 @@ class Flask(App):
             "TEMPLATES_AUTO_RELOAD": None,
             "MAX_COOKIE_SIZE": 4093,
             "PROVIDE_AUTOMATIC_OPTIONS": True,
+            "CSRF_PROTECTION": False,
+            "CSRF_TRUSTED_ORIGINS": None,
+            "CSRF_PROTECTED_METHODS": frozenset({"POST", "PUT", "PATCH", "DELETE"}),
         }
     )
 
@@ -962,6 +967,64 @@ class Flask(App):
             f"Exception on {ctx.request.path} [{ctx.request.method}]", exc_info=exc_info
         )
 
+    def check_csrf(self, ctx: AppContext) -> None:
+        """Check CSRF protection for the current request. Raises
+        :exc:`~werkzeug.exceptions.Forbidden` if the request fails
+        CSRF validation.
+
+        This implements fetch metadata-based CSRF protection using the
+        ``Sec-Fetch-Site`` header, with a fallback to ``Origin`` header
+        validation for browsers that don't support fetch metadata.
+
+        The check is only performed for methods listed in
+        :data:`CSRF_PROTECTED_METHODS` (POST, PUT, PATCH, DELETE by default)
+        and only when the route has ``csrf_protection=True``.
+
+        .. versionadded:: 3.2
+        """
+        req = ctx.request
+
+        # Skip if no url_rule matched (routing error will be raised later)
+        if req.url_rule is None:
+            return
+
+        # Skip if csrf protection is not enabled for this route
+        if not getattr(req.url_rule, "csrf_protection", False):
+            return
+
+        # Skip safe methods
+        if req.method not in self.config["CSRF_PROTECTED_METHODS"]:
+            return
+
+        origin = req.headers.get("Origin")
+
+        # Check if origin is in trusted list
+        trusted_origins = self.config["CSRF_TRUSTED_ORIGINS"]
+        if trusted_origins and origin in trusted_origins:
+            return
+
+        # Check Sec-Fetch-Site header (modern browsers)
+        sec_fetch_site = req.headers.get("Sec-Fetch-Site")
+        if sec_fetch_site is not None:
+            # same-origin and none (e.g., direct navigation) are allowed
+            if sec_fetch_site in ("same-origin", "none"):
+                return
+            # same-site and cross-site are rejected
+            raise Forbidden("CSRF validation failed: cross-origin request detected")
+
+        # Fallback for browsers without Sec-Fetch-Site support:
+        # If neither Sec-Fetch-Site nor Origin is present, allow the request
+        # (likely a non-browser client like curl or API tool)
+        if origin is None:
+            return
+
+        # If Origin is present, verify it matches the Host
+        origin_host = urlparse(origin).netloc
+        if origin_host == req.host:
+            return
+
+        raise Forbidden("CSRF validation failed: origin mismatch")
+
     def dispatch_request(self, ctx: AppContext) -> ft.ResponseReturnValue:
         """Does the request dispatching.  Matches the URL and returns the
         return value of the view or error handler.  This does not have to
@@ -999,6 +1062,7 @@ class Flask(App):
 
         try:
             request_started.send(self, _async_wrapper=self.ensure_sync)
+            self.check_csrf(ctx)
             rv = self.preprocess_request(ctx)
             if rv is None:
                 rv = self.dispatch_request(ctx)

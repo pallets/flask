@@ -605,6 +605,7 @@ class App(Scaffold):
         endpoint: str | None = None,
         view_func: ft.RouteCallable | None = None,
         provide_automatic_options: bool | None = None,
+        csrf_protection: bool | None = None,
         **options: t.Any,
     ) -> None:
         if endpoint is None:
@@ -641,11 +642,19 @@ class App(Scaffold):
             else:
                 provide_automatic_options = False
 
+        # Handle csrf_protection: check view_func attribute, then config.
+        if csrf_protection is None:
+            csrf_protection = getattr(view_func, "csrf_protection", None)
+
+        if csrf_protection is None:
+            csrf_protection = self.config["CSRF_PROTECTION"]
+
         # Add the required methods now.
         methods |= required_methods
 
         rule_obj = self.url_rule_class(rule, methods=methods, **options)
         rule_obj.provide_automatic_options = provide_automatic_options  # type: ignore[attr-defined]
+        rule_obj.csrf_protection = csrf_protection  # type: ignore[attr-defined]
 
         self.url_map.add(rule_obj)
         if view_func is not None:

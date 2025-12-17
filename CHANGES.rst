@@ -3,6 +3,9 @@ Version 3.2.0
 
 Unreleased
 
+-   Add built-in CSRF protection using ``Sec-Fetch-Site`` header with
+    ``Origin`` fallback. Controlled by ``CSRF_PROTECTION`` config and
+    ``csrf_protection`` route parameter. :issue:`5863`
 -   Drop support for Python 3.9. :pr:`5730`
 -   Remove previously deprecated code: ``__version__``. :pr:`5648`
 -   ``RequestContext`` has merged with ``AppContext``. ``RequestContext`` is now

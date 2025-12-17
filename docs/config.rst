@@ -394,6 +394,39 @@ The following configuration values are used internally by Flask:
     responses. This can be overridden per route by altering the
     ``provide_automatic_options`` attribute.
 
+.. py:data:: CSRF_PROTECTION
+
+    Enable CSRF protection globally for all routes. When enabled, requests
+    using methods in :data:`CSRF_PROTECTED_METHODS` will be validated using
+    the ``Sec-Fetch-Site`` header (with a fallback to ``Origin`` header
+    validation). This can be overridden per route using the ``csrf_protection``
+    parameter on ``@app.route()`` or ``add_url_rule()``.
+    See :ref:`security-csrf`.
+
+    Default: ``False``
+
+    .. versionadded:: 3.2
+
+.. py:data:: CSRF_TRUSTED_ORIGINS
+
+    A list of origins that are trusted to make cross-origin requests without
+    CSRF validation. Each value should be a full origin including the scheme,
+    such as ``"https://example.com"``.
+
+    Default: ``None``
+
+    .. versionadded:: 3.2
+
+.. py:data:: CSRF_PROTECTED_METHODS
+
+    A set of HTTP methods that require CSRF validation when
+    :data:`CSRF_PROTECTION` is ``True`` or ``csrf_protection=True`` is set on a
+    route. Safe methods like GET, HEAD, and OPTIONS should not be included.
+
+    Default: ``frozenset({"POST", "PUT", "PATCH", "DELETE"})``
+
+    .. versionadded:: 3.2
+
 .. versionadded:: 0.4
    ``LOGGER_NAME``
 

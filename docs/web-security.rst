@@ -100,40 +100,84 @@ which the browser will execute when clicked if not secured properly.
 
 To prevent this, you'll need to set the :ref:`security-csp` response header.
 
+.. _security-csrf:
+
 Cross-Site Request Forgery (CSRF)
 ---------------------------------
 
-Another big problem is CSRF.  This is a very complex topic and I won't
-outline it here in detail just mention what it is and how to theoretically
-prevent it.
-
 If your authentication information is stored in cookies, you have implicit
-state management.  The state of "being logged in" is controlled by a
-cookie, and that cookie is sent with each request to a page.
-Unfortunately that includes requests triggered by 3rd party sites.  If you
-don't keep that in mind, some people might be able to trick your
-application's users with social engineering to do stupid things without
-them knowing.
+state management. The state of "being logged in" is controlled by a cookie,
+and that cookie is sent with each request to a page. Unfortunately that
+includes requests triggered by 3rd party sites. If you don't keep that in
+mind, some people might be able to trick your application's users with social
+engineering to do stupid things without them knowing.
 
-Say you have a specific URL that, when you sent ``POST`` requests to will
-delete a user's profile (say ``http://example.com/user/delete``).  If an
+Say you have a specific URL that, when you send ``POST`` requests to will
+delete a user's profile (say ``http://example.com/user/delete``). If an
 attacker now creates a page that sends a post request to that page with
 some JavaScript they just have to trick some users to load that page and
 their profiles will end up being deleted.
 
 Imagine you were to run Facebook with millions of concurrent users and
-someone would send out links to images of little kittens.  When users
+someone would send out links to images of little kittens. When users
 would go to that page, their profiles would get deleted while they are
 looking at images of fluffy cats.
 
-How can you prevent that?  Basically for each request that modifies
-content on the server you would have to either use a one-time token and
-store that in the cookie **and** also transmit it with the form data.
-After receiving the data on the server again, you would then have to
-compare the two tokens and ensure they are equal.
+Flask provides built-in CSRF protection that can be enabled for state-changing
+requests (POST, PUT, PATCH, DELETE) using the ``Sec-Fetch-Site`` header that
+modern browsers send automatically. This header tells the server whether a
+request is coming from the same origin, the same site, or a cross-site source.
 
-Why does Flask not do that for you?  The ideal place for this to happen is
-the form validation framework, which does not exist in Flask.
+Enabling CSRF protection
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+CSRF protection is disabled by default. To enable it globally::
+
+    app.config['CSRF_PROTECTION'] = True
+
+Or enable it per-route::
+
+    @app.route('/delete', methods=['POST'], csrf_protection=True)
+    def delete():
+        ...
+
+How it works
+~~~~~~~~~~~~
+
+When enabled, CSRF protection validates requests as follows:
+
+1. Requests with ``Sec-Fetch-Site: same-origin`` or ``none`` are allowed.
+2. Requests with ``Sec-Fetch-Site: same-site`` or ``cross-site`` are rejected.
+3. Requests without browser headers (API clients, curl, etc.) are allowed,
+   as CSRF is exclusively a browser attack vector.
+4. For browsers that don't send ``Sec-Fetch-Site``, the ``Origin`` header
+   is checked against the request host.
+
+Allowing cross-origin requests
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For legitimate cross-origin requests (OAuth callbacks, third-party embeds),
+add the origin to :data:`CSRF_TRUSTED_ORIGINS`::
+
+    app.config['CSRF_TRUSTED_ORIGINS'] = [
+        'https://accounts.example.com',
+    ]
+
+Exempting specific routes
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For routes that use other protection mechanisms (webhook signature
+verification, bearer token authentication), disable CSRF per-route::
+
+    @app.route('/webhooks/stripe', methods=['POST'], csrf_protection=False)
+    def stripe_webhook():
+        # Verify Stripe signature instead
+        ...
+
+For more information on CSRF and the ``Sec-Fetch-Site`` header, see:
+
+- `MDN: Sec-Fetch-Site <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Site>`_
+
 
 .. _security-json:
 
