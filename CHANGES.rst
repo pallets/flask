@@ -16,6 +16,9 @@ Unreleased
     deprecation period. :issue:`5815`
 -   ``template_filter``, ``template_test``, and ``template_global`` decorators
     can be used without parentheses. :issue:`5729`
+-   Deprecated ``App.should_ignore_error()``. This method always returned ``False``
+    and added an unnecessary function call on every request. Teardown handlers should
+    manage their own error handling instead. :issue:`5816`
 
 
 Version 3.1.2

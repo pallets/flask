@@ -1576,8 +1576,13 @@ class Flask(App):
             if "werkzeug.debug.preserve_context" in environ:
                 environ["werkzeug.debug.preserve_context"](ctx)
 
-            if error is not None and self.should_ignore_error(error):
-                error = None
+            # Check if should_ignore_error is overridden (deprecated)
+            if (
+                error is not None
+                and type(self).should_ignore_error is not App.should_ignore_error
+            ):
+                if self.should_ignore_error(error):
+                    error = None
 
             ctx.pop(error)
 

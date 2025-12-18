@@ -928,8 +928,21 @@ class App(Scaffold):
         function returns ``True`` then the teardown handlers will not be
         passed the error.
 
+        .. deprecated:: 3.1
+            This method is deprecated and will be removed in Flask 4.0.
+            Teardown functions should manage their own error handling.
+
         .. versionadded:: 0.10
         """
+        import warnings
+
+        warnings.warn(
+            "'should_ignore_error' is deprecated and will be removed in"
+            " Flask 4.0. Teardown functions should manage error handling"
+            " directly.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return False
 
     def redirect(self, location: str, code: int = 302) -> BaseResponse:
