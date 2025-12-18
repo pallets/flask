@@ -2,8 +2,6 @@
 
 import warnings
 
-import pytest
-
 import flask
 
 
@@ -70,11 +68,11 @@ def test_should_ignore_error_override_is_called():
         # Should have been called with the error
         assert len(called) == 1
         assert isinstance(called[0], ValueError)
-        
+
         # Should have deprecation warning
         dep_warnings = [x for x in w if issubclass(x.category, DeprecationWarning)]
         assert len(dep_warnings) > 0
         assert any("should_ignore_error" in str(x.message) for x in dep_warnings)
-        
+
         # Should return internal server error
         assert response.status_code == 500
