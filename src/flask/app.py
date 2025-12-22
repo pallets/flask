@@ -1568,8 +1568,10 @@ class Flask(App):
             except Exception as e:
                 error = e
                 response = self.handle_exception(ctx, e)
-            except:  # noqa: B001
-                error = sys.exc_info()[1]
+            except BaseException as e:
+                # Catch BaseException (KeyboardInterrupt, SystemExit, etc.)
+                # that should not be handled by the exception handler
+                error = e
                 raise
             return response(environ, start_response)
         finally:
