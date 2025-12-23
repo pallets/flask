@@ -30,6 +30,12 @@ Incoming Request Data
     :members:
     :inherited-members:
     :exclude-members: json_module
+.. note::
+
+   When receiving JSON data, Flask expects the request to include the
+   ``Content-Type: application/json`` header. If the header is missing or
+   the body cannot be parsed as JSON, Flask may return a
+   **415 Unsupported Media Type** error.
 
 .. data:: request
 
