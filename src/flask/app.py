@@ -104,6 +104,7 @@ def add_ctx(f: F) -> F:
 
     return update_wrapper(wrapper, f)  # type: ignore[return-value]
 
+
 # Test comment for indexing - can be removed later
 class Flask(App):
     """The flask object implements a WSGI application and acts as the central
