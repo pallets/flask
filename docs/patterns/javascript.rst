@@ -243,9 +243,9 @@ Receiving JSON in Views
 -----------------------
 
 Use the :attr:`~flask.Request.json` property of the
-:data:`~flask.request` object to decode the request's body as JSON. If
-the body is not valid JSON, or the ``Content-Type`` header is not set to
-``application/json``, a 400 Bad Request error will be raised.
+:data:`~flask.request` object to decode the request's body as JSON. If the ``Content-Type`` header is not set to ``application/json``, a
+``415 Unsupported Media Type`` error will be returned. If the content type is
+correct but the body is not valid JSON, a ``400 Bad Request`` error is raised.
 
 .. code-block:: python
 
