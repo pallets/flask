@@ -715,6 +715,18 @@ serialization library to convert the data to valid JSON types first.
 There are many serialization libraries and Flask API extensions
 maintained by the community that support more complex applications.
 
+.. note::
+
+   When receiving JSON data in a request, Flask expects the
+   ``Content-Type`` header to be set to ``application/json``.
+   If the header is missing, incorrect, or the request body contains
+   invalid JSON, Flask may respond with a **415 Unsupported Media Type**
+   error.
+
+   To avoid this, ensure that clients send valid JSON and include the
+   correct ``Content-Type`` header when making requests.
+
+
 
 .. _sessions:
 
