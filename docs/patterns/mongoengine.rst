@@ -9,7 +9,7 @@ A running MongoDB server and `Flask-MongoEngine`_ are required. ::
 
     pip install flask-mongoengine
 
-.. _MongoEngine: http://mongoengine.org
+.. _MongoEngine: https://mongoengine.org
 .. _Flask-MongoEngine: https://flask-mongoengine.readthedocs.io
 
 

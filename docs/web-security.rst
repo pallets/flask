@@ -116,7 +116,7 @@ application's users with social engineering to do stupid things without
 them knowing.
 
 Say you have a specific URL that, when you sent ``POST`` requests to will
-delete a user's profile (say ``http://example.com/user/delete``).  If an
+delete a user's profile (say ``https://example.com/user/delete``).  If an
 attacker now creates a page that sends a post request to that page with
 some JavaScript they just have to trick some users to load that page and
 their profiles will end up being deleted.
