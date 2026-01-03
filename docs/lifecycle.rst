@@ -157,4 +157,3 @@ parts that you can use to customize its behavior.
 #.  The app context is popped, :data:`.current_app`, :data:`.g`, :data:`.request`,
     and :data:`.session` are no longer available.
 #.  The :data:`.appcontext_popped` signal is sent.
-
