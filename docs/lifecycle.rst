@@ -158,14 +158,3 @@ parts that you can use to customize its behavior.
     and :data:`.session` are no longer available.
 #.  The :data:`.appcontext_popped` signal is sent.
 
-When executing a CLI command or plain app context without request data, the same
-order of steps is followed, omitting the steps that refer to the request.
-
-A :class:`Blueprint` can add handlers for these events that are specific to the
-blueprint. The handlers for a blueprint will run if the blueprint
-owns the route that matches the request.
-
-There are even more decorators and customization points than this, but that aren't part
-of every request lifecycle. They're more specific to certain things you might use during
-a request, such as templates, building URLs, or handling JSON data. See the rest of this
-documentation, as well as the :doc:`api` to explore further.
