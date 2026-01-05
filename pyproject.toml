@@ -42,7 +42,7 @@ dev = [
 ]
 docs = [
     "pallets-sphinx-themes",
-    "sphinx",
+    "sphinx<9",
     "sphinx-tabs",
     "sphinxcontrib-log-cabinet",
 ]
@@ -58,7 +58,7 @@ pre-commit = [
 ]
 tests = [
     "asgiref",
-    "greenlet ; python_version < '3.11'",
+    "greenlet",
     "pytest",
     "python-dotenv",
 ]
