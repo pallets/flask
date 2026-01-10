@@ -29,6 +29,62 @@ well as all the HTTP method handlers in views that inherit from the
     runtime, greenlet>=1.0 is required. When using PyPy, PyPy>=7.3.7 is
     required.
 
+Async Views and gevent
+----------------------
+
+Flask supports defining async view functions using ``async def``, which are executed using
+:mod:`asyncio`. When running Flask under a WSGI server, async views rely on an internal
+bridge (``Flask.async_to_sync``) to integrate asyncio-based code into the synchronous request
+lifecycle.
+
+When using ``gevent``, especially with ``gevent.monkey.patch_all()``, there are important
+limitations to be aware of.
+
+Incompatibility with gevent monkey patching
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``gevent.monkey.patch_all()`` modifies parts of the Python standard library, including
+threading and selectors, to use gevent’s cooperative greenlet-based scheduling. This
+conflicts with assumptions made by :mod:`asyncio`, which expects a single event loop per
+OS thread and threads created via :class:`threading.Thread` to be backed by real OS threads.
+
+After monkey patching, threads may instead be implemented as greenlets running on the same
+OS thread. Under concurrent requests, this can cause :mod:`asyncio` to detect multiple
+event loops in the same thread, resulting in runtime errors such as::
+
+    RuntimeError: You cannot use AsyncToSync in the same thread as an async event loop
+
+This issue typically does not appear when handling a single request, but manifests under
+concurrent load, which can make it difficult to detect during development.
+
+Unsupported configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Running Flask async views together with gevent monkey patching is **not supported**. Even
+in cases where simple async view functions appear to work, the behavior can be unreliable
+and may break under concurrency, different event loop implementations (such as ``uvloop``),
+or on different platforms.
+
+Recommended alternatives
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you are using gevent:
+
+- Prefer synchronous Flask views when running under gevent
+- Avoid ``gevent.monkey.patch_all()`` when using async views
+- Consider using an ASGI server (such as ``uvicorn`` or ``hypercorn``) if you require
+    asyncio-based concurrency
+
+Advanced usage: overriding ``Flask.async_to_sync``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For advanced use cases, Flask allows overriding ``Flask.async_to_sync`` to customize how
+async functions are executed. This can be used to experiment with alternative event loop
+integrations, including gevent-based approaches.
+
+Such configurations are highly environment-dependent and are not supported by Flask. Care
+should be taken to fully understand the interaction between asyncio, gevent, and the chosen
+event loop implementation.
 
 Performance
 -----------
