@@ -26,6 +26,9 @@ Blueprint Objects
 Incoming Request Data
 ---------------------
 
+This section describes how to access data sent by the client in an HTTP
+request, such as query parameters, form data, JSON payloads, and headers.
+
 .. autoclass:: Request
     :members:
     :inherited-members:
@@ -34,7 +37,8 @@ Incoming Request Data
 .. data:: request
 
     A proxy to the request data for the current request, an instance of
-    :class:`.Request`.
+    :class:`.Request`. This is the primary interface used by view functions
+    to access incoming request information.
 
     This is only available when a :doc:`request context </appcontext>` is
     active.
