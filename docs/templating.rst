@@ -325,4 +325,3 @@ Flask exposes helpers to simplify streamed rendering:
 Function Behavior
 ^^^^^^^^^^^^^^^^^
 When a request is active, these functions automatically apply the :func:`~flask.stream_with_context` wrapper, ensuring the request context remains available in the template.
-
