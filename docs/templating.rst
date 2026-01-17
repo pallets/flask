@@ -1,10 +1,14 @@
 Templates
 =========
 
-Flask leverages Jinja as its template engine.  You are obviously free to use
+Flask leverages Jinja as its template engine.  You are free to use
 a different template engine, but you still have to install Jinja to run
 Flask itself.  This requirement is necessary to enable rich extensions.
 An extension can depend on Jinja being present.
+
+
+Note: Flask's template rendering behavior is explained in more detail in the official Jinja documentation linked below.
+
 
 This section only gives a very quick introduction into how Jinja
 is integrated into Flask.  If you want information on the template
@@ -15,18 +19,21 @@ more information.
 Jinja Setup
 -----------
 
-Unless customized, Jinja is configured by Flask as follows:
+Flask sets up Jinja with some default behavior to keep templates safe and easy to work with:
 
--   autoescaping is enabled for all templates ending in ``.html``,
-    ``.htm``, ``.xml``, ``.xhtml``, as well as ``.svg`` when using
-    :func:`~flask.templating.render_template`.
--   autoescaping is enabled for all strings when using
-    :func:`~flask.templating.render_template_string`.
--   a template has the ability to opt in/out autoescaping with the
-    ``{% autoescape %}`` tag.
--   Flask inserts a couple of global functions and helpers into the
-    Jinja context, additionally to the values that are present by
-    default.
+- When rendering templates with :func:`~flask.templating.render_template`, autoescaping
+  is turned on for files ending in ``.html``, ``.htm``, ``.xml``, ``.xhtml`` and ``.svg``.
+  This avoids accidental HTML or XML injection.
+
+- With :func:`~flask.templating.render_template_string`, all output is autoescaped
+  since there is no file extension to determine behavior.
+
+- Templates can turn autoescaping on or off using the ``{% autoescape %}`` block when
+  more control is needed.
+
+- Flask also adds a few helpful global utilities to the Jinja context so they can be
+  used directly in templates without extra setup.
+
 
 Standard Context
 ----------------
@@ -64,16 +71,58 @@ by default:
    The request-bound object for global variables (:data:`flask.g`).  This
    variable is unavailable if the template was rendered without an active
    request context.
+Using `url_for` in Templates
+----------------------------
 
-.. function:: url_for
+Flask provides the `url_for` function to dynamically build URLs based on the names of view functions instead of hard-coding paths directly in templates. This allows your application to remain maintainable and flexible as route definitions evolve. When route paths are modified or moved, templates using `url_for` will continue to work without requiring any changes.
+
+Consider the following view function:
+
+.. code-block:: python
+
+    @app.route('/user/<username>')
+    def profile(username):
+        return f"Profile: {username}"
+
+Inside a Jinja template, the corresponding link can be generated with:
+
+.. code-block:: html
+
+    <a href="{{ url_for('profile', username='alice') }}">View Profile</a>
+
+This will render to:
+
+.. code-block:: text
+
+    /user/alice
+
+Using `url_for` is recommended over hard-coded links such as `/user/alice`, because it keeps the routing logic and template usage consistent and reduces the potential for broken links within the application.
+
+
+Using `url_for` for Static Files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In addition to generating links for dynamic routes, `url_for` can also be used to reference static assets such as images, stylesheets, or JavaScript files. Flask makes files located inside the ``static`` directory available under the ``static`` endpoint.
+
+Example usage in a template:
+
+.. code-block:: html
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+This ensures that static file references remain valid even when configured to serve from a different location, a CDN, or when additional cache-busting strategies are applied.
+
+.. function:: url_for(endpoint, **values)
    :noindex:
 
-   The :func:`flask.url_for` function.
+   Builds a URL to a given endpoint. Commonly used to link to routes or static files
+   directly from templates.
 
-.. function:: get_flashed_messages
+.. function:: get_flashed_messages(with_categories=False, category_filter=())
    :noindex:
 
-   The :func:`flask.get_flashed_messages` function.
+   Retrieves flash messages that were stored during the request cycle for display
+   in templates.
 
 .. admonition:: The Jinja Context Behavior
 
@@ -200,9 +249,15 @@ template context.  A context processor is a function that returns a
 dictionary.  The keys and values of this dictionary are then merged with
 the template context, for all templates in the app::
 
+Example: Injecting a User Object
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
     @app.context_processor
     def inject_user():
         return dict(user=g.user)
+
 
 The context processor above makes a variable called `user` available in
 the template with the value of `g.user`.  This example is not very
@@ -212,6 +267,11 @@ idea how this works.
 Variables are not limited to values; a context processor can also make
 functions available to templates (since Python allows passing around
 functions)::
+
+Example: Registering a Utility Function
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
 
     @app.context_processor
     def utility_processor():
@@ -231,16 +291,28 @@ context processor.
 Streaming
 ---------
 
-It can be useful to not render the whole template as one complete
-string, instead render it as a stream, yielding smaller incremental
-strings. This can be used for streaming HTML in chunks to speed up
-initial page load, or to save memory when rendering a very large
-template.
+Rather than rendering the entire template into a single large string, it can be
+rendered in smaller pieces and returned as a stream. This allows the application
+to send partial output to the client sooner.
 
-The Jinja template engine supports rendering a template piece
-by piece, returning an iterator of strings. Flask provides the
-:func:`~flask.stream_template` and :func:`~flask.stream_template_string`
-functions to make this easier to use.
+Streaming can be helpful in scenarios such as:
+
+- improving initial page load times by sending HTML chunks as they are ready
+- reducing memory usage when working with very large templates
+
+
+Streaming Templates
+^^^^^^^^^^^^^^^^^^^
+
+Jinja allows templates to be rendered incrementally, producing a stream of
+string fragments instead of a single consolidated output. This enables
+applications to send partial responses as they become available.
+
+Flask exposes helpers to simplify streamed rendering:
+
+- :func:`~flask.stream_template` — streams a template file.
+- :func:`~flask.stream_template_string` — streams a template given as a string.
+
 
 .. code-block:: python
 
@@ -250,6 +322,7 @@ functions to make this easier to use.
     def timeline():
         return stream_template("timeline.html")
 
-These functions automatically apply the
-:func:`~flask.stream_with_context` wrapper if a request is active, so
-that it remains available in the template.
+Function Behavior
+^^^^^^^^^^^^^^^^^
+When a request is active, these functions automatically apply the :func:`~flask.stream_with_context` wrapper, ensuring the request context remains available in the template.
+
