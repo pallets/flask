@@ -3,9 +3,9 @@ Application Dispatching
 
 Application dispatching is the process of combining multiple Flask
 applications on the WSGI level.  You can combine not only Flask
-applications but any WSGI application.  This would allow you to run a
-Django and a Flask application in the same interpreter side by side if
-you want.  The usefulness of this depends on how the applications work
+applications but any WSGI application.  This allows you to run a 
+Django application and a Flask application in the same interpreter
+side by side. The usefulness of this depends on how the applications work
 internally.
 
 The fundamental difference from :doc:`packages` is that in this case you
