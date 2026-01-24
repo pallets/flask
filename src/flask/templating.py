@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import typing as t
+from collections import OrderedDict
 
 from jinja2 import BaseLoader
 from jinja2 import Environment as BaseEnvironment
@@ -38,11 +39,46 @@ class Environment(BaseEnvironment):
     name of the blueprint to referenced templates if necessary.
     """
 
+    #: Maximum number of string templates to cache. When the cache is full,
+    #: the least recently used templates are evicted.
+    string_template_cache_size: t.ClassVar[int] = 100
+
+    #: Maximum length of a template source string to cache. Strings longer
+    #: than this are compiled but not cached.
+    string_template_cache_max_len: t.ClassVar[int] = 100_000
+
     def __init__(self, app: App, **options: t.Any) -> None:
         if "loader" not in options:
             options["loader"] = app.create_global_jinja_loader()
         BaseEnvironment.__init__(self, **options)
         self.app = app
+        self._string_template_cache: OrderedDict[str, Template] = OrderedDict()
+
+    def get_or_compile_string(self, source: str) -> Template:
+        """Get a compiled template from a source string, using a cache to
+        avoid recompiling the same template multiple times.
+
+        .. versionadded:: 3.2
+        """
+        # Skip caching for very large templates
+        if len(source) > self.string_template_cache_max_len:
+            return self.from_string(source)
+
+        cache = self._string_template_cache
+
+        if source in cache:
+            # Move to end to mark as recently used
+            cache.move_to_end(source)
+            return cache[source]
+
+        template = self.from_string(source)
+
+        # Evict oldest entries if cache is full
+        while len(cache) >= self.string_template_cache_size:
+            cache.popitem(last=False)
+
+        cache[source] = template
+        return template
 
 
 class DispatchingJinjaLoader(BaseLoader):
@@ -153,9 +189,12 @@ def render_template_string(source: str, **context: t.Any) -> str:
 
     :param source: The source code of the template to render.
     :param context: The variables to make available in the template.
+
+    .. versionchanged:: 3.2
+        Templates are cached to avoid recompiling the same source string.
     """
     ctx = app_ctx._get_current_object()
-    template = ctx.app.jinja_env.from_string(source)
+    template = ctx.app.jinja_env.get_or_compile_string(source)
     return _render(ctx, template, context)
 
 
@@ -205,7 +244,10 @@ def stream_template_string(source: str, **context: t.Any) -> t.Iterator[str]:
     :param context: The variables to make available in the template.
 
     .. versionadded:: 2.2
+
+    .. versionchanged:: 3.2
+        Templates are cached to avoid recompiling the same source string.
     """
     ctx = app_ctx._get_current_object()
-    template = ctx.app.jinja_env.from_string(source)
+    template = ctx.app.jinja_env.get_or_compile_string(source)
     return _stream(ctx, template, context)

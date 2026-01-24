@@ -530,3 +530,106 @@ def test_custom_jinja_env():
 
     app = CustomFlask(__name__)
     assert isinstance(app.jinja_env, CustomEnvironment)
+
+
+def test_template_string_caching(app, app_ctx):
+    """Test that render_template_string caches compiled templates."""
+    source = "Hello {{ name }}!"
+    cache = app.jinja_env._string_template_cache
+
+    # Cache should be empty initially
+    assert len(cache) == 0
+
+    # First render should add to cache
+    result1 = flask.render_template_string(source, name="World")
+    assert result1 == "Hello World!"
+    assert len(cache) == 1
+    assert source in cache
+
+    # Second render should use cached template
+    cached_template = cache[source]
+    result2 = flask.render_template_string(source, name="Flask")
+    assert result2 == "Hello Flask!"
+    assert len(cache) == 1
+    assert cache[source] is cached_template  # Same object
+
+
+def test_stream_template_string_caching(app, app_ctx):
+    """Test that stream_template_string uses the same cache."""
+    source = "Hello {{ name }}!"
+    cache = app.jinja_env._string_template_cache
+
+    # Render with stream_template_string
+    result = "".join(flask.stream_template_string(source, name="World"))
+    assert result == "Hello World!"
+    assert source in cache
+
+    # Render same source with render_template_string should hit cache
+    cached_template = cache[source]
+    result2 = flask.render_template_string(source, name="Flask")
+    assert result2 == "Hello Flask!"
+    assert cache[source] is cached_template
+
+
+def test_template_string_cache_per_app(app_ctx):
+    """Test that each app has its own template string cache."""
+    app1 = flask.Flask(__name__)
+    app2 = flask.Flask(__name__)
+    source = "Hello {{ name }}!"
+
+    with app1.app_context():
+        flask.render_template_string(source, name="App1")
+
+    with app2.app_context():
+        flask.render_template_string(source, name="App2")
+
+    # Each app should have its own cache with the template
+    assert source in app1.jinja_env._string_template_cache
+    assert source in app2.jinja_env._string_template_cache
+    # But they should be different template objects (different environments)
+    assert (
+        app1.jinja_env._string_template_cache[source]
+        is not app2.jinja_env._string_template_cache[source]
+    )
+
+
+def test_template_string_cache_lru_eviction(app, app_ctx):
+    """Test that the cache evicts least recently used templates."""
+    # Set a small cache size for testing
+    app.jinja_env.string_template_cache_size = 3
+    cache = app.jinja_env._string_template_cache
+
+    # Fill the cache
+    flask.render_template_string("{{ a }}", a=1)
+    flask.render_template_string("{{ b }}", b=2)
+    flask.render_template_string("{{ c }}", c=3)
+    assert len(cache) == 3
+    assert list(cache.keys()) == ["{{ a }}", "{{ b }}", "{{ c }}"]
+
+    # Access the first one to make it recently used
+    flask.render_template_string("{{ a }}", a=1)
+    assert list(cache.keys()) == ["{{ b }}", "{{ c }}", "{{ a }}"]
+
+    # Add a new template, should evict "{{ b }}" (least recently used)
+    flask.render_template_string("{{ d }}", d=4)
+    assert len(cache) == 3
+    assert "{{ b }}" not in cache
+    assert list(cache.keys()) == ["{{ c }}", "{{ a }}", "{{ d }}"]
+
+
+def test_template_string_cache_max_len(app, app_ctx):
+    """Test that templates exceeding max length are not cached."""
+    # Set a small max length for testing
+    app.jinja_env.string_template_cache_max_len = 20
+    cache = app.jinja_env._string_template_cache
+
+    # Short template should be cached
+    short_source = "{{ x }}"
+    flask.render_template_string(short_source, x=1)
+    assert short_source in cache
+
+    # Long template should not be cached
+    long_source = "{{ x }}" + " " * 20  # exceeds max_len of 20
+    result = flask.render_template_string(long_source, x=2)
+    assert result == "2" + " " * 20
+    assert long_source not in cache
