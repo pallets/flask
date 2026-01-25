@@ -275,7 +275,7 @@ class Flask(App):
                 f"{self.static_url_path}/<path:filename>",
                 endpoint="static",
                 host=static_host,
-                view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore # noqa: B950
+                view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
             )
 
     def get_send_file_max_age(self, filename: str | None) -> int | None:
@@ -1512,7 +1512,7 @@ class Flask(App):
             except Exception as e:
                 error = e
                 response = self.handle_exception(e)
-            except:  # noqa: B001
+            except:
                 error = sys.exc_info()[1]
                 raise
             return response(environ, start_response)
