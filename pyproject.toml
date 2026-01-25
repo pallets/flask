@@ -160,9 +160,6 @@ select = [
     "UP",  # pyupgrade
     "W",  # pycodestyle warning
 ]
-ignore = [
-    "UP038",  # keep isinstance tuple
-]
 
 [tool.ruff.lint.isort]
 force-single-line = true
