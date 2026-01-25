@@ -23,12 +23,6 @@ method in views that inherit from the :class:`flask.views.View` class, as
 well as all the HTTP method handlers in views that inherit from the
 :class:`flask.views.MethodView` class.
 
-.. admonition:: Using ``async`` with greenlet
-
-    When using gevent or eventlet to serve an application or patch the
-    runtime, greenlet>=1.0 is required. When using PyPy, PyPy>=7.3.7 is
-    required.
-
 
 Performance
 -----------
@@ -78,15 +72,15 @@ Flask based on the `ASGI`_ standard instead of WSGI. This allows it to
 handle many concurrent requests, long running requests, and websockets
 without requiring multiple worker processes or threads.
 
-It has also already been possible to run Flask with Gevent or Eventlet
-to get many of the benefits of async request handling. These libraries
-patch low-level Python functions to accomplish this, whereas ``async``/
-``await`` and ASGI use standard, modern Python capabilities. Deciding
-whether you should use Flask, Quart, or something else is ultimately up
-to understanding the specific needs of your project.
+It has also already been possible to :doc:`run Flask with Gevent </gevent>` to
+get many of the benefits of async request handling. Gevent patches low-level
+Python functions to accomplish this, whereas ``async``/``await`` and ASGI use
+standard, modern Python capabilities. Deciding whether you should use gevent
+with Flask, or Quart, or something else is ultimately up to understanding the
+specific needs of your project.
 
-.. _Quart: https://github.com/pallets/quart
-.. _ASGI: https://asgi.readthedocs.io/en/latest/
+.. _Quart: https://quart.palletsprojects.com
+.. _ASGI: https://asgi.readthedocs.io
 
 
 Extensions
@@ -120,6 +114,6 @@ implemented async support, or make a feature request or PR to them.
 Other event loops
 -----------------
 
-At the moment Flask only supports :mod:`asyncio`. It's possible to
-override :meth:`flask.Flask.ensure_sync` to change how async functions
-are wrapped to use a different library.
+At the moment Flask only supports :mod:`asyncio`. It's possible to override
+:meth:`flask.Flask.ensure_sync` to change how async functions are wrapped to use
+a different library. See :ref:`gevent-asyncio` for an example.

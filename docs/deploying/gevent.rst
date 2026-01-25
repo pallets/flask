@@ -7,15 +7,12 @@ configurable and production-tested servers.
 
 `gevent`_ allows writing asynchronous, coroutine-based code that looks
 like standard synchronous Python. It uses `greenlet`_ to enable task
-switching without writing ``async/await`` or using ``asyncio``.
-
-:doc:`eventlet` is another library that does the same thing. Certain
-dependencies you have, or other considerations, may affect which of the
-two you choose to use.
+switching without writing ``async/await`` or using ``asyncio``. This is
+not the same as Python's ``async/await``, or the ASGI server spec.
 
 gevent provides a WSGI server that can handle many connections at once
-instead of one per worker process. You must actually use gevent in your
-own code to see any benefit to using the server.
+instead of one per worker process. See :doc:`/gevent` for more
+information about enabling it in your application.
 
 .. _gevent: https://www.gevent.org/
 .. _greenlet: https://greenlet.readthedocs.io/en/latest/
@@ -24,8 +21,7 @@ own code to see any benefit to using the server.
 Installing
 ----------
 
-When using gevent, greenlet>=1.0 is required, otherwise context locals
-such as ``request`` will not work as expected. When using PyPy,
+When using gevent, greenlet>=1.0 is required. When using PyPy,
 PyPy>=7.3.7 is required.
 
 Create a virtualenv, install your application, then install ``gevent``.
