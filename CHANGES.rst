@@ -16,6 +16,11 @@ Unreleased
     deprecation period. :issue:`5815`
 -   ``template_filter``, ``template_test``, and ``template_global`` decorators
     can be used without parentheses. :issue:`5729`
+-   ``redirect`` returns a ``303`` status code by default instead of ``302``.
+    This tells the client to always switch to ``GET``, rather than only
+    switching ``POST`` to ``GET``. This preserves the current behavior of
+    ``GET`` and ``POST`` redirects, and is also correct for frontend libraries
+    such as HTMX. :issue:`5895`
 
 
 Version 3.1.2

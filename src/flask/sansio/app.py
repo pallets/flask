@@ -932,7 +932,7 @@ class App(Scaffold):
         """
         return False
 
-    def redirect(self, location: str, code: int = 302) -> BaseResponse:
+    def redirect(self, location: str, code: int = 303) -> BaseResponse:
         """Create a redirect response object.
 
         This is called by :func:`flask.redirect`, and can be called
@@ -940,6 +940,9 @@ class App(Scaffold):
 
         :param location: The URL to redirect to.
         :param code: The status code for the redirect.
+
+        .. versionchanged:: 3.2
+            ``code`` defaults to ``303`` instead of ``302``.
 
         .. versionadded:: 2.2
             Moved from ``flask.redirect``, which calls this method.

@@ -596,7 +596,7 @@ This specifies that ``/users/`` will be the URL for page one and
 ``/users/page/N`` will be the URL for page ``N``.
 
 If a URL contains a default value, it will be redirected to its simpler
-form with a 301 redirect. In the above example, ``/users/page/1`` will
+form with a 308 redirect. In the above example, ``/users/page/1`` will
 be redirected to ``/users/``. If your route handles ``GET`` and ``POST``
 requests, make sure the default route only handles ``GET``, as redirects
 can't preserve form data. ::
