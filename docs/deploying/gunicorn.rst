@@ -8,7 +8,7 @@ multiple worker implementations for performance tuning.
 *   It does not support Windows (but does run on WSL).
 *   It is easy to install as it does not require additional dependencies
     or compilation.
-*   It has built-in async worker support using gevent or eventlet.
+*   It has built-in async worker support using gevent.
 
 This page outlines the basics of running Gunicorn. Be sure to read its
 `documentation`_ and use ``gunicorn --help`` to understand what features
@@ -93,20 +93,19 @@ otherwise it will be possible to bypass the proxy.
 IP address in your browser.
 
 
-Async with gevent or eventlet
------------------------------
+Async with gevent
+-----------------
 
-The default sync worker is appropriate for many use cases. If you need
-asynchronous support, Gunicorn provides workers using either `gevent`_
-or `eventlet`_. This is not the same as Python's ``async/await``, or the
-ASGI server spec. You must actually use gevent/eventlet in your own code
-to see any benefit to using the workers.
+The default sync worker is appropriate for most use cases. If you need numerous,
+long running, concurrent connections, Gunicorn provides an asynchronous worker
+using `gevent`_. This is not the same as Python's ``async/await``, or the ASGI
+server spec. See :doc:`/gevent` for more information about enabling it in your
+application.
 
-When using either gevent or eventlet, greenlet>=1.0 is required,
-otherwise context locals such as ``request`` will not work as expected.
-When using PyPy, PyPy>=7.3.7 is required.
+.. _gevent: https://www.gevent.org/
 
-To use gevent:
+When using gevent, greenlet>=1.0 is required. When using PyPy, PyPy>=7.3.7 is
+required.
 
 .. code-block:: text
 
@@ -115,16 +114,3 @@ To use gevent:
     Listening at: http://127.0.0.1:8000 (x)
     Using worker: gevent
     Booting worker with pid: x
-
-To use eventlet:
-
-.. code-block:: text
-
-    $ gunicorn -k eventlet 'hello:create_app()'
-    Starting gunicorn 20.1.0
-    Listening at: http://127.0.0.1:8000 (x)
-    Using worker: eventlet
-    Booting worker with pid: x
-
-.. _gevent: https://www.gevent.org/
-.. _eventlet: https://eventlet.net/

@@ -119,15 +119,16 @@ IP address in your browser.
 Async with gevent
 -----------------
 
-The default sync worker is appropriate for many use cases. If you need
-asynchronous support, uWSGI provides a `gevent`_ worker. This is not the
-same as Python's ``async/await``, or the ASGI server spec. You must
-actually use gevent in your own code to see any benefit to using the
-worker.
+The default sync worker is appropriate for most use cases. If you need numerous,
+long running, concurrent connections, uWSGI provides an asynchronous worker
+using `gevent`_. This is not the same as Python's ``async/await``, or the ASGI
+server spec. See :doc:`/gevent` for more information about enabling it in your
+application.
 
-When using gevent, greenlet>=1.0 is required, otherwise context locals
-such as ``request`` will not work as expected. When using PyPy,
-PyPy>=7.3.7 is required.
+.. _gevent: https://www.gevent.org/
+
+When using gevent, greenlet>=1.0 is required. When using PyPy, PyPy>=7.3.7 is
+required.
 
 .. code-block:: text
 
@@ -140,6 +141,3 @@ PyPy>=7.3.7 is required.
     spawned uWSGI worker 1 (pid: x, cores: 100)
     spawned uWSGI http 1 (pid: x)
     *** running gevent loop engine [addr:x] ***
-
-
-.. _gevent: https://www.gevent.org/
