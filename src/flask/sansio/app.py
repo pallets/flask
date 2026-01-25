@@ -922,15 +922,16 @@ class App(Scaffold):
 
         return False
 
-    def should_ignore_error(self, error: BaseException | None) -> bool:
-        """This is called to figure out if an error should be ignored
-        or not as far as the teardown system is concerned.  If this
-        function returns ``True`` then the teardown handlers will not be
-        passed the error.
+    should_ignore_error: None = None
+    """If this method returns ``True``, the error will not be passed to
+    teardown handlers, and the context will not be preserved for
+    debugging.
 
-        .. versionadded:: 0.10
-        """
-        return False
+    .. deprecated:: 3.2
+        Handle errors as needed in teardown handlers instead.
+
+    .. versionadded:: 0.10
+    """
 
     def redirect(self, location: str, code: int = 303) -> BaseResponse:
         """Create a redirect response object.
