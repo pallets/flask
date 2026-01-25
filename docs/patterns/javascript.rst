@@ -136,7 +136,8 @@ In general, prefer sending request data as form data, as would be used
 when submitting an HTML form. JSON can represent more complex data, but
 unless you need that it's better to stick with the simpler format. When
 sending JSON data, the ``Content-Type: application/json`` header must be
-sent as well, otherwise Flask will return a 400 error.
+sent as well, otherwise Flask will return a 415 Unsupported Media Type
+error.
 
 .. code-block:: javascript
 
@@ -244,8 +245,9 @@ Receiving JSON in Views
 
 Use the :attr:`~flask.Request.json` property of the
 :data:`~flask.request` object to decode the request's body as JSON. If
-the body is not valid JSON, or the ``Content-Type`` header is not set to
-``application/json``, a 400 Bad Request error will be raised.
+the body is not valid JSON, a 400 Bad Request error will be raised. If
+the ``Content-Type`` header is not set to ``application/json``, a 415
+Unsupported Media Type error will be raised.
 
 .. code-block:: python
 
