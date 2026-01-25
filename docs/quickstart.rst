@@ -462,7 +462,7 @@ broad overview. First it needs to be imported.
 If you have some experience with Python you might be wondering how that object
 can be global when Flask handles multiple requests at a time. The answer is
 that :data:`.request` is actually a proxy, pointing at whatever request is
-currently being handled by a given worker, which is managed interanlly by Flask
+currently being handled by a given worker, which is managed internally by Flask
 and Python. See :doc:`/appcontext` for much more information.
 
 The current request method is available in the :attr:`~.Request.method`
