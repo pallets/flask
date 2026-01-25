@@ -60,6 +60,7 @@ community-maintained extensions to add even more functionality.
    patterns/index
    web-security
    deploying/index
+   gevent
    async-await
 
 

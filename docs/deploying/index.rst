@@ -36,7 +36,6 @@ discusses platforms that can manage this for you.
     mod_wsgi
     uwsgi
     gevent
-    eventlet
     asgi
 
 WSGI servers have HTTP servers built-in. However, a dedicated HTTP

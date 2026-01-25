@@ -51,9 +51,8 @@ use them if you install them.
 greenlet
 ~~~~~~~~
 
-You may choose to use gevent or eventlet with your application. In this
-case, greenlet>=1.0 is required. When using PyPy, PyPy>=7.3.7 is
-required.
+You may choose to use :doc:`/gevent` with your application. In this case,
+greenlet>=1.0 is required. When using PyPy, PyPy>=7.3.7 is required.
 
 These are not minimum supported versions, they only indicate the first
 versions that added necessary features. You should use the latest
