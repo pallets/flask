@@ -56,10 +56,7 @@ directory should be treated as a package.
             app.config.from_mapping(test_config)
 
         # ensure the instance folder exists
-        try:
-            os.makedirs(app.instance_path)
-        except OSError:
-            pass
+        os.makedirs(app.instance_path, exist_ok=True)
 
         # a simple page that says hello
         @app.route('/hello')
