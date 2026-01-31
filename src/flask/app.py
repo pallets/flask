@@ -1221,7 +1221,7 @@ class Flask(App):
         return rv
 
     def _unpack_response_tuple(
-        self, rv: tuple
+        self, rv: tuple[t.Any, ...]
     ) -> tuple[ft.ResponseReturnValue, int | None, HeadersValue | None]:
         """Unpack a response tuple into body, status, and headers.
 
