@@ -1220,6 +1220,38 @@ class Flask(App):
 
         return rv
 
+    def _unpack_response_tuple(
+        self, rv: tuple
+    ) -> tuple[ft.ResponseReturnValue, int | None, HeadersValue | None]:
+        """Unpack a response tuple into body, status, and headers.
+
+        Valid forms:
+        - (body, status, headers)
+        - (body, status)
+        - (body, headers)
+        """
+        status = None
+        headers = None
+
+        length = len(rv)
+
+        if length == 3:
+            body, status, headers = rv
+        elif length == 2:
+            body, second = rv
+            if isinstance(second, (Headers, dict, tuple, list)):
+                headers = second
+            else:
+                status = second
+        else:
+            raise TypeError(
+                "The view function did not return a valid response tuple."
+                " The tuple must have the form (body, status, headers),"
+                " (body, status), or (body, headers)."
+            )
+
+        return body, status, headers
+
     def make_response(self, rv: ft.ResponseReturnValue) -> Response:
         """Convert the return value from a view function to an instance of
         :attr:`response_class`.
@@ -1282,24 +1314,8 @@ class Flask(App):
 
         # unpack tuple returns
         if isinstance(rv, tuple):
-            len_rv = len(rv)
-
-            # a 3-tuple is unpacked directly
-            if len_rv == 3:
-                rv, status, headers = rv  # type: ignore[misc]
-            # decide if a 2-tuple has status or headers
-            elif len_rv == 2:
-                if isinstance(rv[1], (Headers, dict, tuple, list)):
-                    rv, headers = rv  # pyright: ignore
-                else:
-                    rv, status = rv  # type: ignore[assignment,misc]
-            # other sized tuples are not allowed
-            else:
-                raise TypeError(
-                    "The view function did not return a valid response tuple."
-                    " The tuple must have the form (body, status, headers),"
-                    " (body, status), or (body, headers)."
-                )
+            body, status, headers = self._unpack_response_tuple(rv)
+            rv = body
 
         # the body must not be None
         if rv is None:
