@@ -709,6 +709,11 @@ This is a shortcut to passing the data to the
 :func:`~flask.json.jsonify` function, which will serialize any supported
 JSON data type. That means that all the data in the dict or list must be
 JSON serializable.
+.. note::
+
+   When sending JSON requests, clients must include the
+   ``Content-Type: application/json`` header.
+   Otherwise, ``request.get_json()`` may return ``None``.
 
 For complex types such as database models, you'll want to use a
 serialization library to convert the data to valid JSON types first.
