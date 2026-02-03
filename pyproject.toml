@@ -104,6 +104,9 @@ exclude = [
 [tool.uv]
 default-groups = ["dev", "pre-commit", "tests", "typing"]
 
+[tool.uv.sources]
+werkzeug = { path = "../werkzeug" }
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 filterwarnings = [

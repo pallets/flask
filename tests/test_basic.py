@@ -1,8 +1,8 @@
 import gc
+import importlib.metadata
 import re
 import typing as t
 import uuid
-import warnings
 import weakref
 from contextlib import nullcontext
 from datetime import datetime
@@ -1491,20 +1491,22 @@ def test_request_locals():
     assert not flask.g
 
 
+werkzeug_3_2 = importlib.metadata.version("werkzeug") >= "3.2."
+
+
 @pytest.mark.parametrize(
-    ("subdomain_matching", "host_matching", "expect_base", "expect_abc", "expect_xyz"),
+    ("subdomain_matching", "host_matching", "expect_subdomain", "expect_host"),
     [
-        (False, False, "default", "default", "default"),
-        (True, False, "default", "abc", "<invalid>"),
-        (False, True, "default", "abc", "default"),
+        (False, False, "default", "default"),
+        (True, False, "abc", "<invalid>"),
+        (False, True, "abc", "default"),
     ],
 )
 def test_server_name_matching(
     subdomain_matching: bool,
     host_matching: bool,
-    expect_base: str,
-    expect_abc: str,
-    expect_xyz: str,
+    expect_subdomain: str,
+    expect_host: str,
 ) -> None:
     app = flask.Flask(
         __name__,
@@ -1522,15 +1524,18 @@ def test_server_name_matching(
     client = app.test_client()
 
     r = client.get(base_url="http://example.test")
-    assert r.text == expect_base
+    assert r.text == "default"
 
     r = client.get(base_url="http://abc.example.test")
-    assert r.text == expect_abc
+    assert r.text == expect_subdomain
 
     with pytest.warns() if subdomain_matching else nullcontext():
         r = client.get(base_url="http://xyz.other.test")
 
-    assert r.text == expect_xyz
+        if werkzeug_3_2:
+            assert r.text == "default"
+        else:
+            assert r.text == expect_host
 
 
 def test_server_name_subdomain():
@@ -1566,12 +1571,12 @@ def test_server_name_subdomain():
     rv = client.get("/", "https://dev.local")
     assert rv.data == b"default"
 
-    # suppress Werkzeug 0.15 warning about name mismatch
-    with warnings.catch_warnings():
-        warnings.filterwarnings(
-            "ignore", "Current server name", UserWarning, "flask.app"
-        )
+    with pytest.warns(match="Current server name"):
         rv = client.get("/", "http://foo.localhost")
+
+    if werkzeug_3_2:
+        assert rv.status_code == 200
+    else:
         assert rv.status_code == 404
 
     rv = client.get("/", "http://foo.dev.local")
@@ -1807,13 +1812,13 @@ def test_subdomain_matching_other_name(matching):
     def index():
         return "", 204
 
-    # suppress Werkzeug 0.15 warning about name mismatch
-    with warnings.catch_warnings():
-        warnings.filterwarnings(
-            "ignore", "Current server name", UserWarning, "flask.app"
-        )
-        # ip address can't match name
+    with pytest.warns(match="Current server name") if matching else nullcontext():
+        # ip address can't match name, but will fall back to default
         rv = client.get("/", "http://127.0.0.1:3000/")
+
+    if werkzeug_3_2:
+        assert rv.status_code == 204
+    else:
         assert rv.status_code == 404 if matching else 204
 
     # allow all subdomains if matching is disabled
