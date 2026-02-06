@@ -32,18 +32,15 @@ from flask.cli import with_appcontext
 cwd = Path.cwd()
 test_path = (Path(__file__) / ".." / "test_apps").resolve()
 
-
 @pytest.fixture
 def runner():
     return CliRunner()
-
 
 def test_cli_name(test_apps):
     """Make sure the CLI object's name is the app's name and not the app itself"""
     from cliapp.app import testapp
 
     assert testapp.cli.name == testapp.name
-
 
 def test_find_best_app(test_apps):
     class Module:
@@ -131,7 +128,6 @@ def test_find_best_app(test_apps):
 
     pytest.raises(TypeError, find_best_app, Module)
 
-
 @pytest.mark.parametrize(
     "value,path,result",
     (
@@ -176,7 +172,6 @@ def test_prepare_import(request, value, path, result):
     assert prepare_import(value) == result
     assert sys.path[0] == str(path)
 
-
 @pytest.mark.parametrize(
     "iname,aname,result",
     (
@@ -194,7 +189,6 @@ def test_prepare_import(request, value, path, result):
 )
 def test_locate_app(test_apps, iname, aname, result):
     assert locate_app(iname, aname).name == result
-
 
 @pytest.mark.parametrize(
     "iname,aname",
@@ -218,7 +212,6 @@ def test_locate_app_raises(test_apps, iname, aname):
     with pytest.raises(NoAppException):
         locate_app(iname, aname)
 
-
 def test_locate_app_suppress_raise(test_apps):
     app = locate_app("notanapp.py", None, raise_if_not_found=False)
     assert app is None
@@ -226,7 +219,6 @@ def test_locate_app_suppress_raise(test_apps):
     # only direct import error is suppressed
     with pytest.raises(NoAppException):
         locate_app("cliapp.importerrorapp", None, raise_if_not_found=False)
-
 
 def test_get_version(test_apps, capsys):
     class MockCtx:
@@ -242,7 +234,6 @@ def test_get_version(test_apps, capsys):
     assert f"Python {platform.python_version()}" in out
     assert f"Flask {importlib.metadata.version('flask')}" in out
     assert f"Werkzeug {importlib.metadata.version('werkzeug')}" in out
-
 
 def test_scriptinfo(test_apps, monkeypatch):
     obj = ScriptInfo(app_import_path="cliapp.app:testapp")
@@ -285,7 +276,6 @@ def test_scriptinfo(test_apps, monkeypatch):
     app = obj.load_app()
     assert app.name == "testapp"
 
-
 def test_app_cli_has_app_context(app, runner):
     def _param_cb(ctx, param, value):
         # current_app should be available in parameter callbacks
@@ -303,7 +293,6 @@ def test_app_cli_has_app_context(app, runner):
     result = runner.invoke(cli, ["check", "x"], standalone_mode=False)
     assert result.return_value == (True, True)
 
-
 def test_with_appcontext(runner):
     @click.command()
     @with_appcontext
@@ -315,7 +304,6 @@ def test_with_appcontext(runner):
     result = runner.invoke(testcmd, obj=obj)
     assert result.exit_code == 0
     assert result.output == "testapp\n"
-
 
 def test_appgroup_app_context(runner):
     @click.group(cls=AppGroup)
@@ -344,7 +332,6 @@ def test_appgroup_app_context(runner):
     assert result.exit_code == 0
     assert result.output == "testappgroup\n"
 
-
 def test_flaskgroup_app_context(runner):
     def create_app():
         return Flask("flaskgroup")
@@ -360,7 +347,6 @@ def test_flaskgroup_app_context(runner):
     result = runner.invoke(cli, ["test"])
     assert result.exit_code == 0
     assert result.output == "flaskgroup\n"
-
 
 @pytest.mark.parametrize("set_debug_flag", (True, False))
 def test_flaskgroup_debug(runner, set_debug_flag):
@@ -381,7 +367,6 @@ def test_flaskgroup_debug(runner, set_debug_flag):
     assert result.exit_code == 0
     assert result.output == f"{not set_debug_flag}\n"
 
-
 def test_flaskgroup_nested(app, runner):
     cli = click.Group("cli")
     flask_group = FlaskGroup(name="flask", create_app=lambda: app)
@@ -393,7 +378,6 @@ def test_flaskgroup_nested(app, runner):
 
     result = runner.invoke(cli, ["flask", "show"])
     assert result.output == "flask_test\n"
-
 
 def test_no_command_echo_loading_error():
     from flask.cli import cli
@@ -409,7 +393,6 @@ def test_no_command_echo_loading_error():
     assert "FLASK_APP" in result.stderr
     assert "Usage:" in result.stderr
 
-
 def test_help_echo_loading_error():
     from flask.cli import cli
 
@@ -423,7 +406,6 @@ def test_help_echo_loading_error():
     assert result.exit_code == 0
     assert "FLASK_APP" in result.stderr
     assert "Usage:" in result.stdout
-
 
 def test_help_echo_exception():
     def create_app():
@@ -441,7 +423,6 @@ def test_help_echo_exception():
     assert result.exit_code == 0
     assert "Exception: oh no" in result.stderr
     assert "Usage:" in result.stdout
-
 
 class TestRoutes:
     @pytest.fixture
@@ -517,7 +498,6 @@ class TestRoutes:
         assert result.exit_code == 0
         assert "Host" in result.output
 
-
 def dotenv_not_available():
     try:
         import dotenv  # noqa: F401
@@ -526,11 +506,9 @@ def dotenv_not_available():
 
     return False
 
-
 need_dotenv = pytest.mark.skipif(
     dotenv_not_available(), reason="dotenv is not installed"
 )
-
 
 @need_dotenv
 def test_load_dotenv(monkeypatch):
@@ -555,7 +533,6 @@ def test_load_dotenv(monkeypatch):
     # Non existent file should not load
     assert not load_dotenv("non-existent-file", load_defaults=False)
 
-
 @need_dotenv
 def test_dotenv_path(monkeypatch):
     for item in ("FOO", "BAR", "EGGS"):
@@ -565,13 +542,11 @@ def test_dotenv_path(monkeypatch):
     assert Path.cwd() == cwd
     assert "FOO" in os.environ
 
-
 def test_dotenv_optional(monkeypatch):
     monkeypatch.setitem(sys.modules, "dotenv", None)
     monkeypatch.chdir(test_path)
     load_dotenv()
     assert "FOO" not in os.environ
-
 
 @need_dotenv
 def test_disable_dotenv_from_env(monkeypatch, runner):
@@ -579,7 +554,6 @@ def test_disable_dotenv_from_env(monkeypatch, runner):
     monkeypatch.setitem(os.environ, "FLASK_SKIP_DOTENV", "1")
     runner.invoke(FlaskGroup())
     assert "FOO" not in os.environ
-
 
 def test_run_cert_path():
     # no key
@@ -598,7 +572,6 @@ def test_run_cert_path():
     ctx = run_command.make_context("run", ["--key", __file__, "--cert", __file__])
     assert ctx.params["cert"] == (__file__, __file__)
 
-
 def test_run_cert_adhoc(monkeypatch):
     monkeypatch.setitem(sys.modules, "cryptography", None)
 
@@ -614,7 +587,6 @@ def test_run_cert_adhoc(monkeypatch):
     # no key with adhoc
     with pytest.raises(click.BadParameter):
         run_command.make_context("run", ["--cert", "adhoc", "--key", __file__])
-
 
 def test_run_cert_import(monkeypatch):
     monkeypatch.setitem(sys.modules, "not_here", None)
@@ -637,13 +609,11 @@ def test_run_cert_import(monkeypatch):
     with pytest.raises(click.BadParameter):
         run_command.make_context("run", ["--cert", "ssl_context", "--key", __file__])
 
-
 def test_run_cert_no_ssl(monkeypatch):
     monkeypatch.setitem(sys.modules, "ssl", None)
 
     with pytest.raises(click.BadParameter):
         run_command.make_context("run", ["--cert", "not_here"])
-
 
 def test_cli_blueprints(app):
     """Test blueprint commands register correctly to the application"""
@@ -687,7 +657,6 @@ def test_cli_blueprints(app):
     result = app_runner.invoke(args=["late_registration", "late"])
     assert "late_result" in result.output
 
-
 def test_cli_empty(app):
     """If a Blueprint's CLI group is empty, do not register it."""
     bp = Blueprint("blue", __name__, cli_group="blue")
@@ -695,7 +664,6 @@ def test_cli_empty(app):
 
     result = app.test_cli_runner().invoke(args=["blue", "--help"])
     assert result.exit_code == 2, f"Unexpected success:\n\n{result.output}"
-
 
 def test_run_exclude_patterns():
     ctx = run_command.make_context("run", ["--exclude-patterns", __file__])

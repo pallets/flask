@@ -9,31 +9,26 @@ import flask
 TEST_KEY = "foo"
 SECRET_KEY = "config"
 
-
 def common_object_test(app):
     assert app.secret_key == "config"
     assert app.config["TEST_KEY"] == "foo"
     assert "TestConfig" not in app.config
-
 
 def test_config_from_pyfile():
     app = flask.Flask(__name__)
     app.config.from_pyfile(f"{__file__.rsplit('.', 1)[0]}.py")
     common_object_test(app)
 
-
 def test_config_from_object():
     app = flask.Flask(__name__)
     app.config.from_object(__name__)
     common_object_test(app)
-
 
 def test_config_from_file_json():
     app = flask.Flask(__name__)
     current_dir = os.path.dirname(os.path.abspath(__file__))
     app.config.from_file(os.path.join(current_dir, "static", "config.json"), json.load)
     common_object_test(app)
-
 
 def test_config_from_file_toml():
     tomllib = pytest.importorskip("tomllib", reason="tomllib added in 3.11")
@@ -43,7 +38,6 @@ def test_config_from_file_toml():
         os.path.join(current_dir, "static", "config.toml"), tomllib.load, text=False
     )
     common_object_test(app)
-
 
 def test_from_prefixed_env(monkeypatch):
     monkeypatch.setenv("FLASK_STRING", "value")
@@ -65,7 +59,6 @@ def test_from_prefixed_env(monkeypatch):
     assert app.config["DICT"] == {"k": "v"}
     assert "OTHER" not in app.config
 
-
 def test_from_prefixed_env_custom_prefix(monkeypatch):
     monkeypatch.setenv("FLASK_A", "a")
     monkeypatch.setenv("NOT_FLASK_A", "b")
@@ -74,7 +67,6 @@ def test_from_prefixed_env_custom_prefix(monkeypatch):
     app.config.from_prefixed_env("NOT_FLASK")
 
     assert app.config["A"] == "b"
-
 
 def test_from_prefixed_env_nested(monkeypatch):
     monkeypatch.setenv("FLASK_EXIST__ok", "other")
@@ -106,7 +98,6 @@ def test_from_prefixed_env_nested(monkeypatch):
 
     assert app.config["NEW"] == {"K": "v"}
 
-
 def test_config_from_mapping():
     app = flask.Flask(__name__)
     app.config.from_mapping({"SECRET_KEY": "config", "TEST_KEY": "foo"})
@@ -128,7 +119,6 @@ def test_config_from_mapping():
     with pytest.raises(TypeError):
         app.config.from_mapping({}, {})
 
-
 def test_config_from_class():
     class Base:
         TEST_KEY = "foo"
@@ -139,7 +129,6 @@ def test_config_from_class():
     app = flask.Flask(__name__)
     app.config.from_object(Test)
     common_object_test(app)
-
 
 def test_config_from_envvar(monkeypatch):
     monkeypatch.setattr("os.environ", {})
@@ -157,7 +146,6 @@ def test_config_from_envvar(monkeypatch):
     assert app.config.from_envvar("FOO_SETTINGS")
     common_object_test(app)
 
-
 def test_config_from_envvar_missing(monkeypatch):
     monkeypatch.setattr("os.environ", {"FOO_SETTINGS": "missing.cfg"})
     app = flask.Flask(__name__)
@@ -170,7 +158,6 @@ def test_config_from_envvar_missing(monkeypatch):
     assert msg.endswith("missing.cfg'")
     assert not app.config.from_envvar("FOO_SETTINGS", silent=True)
 
-
 def test_config_missing():
     app = flask.Flask(__name__)
     with pytest.raises(IOError) as e:
@@ -182,7 +169,6 @@ def test_config_missing():
     assert msg.endswith("missing.cfg'")
     assert not app.config.from_pyfile("missing.cfg", silent=True)
 
-
 def test_config_missing_file():
     app = flask.Flask(__name__)
     with pytest.raises(IOError) as e:
@@ -193,7 +179,6 @@ def test_config_missing_file():
     )
     assert msg.endswith("missing.json'")
     assert not app.config.from_file("missing.json", load=json.load, silent=True)
-
 
 def test_custom_config_class():
     class Config(flask.Config):
@@ -207,12 +192,10 @@ def test_custom_config_class():
     app.config.from_object(__name__)
     common_object_test(app)
 
-
 def test_session_lifetime():
     app = flask.Flask(__name__)
     app.config["PERMANENT_SESSION_LIFETIME"] = 42
     assert app.permanent_session_lifetime.seconds == 42
-
 
 def test_get_namespace():
     app = flask.Flask(__name__)
@@ -238,7 +221,6 @@ def test_get_namespace():
     assert 2 == len(bar_options)
     assert "bar stuff 1" == bar_options["BAR_STUFF_1"]
     assert "bar stuff 2" == bar_options["BAR_STUFF_2"]
-
 
 @pytest.mark.parametrize("encoding", ["utf-8", "iso-8859-15", "latin-1"])
 def test_from_pyfile_weird_encoding(tmp_path, encoding):
