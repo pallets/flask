@@ -471,8 +471,10 @@ class AppContext:
 
         try:
             if self._request is not None:
-                self.app.do_teardown_request(self, exc)
-                self._request.close()
+                try:
+                    self.app.do_teardown_request(self, exc)
+                finally:
+                    self._request.close()
         finally:
             self.app.do_teardown_appcontext(self, exc)
             _cv_app.reset(self._cv_token)
