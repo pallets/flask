@@ -195,6 +195,28 @@ def test_config_missing_file():
     assert not app.config.from_file("missing.json", load=json.load, silent=True)
 
 
+def test_config_enotdir_from_pyfile(tmp_path):
+    """from_pyfile with silent=True handles ENOTDIR when a path
+    component is a regular file rather than a directory."""
+    # Create a regular file that will block directory traversal.
+    blocker = tmp_path / "not_a_dir"
+    blocker.write_text("x")
+    app = flask.Flask(__name__)
+    # Trying to open "not_a_dir/settings.cfg" raises ENOTDIR.
+    assert not app.config.from_pyfile(str(blocker / "settings.cfg"), silent=True)
+
+
+def test_config_enotdir_from_file(tmp_path):
+    """from_file with silent=True handles ENOTDIR when a path
+    component is a regular file rather than a directory."""
+    blocker = tmp_path / "not_a_dir"
+    blocker.write_text("x")
+    app = flask.Flask(__name__)
+    assert not app.config.from_file(
+        str(blocker / "config.json"), load=json.load, silent=True
+    )
+
+
 def test_custom_config_class():
     class Config(flask.Config):
         pass

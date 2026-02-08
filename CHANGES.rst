@@ -3,6 +3,9 @@ Version 3.2.0
 
 Unreleased
 
+-   ``Config.from_file()`` with ``silent=True`` now handles ``ENOTDIR``
+    errors, matching the behavior of ``Config.from_pyfile()``. :issue:`5912`
+
 -   Drop support for Python 3.9. :pr:`5730`
 -   Remove previously deprecated code: ``__version__``. :pr:`5648`
 -   ``RequestContext`` has merged with ``AppContext``. ``RequestContext`` is now
