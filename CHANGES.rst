@@ -23,6 +23,8 @@ Unreleased
     switching ``POST`` to ``GET``. This preserves the current behavior of
     ``GET`` and ``POST`` redirects, and is also correct for frontend libraries
     such as HTMX. :issue:`5895`
+-   ``Config.from_file()`` with ``silent=True`` handles ``ENOTDIR`` errors,
+    matching the behavior of ``Config.from_pyfile()``. :issue:`5912`
 
 
 Version 3.1.2

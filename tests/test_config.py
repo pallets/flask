@@ -195,6 +195,20 @@ def test_config_missing_file():
     assert not app.config.from_file("missing.json", load=json.load, silent=True)
 
 
+def test_config_from_file_enotdir(tmp_path):
+    not_a_dir = tmp_path / "not_a_dir"
+    not_a_dir.write_text("")
+    app = flask.Flask(__name__)
+    app.config.root_path = str(tmp_path)
+
+    with pytest.raises(OSError):
+        app.config.from_file("not_a_dir/config.json", load=json.load)
+
+    assert not app.config.from_file(
+        "not_a_dir/config.json", load=json.load, silent=True
+    )
+
+
 def test_custom_config_class():
     class Config(flask.Config):
         pass
