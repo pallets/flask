@@ -20,6 +20,7 @@ from werkzeug.routing import BuildError
 from werkzeug.routing import RequestRedirect
 
 import flask
+from flask.testing import FlaskClient
 
 require_cpython_gc = pytest.mark.skipif(
     python_implementation() != "CPython",
@@ -67,63 +68,61 @@ def test_method_route_no_methods(app):
         app.get("/", methods=["GET", "POST"])
 
 
-def test_provide_automatic_options_attr():
-    app = flask.Flask(__name__)
+def test_provide_automatic_options_attr_disable(
+    app: flask.Flask, client: FlaskClient
+) -> None:
+    """Automatic options can be disabled by the view func attribute."""
 
     def index():
         return "Hello World!"
 
     index.provide_automatic_options = False
-    app.route("/")(index)
-    rv = app.test_client().open("/", method="OPTIONS")
+    app.add_url_rule("/", view_func=index)
+    rv = client.options()
     assert rv.status_code == 405
 
-    app = flask.Flask(__name__)
 
-    def index2():
+def test_provide_automatic_options_attr_enable(
+    app: flask.Flask, client: FlaskClient
+) -> None:
+    """When default automatic options is disabled in config, it can still be
+    enabled by the view function attribute.
+    """
+    app.config["PROVIDE_AUTOMATIC_OPTIONS"] = False
+
+    def index():
         return "Hello World!"
 
-    index2.provide_automatic_options = True
-    app.route("/", methods=["OPTIONS"])(index2)
-    rv = app.test_client().open("/", method="OPTIONS")
-    assert sorted(rv.allow) == ["OPTIONS"]
+    index.provide_automatic_options = True
+    app.add_url_rule("/", view_func=index)
+    rv = client.options()
+    assert rv.allow == {"GET", "HEAD", "OPTIONS"}
 
 
-def test_provide_automatic_options_kwarg(app, client):
+def test_provide_automatic_options_arg_disable(
+    app: flask.Flask, client: FlaskClient
+) -> None:
+    """Automatic options can be disabled by the route argument."""
+
+    @app.get("/", provide_automatic_options=False)
     def index():
-        return flask.request.method
+        return "Hello World!"
 
-    def more():
-        return flask.request.method
-
-    app.add_url_rule("/", view_func=index, provide_automatic_options=False)
-    app.add_url_rule(
-        "/more",
-        view_func=more,
-        methods=["GET", "POST"],
-        provide_automatic_options=False,
-    )
-    assert client.get("/").data == b"GET"
-
-    rv = client.post("/")
-    assert rv.status_code == 405
-    assert sorted(rv.allow) == ["GET", "HEAD"]
-
-    rv = client.open("/", method="OPTIONS")
+    rv = client.options()
     assert rv.status_code == 405
 
-    rv = client.head("/")
-    assert rv.status_code == 200
-    assert not rv.data  # head truncates
-    assert client.post("/more").data == b"POST"
-    assert client.get("/more").data == b"GET"
 
-    rv = client.delete("/more")
-    assert rv.status_code == 405
-    assert sorted(rv.allow) == ["GET", "HEAD", "POST"]
+def test_provide_automatic_options_method_disable(
+    app: flask.Flask, client: FlaskClient
+) -> None:
+    """Automatic options is ignored if the route handles options."""
 
-    rv = client.open("/more", method="OPTIONS")
-    assert rv.status_code == 405
+    @app.route("/", methods=["OPTIONS"])
+    def index():
+        return "", {"X-Test": "test"}
+
+    rv = client.options()
+    assert rv.headers["X-Test"] == "test"
 
 
 def test_request_dispatching(app, client):
