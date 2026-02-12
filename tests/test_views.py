@@ -2,6 +2,7 @@ import pytest
 from werkzeug.http import parse_set_header
 
 import flask.views
+from flask.testing import FlaskClient
 
 
 def common_test(app):
@@ -98,44 +99,55 @@ def test_view_decorators(app, client):
     assert rv.data == b"Awesome"
 
 
-def test_view_provide_automatic_options_attr():
-    app = flask.Flask(__name__)
+def test_view_provide_automatic_options_attr_disable(
+    app: flask.Flask, client: FlaskClient
+) -> None:
+    """Automatic options can be disabled by the view class attribute."""
 
-    class Index1(flask.views.View):
+    class Index(flask.views.View):
         provide_automatic_options = False
 
         def dispatch_request(self):
             return "Hello World!"
 
-    app.add_url_rule("/", view_func=Index1.as_view("index"))
-    c = app.test_client()
-    rv = c.open("/", method="OPTIONS")
+    app.add_url_rule("/", view_func=Index.as_view("index"))
+    rv = client.options()
     assert rv.status_code == 405
 
-    app = flask.Flask(__name__)
 
-    class Index2(flask.views.View):
-        methods = ["OPTIONS"]
+def test_view_provide_automatic_options_attr_enable(
+    app: flask.Flask, client: FlaskClient
+) -> None:
+    """When default automatic options is disabled in config, it can still be
+    enabled by the view class attribute.
+    """
+    app.config["PROVIDE_AUTOMATIC_OPTIONS"] = False
+
+    class Index(flask.views.View):
         provide_automatic_options = True
 
         def dispatch_request(self):
             return "Hello World!"
 
-    app.add_url_rule("/", view_func=Index2.as_view("index"))
-    c = app.test_client()
-    rv = c.open("/", method="OPTIONS")
-    assert sorted(rv.allow) == ["OPTIONS"]
+    app.add_url_rule("/", view_func=Index.as_view("index"))
+    rv = client.options("/")
+    assert rv.allow == {"GET", "HEAD", "OPTIONS"}
 
-    app = flask.Flask(__name__)
 
-    class Index3(flask.views.View):
+def test_provide_automatic_options_method_disable(
+    app: flask.Flask, client: FlaskClient
+) -> None:
+    """Automatic options is ignored if the route handles options."""
+
+    class Index(flask.views.View):
+        methods = ["OPTIONS"]
+
         def dispatch_request(self):
-            return "Hello World!"
+            return "", {"X-Test": "test"}
 
-    app.add_url_rule("/", view_func=Index3.as_view("index"))
-    c = app.test_client()
-    rv = c.open("/", method="OPTIONS")
-    assert "OPTIONS" in rv.allow
+    app.add_url_rule("/", view_func=Index.as_view("index"))
+    rv = client.options()
+    assert rv.headers["X-Test"] == "test"
 
 
 def test_implicit_head(app, client):
@@ -180,7 +192,7 @@ def test_endpoint_override(app):
     app.add_url_rule("/", view_func=Index.as_view("index"))
 
     with pytest.raises(AssertionError):
-        app.add_url_rule("/", view_func=Index.as_view("index"))
+        app.add_url_rule("/other", view_func=Index.as_view("index"))
 
     # But these tests should still pass. We just log a warning.
     common_test(app)
