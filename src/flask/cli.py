@@ -1072,10 +1072,15 @@ def routes_command(sort: str, all_methods: bool) -> None:
     rows = []
 
     for rule in rules:
-        row = [
-            rule.endpoint,
-            ", ".join(sorted((rule.methods or set()) - ignored_methods)),
-        ]
+        if rule.endpoint == "_automatic_options":
+            continue
+
+        methods = rule.methods or set()
+
+        if getattr(rule, "provide_automatic_options", False):
+            methods.add("OPTIONS")
+
+        row = [rule.endpoint, ", ".join(sorted(methods - ignored_methods))]
 
         if has_domain:
             row.append((rule.host if host_matching else rule.subdomain) or "")

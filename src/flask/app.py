@@ -5,7 +5,6 @@ import inspect
 import os
 import sys
 import typing as t
-import weakref
 from datetime import timedelta
 from functools import update_wrapper
 from inspect import iscoroutinefunction
@@ -351,15 +350,14 @@ class Flask(App):
             assert bool(static_host) == host_matching, (
                 "Invalid static_host/host_matching combination"
             )
-            # Use a weakref to avoid creating a reference cycle between the app
-            # and the view function (see #3761).
-            self_ref = weakref.ref(self)
             self.add_url_rule(
                 f"{self.static_url_path}/<path:filename>",
                 endpoint="static",
                 host=static_host,
-                view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
+                view_func=_static_view,
             )
+
+        self.view_functions["_automatic_options"] = _options_view
 
     def get_send_file_max_age(self, filename: str | None) -> int | None:
         """Used by :func:`send_file` to determine the ``max_age`` cache
@@ -977,14 +975,6 @@ class Flask(App):
         if req.routing_exception is not None:
             self.raise_routing_exception(req)
         rule: Rule = req.url_rule  # type: ignore[assignment]
-        # if we provide automatic options for this URL and the
-        # request came with the OPTIONS method, reply automatically
-        if (
-            getattr(rule, "provide_automatic_options", False)
-            and req.method == "OPTIONS"
-        ):
-            return self.make_default_options_response(ctx)
-        # otherwise dispatch to the handler for that endpoint
         view_args: dict[str, t.Any] = req.view_args  # type: ignore[assignment]
         return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
 
@@ -1604,3 +1594,12 @@ class Flask(App):
         wrapped to apply middleware.
         """
         return self.wsgi_app(environ, start_response)
+
+
+def _static_view(filename: str) -> Response:
+    return app_ctx.app.send_static_file(filename)
+
+
+def _options_view() -> Response:
+    ctx = app_ctx._get_current_object()
+    return ctx.app.make_default_options_response(ctx)
