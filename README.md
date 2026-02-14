@@ -52,7 +52,7 @@ questions, and making PRs.
 
 [contrib]: https://palletsprojects.com/contributing/
 HEAD
-## Contribution Note 
+## Contribution Note
 5b51808f513ae28c87c9122a22e7e79b6f2ae3eb
 
 This change was added to demonstrate the GitHub fork and pull request collaboration workflow.
