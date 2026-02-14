@@ -51,6 +51,3 @@ contribute, including reporting issues, requesting features, asking or answering
 questions, and making PRs.
 
 [contrib]: https://palletsprojects.com/contributing/
-## Contribution Note 
-
-This change was added to demonstrate the GitHub fork and pull request collaboration workflow.
