@@ -73,7 +73,7 @@ function but internally imports the real function on first use::
         def __call__(self, *args, **kwargs):
             return self.view(*args, **kwargs)
 
-What's important here is is that `__module__` and `__name__` are properly
+What's important here is that `__module__` and `__name__` are properly
 set.  This is used by Flask internally to figure out how to name the
 URL rules in case you don't provide a name for the rule yourself.
 
