@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 import typing as t
 
 from werkzeug.exceptions import BadRequest
@@ -13,6 +14,31 @@ from .helpers import _split_blueprint_path
 
 if t.TYPE_CHECKING:  # pragma: no cover
     from werkzeug.routing import Rule
+
+
+@dataclass(slots=True)
+class RequestLimits:
+    """Validated view of configured request size limits.
+
+    This centralizes basic sanity checks for limits that control how much
+    data Flask will accept and parse from a client request.
+    """
+
+    max_content_length: int | None = None
+    max_form_memory_size: int = 500_000
+    max_form_parts: int = 1_000
+
+    def __post_init__(self) -> None:
+        if self.max_content_length is not None and self.max_content_length < 0:
+            raise ValueError("MAX_CONTENT_LENGTH must be non-negative or None.")
+
+        if self.max_form_memory_size < 0:
+            raise ValueError("MAX_FORM_MEMORY_SIZE must be non-negative.")
+
+        if self.max_form_parts is not None and self.max_form_parts < 1:  # type: ignore[redundant-expr]
+            # NOTE: max_form_parts is annotated as int, but allow a defensive
+            # check in case callers or future changes make it optional.
+            raise ValueError("MAX_FORM_PARTS must be at least 1.")
 
 
 class Request(RequestBase):
@@ -56,6 +82,27 @@ class Request(RequestBase):
     _max_form_memory_size: int | None = None
     _max_form_parts: int | None = None
 
+    def _get_limits(self) -> RequestLimits:
+        """Return validated request limits derived from the current app config.
+
+        Falls back to Werkzeug's defaults when no Flask app is active, in
+        order to preserve existing behaviour for non-Flask usage.
+        """
+        if not current_app:
+            # When there is no current app, use the underlying Werkzeug limits.
+            # These attributes are provided by ``RequestBase``.
+            return RequestLimits(
+                max_content_length=super().max_content_length,
+                max_form_memory_size=super().max_form_memory_size or 500_000,
+                max_form_parts=super().max_form_parts or 1_000,
+            )
+
+        return RequestLimits(
+            max_content_length=current_app.config["MAX_CONTENT_LENGTH"],
+            max_form_memory_size=current_app.config["MAX_FORM_MEMORY_SIZE"],
+            max_form_parts=current_app.config["MAX_FORM_PARTS"],
+        )
+
     @property
     def max_content_length(self) -> int | None:
         """The maximum number of bytes that will be read during this request. If
@@ -80,10 +127,8 @@ class Request(RequestBase):
         if self._max_content_length is not None:
             return self._max_content_length
 
-        if not current_app:
-            return super().max_content_length
-
-        return current_app.config["MAX_CONTENT_LENGTH"]  # type: ignore[no-any-return]
+        limits = self._get_limits()
+        return limits.max_content_length
 
     @max_content_length.setter
     def max_content_length(self, value: int | None) -> None:
@@ -107,10 +152,8 @@ class Request(RequestBase):
         if self._max_form_memory_size is not None:
             return self._max_form_memory_size
 
-        if not current_app:
-            return super().max_form_memory_size
-
-        return current_app.config["MAX_FORM_MEMORY_SIZE"]  # type: ignore[no-any-return]
+        limits = self._get_limits()
+        return limits.max_form_memory_size
 
     @max_form_memory_size.setter
     def max_form_memory_size(self, value: int | None) -> None:
@@ -134,10 +177,8 @@ class Request(RequestBase):
         if self._max_form_parts is not None:
             return self._max_form_parts
 
-        if not current_app:
-            return super().max_form_parts
-
-        return current_app.config["MAX_FORM_PARTS"]  # type: ignore[no-any-return]
+        limits = self._get_limits()
+        return limits.max_form_parts
 
     @max_form_parts.setter
     def max_form_parts(self, value: int | None) -> None:
