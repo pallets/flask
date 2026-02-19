@@ -1,5 +1,5 @@
 import functools
-
+import re
 from flask import Blueprint
 from flask import flash
 from flask import g
@@ -8,10 +8,17 @@ from flask import render_template
 from flask import request
 from flask import session
 from flask import url_for
-from werkzeug.security import check_password_hash
-from werkzeug.security import generate_password_hash
+# from werkzeug.security import check_password_hash
+# from werkzeug.security import generate_password_hash
 
 from .db import get_db
+#   Modern secure password hashing (Argon2)
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
+
+#Create Argon2 password hasher instance
+ph = PasswordHasher()
+
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -58,14 +65,26 @@ def register():
 
         if not username:
             error = "Username is required."
+        #   Strong password policy enforcement
+        elif len(password) < 8:
+            error = "Password must be at least 8 characters."
+        elif not re.search(r"[A-Z]", password):
+            error = "Password must contain an uppercase letter."
+        elif not re.search(r"[a-z]", password):
+            error = "Password must contain a lowercase letter."
+        elif not re.search(r"[0-9]", password):
+            error = "Password must contain a number."
+        elif not re.search(r"[!@#$%^&*]", password):
+            error = "Password must contain a special character."
         elif not password:
             error = "Password is required."
 
         if error is None:
             try:
+                
                 db.execute(
                     "INSERT INTO user (username, password) VALUES (?, ?)",
-                    (username, generate_password_hash(password)),
+                    (username, ph.hash(password)), 
                 )
                 db.commit()
             except db.IntegrityError:
@@ -82,8 +101,10 @@ def register():
 
 
 @bp.route("/login", methods=("GET", "POST"))
+#   Prevent brute-force attacks by limiting login attempts
 def login():
     """Log in a registered user by adding the user id to the session."""
+    """Authenticate user using Argon2 password verification."""
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -95,8 +116,12 @@ def login():
 
         if user is None:
             error = "Incorrect username."
-        elif not check_password_hash(user["password"], password):
-            error = "Incorrect password."
+        else:
+            try:
+               #Secure Argon2 password verification
+                ph.verify(user["password"], password)
+            except VerifyMismatchError:
+                error = "Incorrect password."
 
         if error is None:
             # store the user id in a new session and return to the index
