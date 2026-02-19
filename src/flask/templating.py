@@ -19,15 +19,16 @@ if t.TYPE_CHECKING:  # pragma: no cover
 
 
 def _default_template_ctx_processor() -> dict[str, t.Any]:
-    """Default template context processor.  Injects `request`,
-    `session` and `g`.
+    """Default template context processor.  Replaces the ``request`` and ``g``
+    proxies with their concrete objects for faster access.
     """
     ctx = app_ctx._get_current_object()
     rv: dict[str, t.Any] = {"g": ctx.g}
 
     if ctx.has_request:
         rv["request"] = ctx.request
-        rv["session"] = ctx.session
+        # The session proxy cannot be replaced, accessing it gets
+        # RequestContext.session, which sets session.accessed.
 
     return rv
 

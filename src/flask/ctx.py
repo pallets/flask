@@ -381,7 +381,7 @@ class AppContext:
     def session(self) -> SessionMixin:
         """The session object associated with this context. Accessed through
         :data:`.session`. Only available in request contexts, otherwise raises
-        :exc:`RuntimeError`.
+        :exc:`RuntimeError`. Accessing this sets :attr:`.SessionMixin.accessed`.
         """
         if self._request is None:
             raise RuntimeError("There is no request in this context.")
@@ -393,6 +393,7 @@ class AppContext:
             if self._session is None:
                 self._session = si.make_null_session(self.app)
 
+        self._session.accessed = True
         return self._session
 
     def match_request(self) -> None:
