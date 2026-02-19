@@ -377,12 +377,8 @@ class AppContext:
 
         return self._request
 
-    @property
-    def session(self) -> SessionMixin:
-        """The session object associated with this context. Accessed through
-        :data:`.session`. Only available in request contexts, otherwise raises
-        :exc:`RuntimeError`. Accessing this sets :attr:`.SessionMixin.accessed`.
-        """
+    def _get_session(self) -> SessionMixin:
+        """Open the session if it is not already open for this request context."""
         if self._request is None:
             raise RuntimeError("There is no request in this context.")
 
@@ -393,8 +389,17 @@ class AppContext:
             if self._session is None:
                 self._session = si.make_null_session(self.app)
 
-        self._session.accessed = True
         return self._session
+
+    @property
+    def session(self) -> SessionMixin:
+        """The session object associated with this context. Accessed through
+        :data:`.session`. Only available in request contexts, otherwise raises
+        :exc:`RuntimeError`. Accessing this sets :attr:`.SessionMixin.accessed`.
+        """
+        session = self._get_session()
+        session.accessed = True
+        return session
 
     def match_request(self) -> None:
         """Apply routing to the current request, storing either the matched
@@ -427,8 +432,15 @@ class AppContext:
         self._cv_token = _cv_app.set(self)
         appcontext_pushed.send(self.app, _async_wrapper=self.app.ensure_sync)
 
-        if self._request is not None and self.url_adapter is not None:
-            self.match_request()
+        if self._request is not None:
+            # Open the session at the moment that the request context is available.
+            # This allows a custom open_session method to use the request context.
+            self._get_session()
+
+            # Match the request URL after loading the session, so that the
+            # session is available in custom URL converters.
+            if self.url_adapter is not None:
+                self.match_request()
 
     def pop(self, exc: BaseException | None = None) -> None:
         """Pop this context so that it is no longer the active context. Then
