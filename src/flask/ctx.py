@@ -324,7 +324,7 @@ class RequestContext:
         except HTTPException as e:
             self.request.routing_exception = e
         self.flashes: list[tuple[str, str]] | None = None
-        self.session: SessionMixin | None = session
+        self._session: SessionMixin | None = session
         # Functions that should be executed after the request on the response
         # object.  These will be called before the regular "after_request"
         # functions.
@@ -351,7 +351,7 @@ class RequestContext:
             self.app,
             environ=self.request.environ,
             request=self.request,
-            session=self.session,
+            session=self._session,
         )
 
     def match_request(self) -> None:
@@ -363,6 +363,16 @@ class RequestContext:
             self.request.url_rule, self.request.view_args = result  # type: ignore
         except HTTPException as e:
             self.request.routing_exception = e
+
+    @property
+    def session(self) -> SessionMixin:
+        """The session data associated with this request. Not available until
+        this context has been pushed. Accessing this property, also accessed by
+        the :data:`~flask.session` proxy, sets :attr:`.SessionMixin.accessed`.
+        """
+        assert self._session is not None, "The session has not yet been opened."
+        self._session.accessed = True
+        return self._session
 
     def push(self) -> None:
         # Before we push the request context we have to ensure that there
@@ -381,12 +391,12 @@ class RequestContext:
         # This allows a custom open_session method to use the request context.
         # Only open a new session if this is the first time the request was
         # pushed, otherwise stream_with_context loses the session.
-        if self.session is None:
+        if self._session is None:
             session_interface = self.app.session_interface
-            self.session = session_interface.open_session(self.app, self.request)
+            self._session = session_interface.open_session(self.app, self.request)
 
-            if self.session is None:
-                self.session = session_interface.make_null_session(self.app)
+            if self._session is None:
+                self._session = session_interface.make_null_session(self.app)
 
         # Match the request URL after loading the session, so that the
         # session is available in custom URL converters.
