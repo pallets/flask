@@ -20,6 +20,8 @@ from werkzeug.routing import BuildError
 from werkzeug.routing import RequestRedirect
 
 import flask
+from flask.globals import request_ctx
+from flask.testing import FlaskClient
 
 require_cpython_gc = pytest.mark.skipif(
     python_implementation() != "CPython",
@@ -231,27 +233,46 @@ def test_endpoint_decorator(app, client):
     assert client.get("/foo/bar").data == b"bar"
 
 
-def test_session(app, client):
-    @app.route("/set", methods=["POST"])
-    def set():
-        assert not flask.session.accessed
-        assert not flask.session.modified
+def test_session_accessed(app: flask.Flask, client: FlaskClient) -> None:
+    @app.post("/")
+    def do_set():
         flask.session["value"] = flask.request.form["value"]
-        assert flask.session.accessed
-        assert flask.session.modified
         return "value set"
 
-    @app.route("/get")
-    def get():
-        assert not flask.session.accessed
-        assert not flask.session.modified
-        v = flask.session.get("value", "None")
-        assert flask.session.accessed
-        assert not flask.session.modified
-        return v
+    @app.get("/")
+    def do_get():
+        return flask.session.get("value", "None")
 
-    assert client.post("/set", data={"value": "42"}).data == b"value set"
-    assert client.get("/get").data == b"42"
+    @app.get("/nothing")
+    def do_nothing() -> str:
+        return ""
+
+    with client:
+        rv = client.get("/nothing")
+        assert "cookie" not in rv.vary
+        assert not request_ctx._session.accessed
+        assert not request_ctx._session.modified
+
+    with client:
+        rv = client.post(data={"value": "42"})
+        assert rv.text == "value set"
+        assert "cookie" in rv.vary
+        assert request_ctx._session.accessed
+        assert request_ctx._session.modified
+
+    with client:
+        rv = client.get()
+        assert rv.text == "42"
+        assert "cookie" in rv.vary
+        assert request_ctx._session.accessed
+        assert not request_ctx._session.modified
+
+    with client:
+        rv = client.get("/nothing")
+        assert rv.text == ""
+        assert "cookie" not in rv.vary
+        assert not request_ctx._session.accessed
+        assert not request_ctx._session.modified
 
 
 def test_session_path(app, client):
