@@ -17,6 +17,14 @@ community that make adding new functionality easy.
 [Werkzeug]: https://werkzeug.palletsprojects.com/
 [Jinja]: https://jinja.palletsprojects.com/
 
+##Installation
+
+Install Flask using pip:
+
+```bash
+pip install Flask
+```
+
 ## A Simple Example
 
 ```python
