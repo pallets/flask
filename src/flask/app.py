@@ -36,6 +36,7 @@ from .globals import app_ctx
 from .globals import g
 from .globals import request
 from .globals import session
+from .helpers import _CollectErrors
 from .helpers import get_debug_flag
 from .helpers import get_flashed_messages
 from .helpers import get_load_dotenv
@@ -1430,15 +1431,24 @@ class Flask(App):
         :param exc: An unhandled exception raised while dispatching the request.
             Passed to each teardown function.
 
+        .. versionchanged:: 3.2
+            All callbacks are called rather than stopping on the first error.
+
         .. versionchanged:: 0.9
             Added the ``exc`` argument.
         """
+        collect_errors = _CollectErrors()
+
         for name in chain(ctx.request.blueprints, (None,)):
             if name in self.teardown_request_funcs:
                 for func in reversed(self.teardown_request_funcs[name]):
-                    self.ensure_sync(func)(exc)
+                    with collect_errors:
+                        self.ensure_sync(func)(exc)
 
-        request_tearing_down.send(self, _async_wrapper=self.ensure_sync, exc=exc)
+        with collect_errors:
+            request_tearing_down.send(self, _async_wrapper=self.ensure_sync, exc=exc)
+
+        collect_errors.raise_any("Errors during request teardown")
 
     def do_teardown_appcontext(
         self, ctx: AppContext, exc: BaseException | None = None
@@ -1452,12 +1462,21 @@ class Flask(App):
         :param exc: An unhandled exception raised while the context was active.
             Passed to each teardown function.
 
+        .. versionchanged:: 3.2
+            All callbacks are called rather than stopping on the first error.
+
         .. versionadded:: 0.9
         """
-        for func in reversed(self.teardown_appcontext_funcs):
-            self.ensure_sync(func)(exc)
+        collect_errors = _CollectErrors()
 
-        appcontext_tearing_down.send(self, _async_wrapper=self.ensure_sync, exc=exc)
+        for func in reversed(self.teardown_appcontext_funcs):
+            with collect_errors:
+                self.ensure_sync(func)(exc)
+
+        with collect_errors:
+            appcontext_tearing_down.send(self, _async_wrapper=self.ensure_sync, exc=exc)
+
+        collect_errors.raise_any("Errors during app teardown")
 
     def app_context(self) -> AppContext:
         """Create an :class:`.AppContext`. When the context is pushed,

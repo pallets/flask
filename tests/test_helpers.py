@@ -32,45 +32,39 @@ class PyBytesIO:
 
 class TestSendfile:
     def test_send_file(self, app, req_ctx):
-        rv = flask.send_file("static/index.html")
-        assert rv.direct_passthrough
-        assert rv.mimetype == "text/html"
-
         with app.open_resource("static/index.html") as f:
-            rv.direct_passthrough = False
-            assert rv.data == f.read()
+            expect = f.read()
 
-        rv.close()
+        with flask.send_file("static/index.html") as rv:
+            assert rv.direct_passthrough
+            assert rv.mimetype == "text/html"
+            rv.direct_passthrough = False
+            assert rv.data == expect
 
     def test_static_file(self, app, req_ctx):
         # Default max_age is None.
 
         # Test with static file handler.
-        rv = app.send_static_file("index.html")
-        assert rv.cache_control.max_age is None
-        rv.close()
+        with app.send_static_file("index.html") as rv:
+            assert rv.cache_control.max_age is None
 
         # Test with direct use of send_file.
-        rv = flask.send_file("static/index.html")
-        assert rv.cache_control.max_age is None
-        rv.close()
+        with flask.send_file("static/index.html") as rv:
+            assert rv.cache_control.max_age is None
 
         app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 3600
 
         # Test with static file handler.
-        rv = app.send_static_file("index.html")
-        assert rv.cache_control.max_age == 3600
-        rv.close()
+        with app.send_static_file("index.html") as rv:
+            assert rv.cache_control.max_age == 3600
 
         # Test with direct use of send_file.
-        rv = flask.send_file("static/index.html")
-        assert rv.cache_control.max_age == 3600
-        rv.close()
+        with flask.send_file("static/index.html") as rv:
+            assert rv.cache_control.max_age == 3600
 
         # Test with pathlib.Path.
-        rv = app.send_static_file(FakePath("index.html"))
-        assert rv.cache_control.max_age == 3600
-        rv.close()
+        with app.send_static_file(FakePath("index.html")) as rv:
+            assert rv.cache_control.max_age == 3600
 
         class StaticFileApp(flask.Flask):
             def get_send_file_max_age(self, filename):
@@ -80,23 +74,21 @@ class TestSendfile:
 
         with app.test_request_context():
             # Test with static file handler.
-            rv = app.send_static_file("index.html")
-            assert rv.cache_control.max_age == 10
-            rv.close()
+            with app.send_static_file("index.html") as rv:
+                assert rv.cache_control.max_age == 10
 
             # Test with direct use of send_file.
-            rv = flask.send_file("static/index.html")
-            assert rv.cache_control.max_age == 10
-            rv.close()
+            with flask.send_file("static/index.html") as rv:
+                assert rv.cache_control.max_age == 10
 
     def test_send_from_directory(self, app, req_ctx):
         app.root_path = os.path.join(
             os.path.dirname(__file__), "test_apps", "subdomaintestmodule"
         )
-        rv = flask.send_from_directory("static", "hello.txt")
-        rv.direct_passthrough = False
-        assert rv.data.strip() == b"Hello Subdomain"
-        rv.close()
+
+        with flask.send_from_directory("static", "hello.txt") as rv:
+            rv.direct_passthrough = False
+            assert rv.data.strip() == b"Hello Subdomain"
 
 
 class TestUrlFor:
@@ -319,15 +311,17 @@ class TestStreaming:
 
         # response is closed without reading stream
         client.get().close()
+
         # response stream is read
-        assert client.get().text == "flask"
+        with client.get() as rv:
+            assert rv.text == "flask"
 
         # same as above, but with client context preservation
         with client:
             client.get().close()
 
-        with client:
-            assert client.get().text == "flask"
+        with client, client.get() as rv:
+            assert rv.text == "flask"
 
 
 class TestHelpers:

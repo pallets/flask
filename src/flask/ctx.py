@@ -10,6 +10,7 @@ from werkzeug.routing import MapAdapter
 
 from . import typing as ft
 from .globals import _cv_app
+from .helpers import _CollectErrors
 from .signals import appcontext_popped
 from .signals import appcontext_pushed
 
@@ -482,15 +483,25 @@ class AppContext:
         if self._push_count > 0:
             return
 
-        try:
-            if self._request is not None:
+        collect_errors = _CollectErrors()
+
+        if self._request is not None:
+            with collect_errors:
                 self.app.do_teardown_request(self, exc)
+
+            with collect_errors:
                 self._request.close()
-        finally:
+
+        with collect_errors:
             self.app.do_teardown_appcontext(self, exc)
-            _cv_app.reset(self._cv_token)
-            self._cv_token = None
+
+        _cv_app.reset(self._cv_token)
+        self._cv_token = None
+
+        with collect_errors:
             appcontext_popped.send(self.app, _async_wrapper=self.app.ensure_sync)
+
+        collect_errors.raise_any("Errors during context teardown")
 
     def __enter__(self) -> te.Self:
         self.push()

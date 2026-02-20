@@ -184,12 +184,12 @@ def test_templates_and_static(test_apps):
     assert rv.data == b"Hello from the Admin"
     rv = client.get("/admin/index2")
     assert rv.data == b"Hello from the Admin"
-    rv = client.get("/admin/static/test.txt")
-    assert rv.data.strip() == b"Admin File"
-    rv.close()
-    rv = client.get("/admin/static/css/test.css")
-    assert rv.data.strip() == b"/* nested file */"
-    rv.close()
+
+    with client.get("/admin/static/test.txt") as rv:
+        assert rv.data.strip() == b"Admin File"
+
+    with client.get("/admin/static/css/test.css") as rv:
+        assert rv.data.strip() == b"/* nested file */"
 
     # try/finally, in case other tests use this app for Blueprint tests.
     max_age_default = app.config["SEND_FILE_MAX_AGE_DEFAULT"]
@@ -198,10 +198,10 @@ def test_templates_and_static(test_apps):
         if app.config["SEND_FILE_MAX_AGE_DEFAULT"] == expected_max_age:
             expected_max_age = 7200
         app.config["SEND_FILE_MAX_AGE_DEFAULT"] = expected_max_age
-        rv = client.get("/admin/static/css/test.css")
-        cc = parse_cache_control_header(rv.headers["Cache-Control"])
-        assert cc.max_age == expected_max_age
-        rv.close()
+
+        with client.get("/admin/static/css/test.css") as rv:
+            cc = parse_cache_control_header(rv.headers["Cache-Control"])
+            assert cc.max_age == expected_max_age
     finally:
         app.config["SEND_FILE_MAX_AGE_DEFAULT"] = max_age_default
 
