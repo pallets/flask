@@ -7,6 +7,7 @@ import typing as t
 from datetime import datetime
 from functools import cache
 from functools import update_wrapper
+from types import TracebackType
 
 import werkzeug.utils
 from werkzeug.exceptions import abort as _wz_abort
@@ -636,3 +637,34 @@ def _split_blueprint_path(name: str) -> list[str]:
         out.extend(_split_blueprint_path(name.rpartition(".")[0]))
 
     return out
+
+
+class _CollectErrors:
+    """A context manager that records and silences an error raised within it.
+    Used to run all teardown functions, then raise any errors afterward.
+    """
+
+    def __init__(self) -> None:
+        self.errors: list[BaseException] = []
+
+    def __enter__(self) -> None:
+        pass
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> bool:
+        if exc_val is not None:
+            self.errors.append(exc_val)
+
+        return True
+
+    def raise_any(self, message: str) -> None:
+        """Raise if any errors were collected."""
+        if self.errors:
+            if sys.version_info >= (3, 11):
+                raise BaseExceptionGroup(message, self.errors)  # noqa: F821
+            else:
+                raise self.errors[0]

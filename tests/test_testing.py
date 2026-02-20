@@ -76,7 +76,6 @@ def test_client_open_environ(app, client, request):
         return flask.request.remote_addr
 
     builder = EnvironBuilder(app, path="/index", method="GET")
-    request.addfinalizer(builder.close)
 
     rv = client.open(builder)
     assert rv.data == b"127.0.0.1"

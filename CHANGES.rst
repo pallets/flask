@@ -14,6 +14,7 @@ Unreleased
     If subclasses were overriding these methods, the old signature is detected,
     shows a deprecation warning, and will continue to work during the
     deprecation period. :issue:`5815`
+-   All teardown callbacks are called, even if any raise an error. :pr:`5928`
 -   The ``should_ignore_error`` is deprecated. Handle errors as needed in
     teardown handlers instead. :issue:`5816`
 -   ``template_filter``, ``template_test``, and ``template_global`` decorators

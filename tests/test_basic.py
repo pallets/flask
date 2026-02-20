@@ -1420,20 +1420,21 @@ def test_url_for_passes_special_values_to_build_error_handler(app):
 
 
 def test_static_files(app, client):
-    rv = client.get("/static/index.html")
-    assert rv.status_code == 200
-    assert rv.data.strip() == b"<h1>Hello World!</h1>"
-    with app.test_request_context():
-        assert flask.url_for("static", filename="index.html") == "/static/index.html"
-    rv.close()
+    with client.get("/static/index.html") as rv:
+        assert rv.status_code == 200
+        assert rv.data.strip() == b"<h1>Hello World!</h1>"
+        with app.test_request_context():
+            assert (
+                flask.url_for("static", filename="index.html") == "/static/index.html"
+            )
 
 
 def test_static_url_path():
     app = flask.Flask(__name__, static_url_path="/foo")
     app.testing = True
-    rv = app.test_client().get("/foo/index.html")
-    assert rv.status_code == 200
-    rv.close()
+
+    with app.test_client().get("/foo/index.html") as rv:
+        assert rv.status_code == 200
 
     with app.test_request_context():
         assert flask.url_for("static", filename="index.html") == "/foo/index.html"
@@ -1442,9 +1443,9 @@ def test_static_url_path():
 def test_static_url_path_with_ending_slash():
     app = flask.Flask(__name__, static_url_path="/foo/")
     app.testing = True
-    rv = app.test_client().get("/foo/index.html")
-    assert rv.status_code == 200
-    rv.close()
+
+    with app.test_client().get("/foo/index.html") as rv:
+        assert rv.status_code == 200
 
     with app.test_request_context():
         assert flask.url_for("static", filename="index.html") == "/foo/index.html"
@@ -1452,25 +1453,25 @@ def test_static_url_path_with_ending_slash():
 
 def test_static_url_empty_path(app):
     app = flask.Flask(__name__, static_folder="", static_url_path="")
-    rv = app.test_client().open("/static/index.html", method="GET")
-    assert rv.status_code == 200
-    rv.close()
+
+    with app.test_client().open("/static/index.html", method="GET") as rv:
+        assert rv.status_code == 200
 
 
 def test_static_url_empty_path_default(app):
     app = flask.Flask(__name__, static_folder="")
-    rv = app.test_client().open("/static/index.html", method="GET")
-    assert rv.status_code == 200
-    rv.close()
+
+    with app.test_client().open("/static/index.html", method="GET") as rv:
+        assert rv.status_code == 200
 
 
 def test_static_folder_with_pathlib_path(app):
     from pathlib import Path
 
     app = flask.Flask(__name__, static_folder=Path("static"))
-    rv = app.test_client().open("/static/index.html", method="GET")
-    assert rv.status_code == 200
-    rv.close()
+
+    with app.test_client().open("/static/index.html", method="GET") as rv:
+        assert rv.status_code == 200
 
 
 def test_static_folder_with_ending_slash():
@@ -1487,9 +1488,10 @@ def test_static_folder_with_ending_slash():
 def test_static_route_with_host_matching():
     app = flask.Flask(__name__, host_matching=True, static_host="example.com")
     c = app.test_client()
-    rv = c.get("http://example.com/static/index.html")
-    assert rv.status_code == 200
-    rv.close()
+
+    with c.get("http://example.com/static/index.html") as rv:
+        assert rv.status_code == 200
+
     with app.test_request_context():
         rv = flask.url_for("static", filename="index.html", _external=True)
         assert rv == "http://example.com/static/index.html"

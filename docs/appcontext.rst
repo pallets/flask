@@ -163,7 +163,8 @@ The teardown callbacks are called by the context when it is popped. They are
 called even if there is an unhandled exception during dispatch. They may be
 called multiple times in some test scenarios. This means there is no guarantee
 that any other parts of the request dispatch have run. Be sure to write these
-functions in a way that does not depend on other callbacks and will not fail.
+functions in a way that does not depend on other callbacks. All callbacks are
+called even if any raise an error.
 
 
 How the Context Works
