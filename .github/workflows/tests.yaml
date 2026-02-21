@@ -5,6 +5,10 @@ on:
   push:
     branches: [main, stable]
     paths-ignore: ['docs/**', 'README.md']
+
+permissions:
+  contents: read
+
 jobs:
   tests:
     name: ${{ matrix.name || matrix.python }}
