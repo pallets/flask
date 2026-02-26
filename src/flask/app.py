@@ -1598,7 +1598,7 @@ class Flask(App):
             except Exception as e:
                 error = e
                 response = self.handle_exception(ctx, e)
-            except:
+            except Exception:
                 error = sys.exc_info()[1]
                 raise
             return response(environ, start_response)
