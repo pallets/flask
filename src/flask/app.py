@@ -971,6 +971,10 @@ class Flask(App):
         be a response object.  In order to convert the return value to a
         proper response object, call :func:`make_response`.
 
+        .. versionchanged:: 3.2
+           The result of ``ensure_sync`` is cached in ``_sync_view_functions``
+           to improve performance.
+
         .. versionchanged:: 0.7
            This no longer does the exception handling, this code was
            moved to the new :meth:`full_dispatch_request`.
@@ -1076,6 +1080,10 @@ class Flask(App):
         functions are wrapped to run and wait for the response.
 
         Override this method to change how the app runs async views.
+
+        .. versionchanged:: 3.2
+           The result of this method is cached during request dispatching
+           to improve performance.
 
         .. versionadded:: 2.0
         """

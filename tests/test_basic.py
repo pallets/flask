@@ -1968,3 +1968,37 @@ def test_app_freed_on_zero_refcount():
         assert weak() is None
     finally:
         gc.enable()
+
+
+def test_sync_view_functions_cache(app, client):
+    """Test that the _sync_view_functions cache is populated and used."""
+    @app.route("/test")
+    def test_view():
+        return "Hello"
+
+    import unittest.mock
+    
+    with unittest.mock.patch.object(app, 'ensure_sync', wraps=app.ensure_sync) as mock_ensure_sync:
+        # First request should call ensure_sync
+        response = client.get("/test")
+        assert response.status_code == 200
+        assert mock_ensure_sync.call_count == 1
+        
+        # Second request should hit the cache and not call ensure_sync
+        response = client.get("/test")
+        assert response.status_code == 200
+        assert mock_ensure_sync.call_count == 1
+
+        # Direct mutation test (to verify the cache is bound to endpoint)
+        def new_view():
+            return "World"
+        
+        # Simulating a user directly updating the view functions after setup
+        # Because it's already cached, this mutation won't affect _sync_view_functions
+        app.view_functions["test"] = new_view
+        
+        # Ensure that it still returns the old result due to the cache
+        response = client.get("/test")
+        assert response.status_code == 200
+        assert response.data == b"Hello"
+

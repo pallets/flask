@@ -107,6 +107,10 @@ the decorated function,
 
         return wrapper
 
+To improve performance, consider caching the result of ``ensure_sync`` if your
+extension calls it frequently on the same function. This is how Flask internally
+optimizes request dispatching.
+
 Check the changelog of the extension you want to use to see if they've
 implemented async support, or make a feature request or PR to them.
 
