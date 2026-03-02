@@ -333,6 +333,8 @@ class Flask(App):
             root_path=root_path,
         )
 
+        self._sync_view_functions: dict[str, t.Callable[..., t.Any]] = {}
+
         #: The Click command group for registering CLI commands for this
         #: object. The commands are available from the ``flask`` command
         #: once the application has been discovered and blueprints have
@@ -987,7 +989,13 @@ class Flask(App):
             return self.make_default_options_response(ctx)
         # otherwise dispatch to the handler for that endpoint
         view_args: dict[str, t.Any] = req.view_args  # type: ignore[assignment]
-        return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+
+        if rule.endpoint not in self._sync_view_functions:
+            self._sync_view_functions[rule.endpoint] = self.ensure_sync(
+                self.view_functions[rule.endpoint]
+            )
+
+        return self._sync_view_functions[rule.endpoint](**view_args)  # type: ignore[no-any-return]
 
     def full_dispatch_request(self, ctx: AppContext) -> Response:
         """Dispatches the request and on top of that performs request
