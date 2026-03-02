@@ -4,7 +4,7 @@ Version 3.2.0
 Unreleased
 
 -   Optimize request dispatching by caching the result of ``ensure_sync`` for view
-    functions in ``_sync_view_functions``, reducing CPU overhead. :issue:`9999`
+    functions in ``_sync_view_functions``, reducing CPU overhead. :pr:`5939`
 -   Drop support for Python 3.9. :pr:`5730`
 -   Remove previously deprecated code: ``__version__``. :pr:`5648`
 -   ``RequestContext`` has merged with ``AppContext``. ``RequestContext`` is now
