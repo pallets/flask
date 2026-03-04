@@ -68,6 +68,18 @@ def stream_with_context(
     available, even though at the point the generator runs the request context
     will typically have ended.
 
+    .. warning::
+
+        Due to the following caveat, it is often safer to pass the data you
+        need as arguments to the generator, rather than relying on the context
+        objects.
+
+    More headers cannot be sent after the body has begun. Therefore, you must
+    make sure all headers are set before starting the response. In particular,
+    if the generator will access ``session``, be sure to do so in the view as
+    well so that the ``Vary: cookie`` header will be set. Do not modify the
+    session in the generator, as the ``Set-Cookie`` header will already be sent.
+
     Use it as a decorator on a generator function:
 
     .. code-block:: python
