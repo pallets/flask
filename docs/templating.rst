@@ -225,5 +225,11 @@ functions to make this easier to use.
         return stream_template("timeline.html")
 
 These functions automatically apply the
-:func:`~flask.stream_with_context` wrapper if a request is active, so
-that it remains available in the template.
+:func:`~flask.stream_with_context` wrapper if a request is active, so that
+:data:`.request`, :data:`.session`, and :data:`.g` remain available in the
+template.
+
+More headers cannot be sent after the body has begun. Therefore, you must
+make sure all headers are set before starting the response. In particular,
+if the template will access ``session``, be sure to do so in the view as
+well so that the ``Vary: cookie`` header will be set.

@@ -153,13 +153,27 @@ F = t.TypeVar("F", bound=t.Callable[..., t.Any])
 
 
 def copy_current_request_context(f: F) -> F:
-    """A helper function that decorates a function to retain the current
-    request context.  This is useful when working with greenlets.  The moment
-    the function is decorated a copy of the request context is created and
-    then pushed when the function is called.  The current session is also
-    included in the copied request context.
+    """Decorate a function to run inside the current request context. This can
+    be used when starting a background task, otherwise it will not see the app
+    and request objects that were active in the parent.
 
-    Example::
+    .. warning::
+
+        Due to the following caveats, it is often safer (and simpler) to pass
+        the data you need when starting the task, rather than using this and
+        relying on the context objects.
+
+    In order to avoid execution switching partially though reading data, either
+    read the request body (access ``form``, ``json``, ``data``, etc) before
+    starting the task, or use a lock. This can be an issue when using threading,
+    but shouldn't be an issue when using greenlet/gevent or asyncio.
+
+    If the task will access ``session``, be sure to do so in the parent as well
+    so that the ``Vary: cookie`` header will be set. Modifying ``session`` in
+    the task should be avoided, as it may execute after the response cookie has
+    already been written.
+
+    .. code-block:: python
 
         import gevent
         from flask import copy_current_request_context

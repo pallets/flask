@@ -8,6 +8,21 @@ roundtrip to the filesystem?
 
 The answer is by using generators and direct responses.
 
+HTTP Response Behavior
+----------------------
+
+**Headers cannot be changed after the streaming response starts.**
+
+When using streaming, it's important to be aware of the order than an HTTP
+response is sent. All headers must be sent first, then the body. More headers
+cannot be sent after the body has begun. Therefore, you must make sure all
+headers are set before starting the response, outside the generator.
+
+In particular, if the generator will access ``session``, be sure to do so in the
+view as well so that the ``Vary: cookie`` header will be set. Do not modify the
+session in the generator, as the ``Set-Cookie`` header will already be sent.
+
+
 Basic Usage
 -----------
 
