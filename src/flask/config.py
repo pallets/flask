@@ -293,7 +293,7 @@ class Config(dict):  # type: ignore[type-arg]
             with open(filename, "r" if text else "rb") as f:
                 obj = load(f)
         except OSError as e:
-            if silent and e.errno in (errno.ENOENT, errno.EISDIR):
+            if silent and e.errno in (errno.ENOENT, errno.EISDIR, errno.ENOTDIR):
                 return False
 
             e.strerror = f"Unable to load configuration file ({e.strerror})"

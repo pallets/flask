@@ -248,3 +248,20 @@ def test_from_pyfile_weird_encoding(tmp_path, encoding):
     app.config.from_pyfile(os.fspath(f))
     value = app.config["TEST_VALUE"]
     assert value == "föö"
+
+
+def test_config_from_file_enotdir_silent(tmp_path):
+    """Test that from_file with silent=True handles ENOTDIR error.
+    When a path component is a regular file instead of a directory,
+    from_file should return False instead of raising OSError.
+    """
+    # Create a file where a directory is expected
+    config_file = tmp_path / "not_a_dir"
+    config_file.write_text("This is a file, not a directory")
+
+    # Try to load a config file through the non-directory path
+    app = flask.Flask(__name__)
+    result = app.config.from_file(
+        os.path.join(config_file, "config.json"), load=json.load, silent=True
+    )
+    assert result is False
