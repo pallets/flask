@@ -3,12 +3,18 @@ on:
   pull_request:
   push:
     branches: [main, stable]
+permissions: {}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   main:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: astral-sh/setup-uv@803947b9bd8e9f986429fa0c5a41c367cd732b41 # v7.2.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098 # v7.3.1
         with:
           enable-cache: true
           prune-cache: false
@@ -21,5 +27,3 @@ jobs:
           path: ~/.cache/pre-commit
           key: pre-commit|${{ hashFiles('pyproject.toml', '.pre-commit-config.yaml') }}
       - run: uv run --locked --group pre-commit pre-commit run --show-diff-on-failure --color=always --all-files
-      - uses: pre-commit-ci/lite-action@5d6cc0eb514c891a40562a58a8e71576c5c7fb43 # v1.1.0
-        if: ${{ !cancelled() }}
