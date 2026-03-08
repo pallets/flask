@@ -609,7 +609,7 @@ class App(Scaffold):
     ) -> None:
         if endpoint is None:
             endpoint = _endpoint_from_view_func(view_func)  # type: ignore
-        options["endpoint"] = endpoint
+
         methods = options.pop("methods", None)
 
         # if the methods are not given and the view_func object knows its
@@ -617,15 +617,16 @@ class App(Scaffold):
         # a tuple of only ``GET`` as default.
         if methods is None:
             methods = getattr(view_func, "methods", None) or ("GET",)
+
         if isinstance(methods, str):
             raise TypeError(
                 "Allowed methods must be a list of strings, for"
                 ' example: @app.route(..., methods=["POST"])'
             )
-        methods = {item.upper() for item in methods}
 
+        methods = {item.upper() for item in methods}
         # Methods that should always be added
-        required_methods: set[str] = set(getattr(view_func, "required_methods", ()))
+        methods |= set(getattr(view_func, "required_methods", ()))
 
         if provide_automatic_options is None:
             provide_automatic_options = getattr(
@@ -638,16 +639,12 @@ class App(Scaffold):
                     and self.config["PROVIDE_AUTOMATIC_OPTIONS"]
                 )
 
-        if provide_automatic_options:
-            required_methods.add("OPTIONS")
-
-        # Add the required methods now.
-        methods |= required_methods
-
-        rule_obj = self.url_rule_class(rule, methods=methods, **options)
+        rule_obj = self.url_rule_class(
+            rule, methods=methods, endpoint=endpoint, **options
+        )
         rule_obj.provide_automatic_options = provide_automatic_options  # type: ignore[attr-defined]
-
         self.url_map.add(rule_obj)
+
         if view_func is not None:
             old_func = self.view_functions.get(endpoint)
             if old_func is not None and old_func != view_func:
@@ -656,6 +653,19 @@ class App(Scaffold):
                     f" endpoint function: {endpoint}"
                 )
             self.view_functions[endpoint] = view_func
+
+        if provide_automatic_options:
+            try:
+                self.url_map.add(
+                    self.url_rule_class(
+                        rule,
+                        methods={"OPTIONS"},
+                        endpoint="_automatic_options",
+                        **options,
+                    )
+                )
+            except Exception:
+                pass
 
     @t.overload
     def template_filter(self, name: T_template_filter) -> T_template_filter: ...
