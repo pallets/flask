@@ -2,6 +2,10 @@ name: Publish
 on:
   push:
     tags: ['*']
+permissions: {}
+concurrency:
+  group: publish-${{ github.event.push.ref }}
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,7 +17,7 @@ jobs:
           persist-credentials: false
       - uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
         with:
-          enable-cache: true
+          enable-cache: false
           prune-cache: false
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
@@ -37,7 +41,7 @@ jobs:
           artifact-ids: ${{ needs.build.outputs.artifact-id }}
           path: dist/
       - name: create release
-        run: gh release create --draft --repo ${{ github.repository }} ${{ github.ref_name }} dist/*
+        run: gh release create --draft --repo ${GITHUB_REPOSITORY} ${GITHUB_REF_NAME} dist/*
         env:
           GH_TOKEN: ${{ github.token }}
   publish-pypi:
