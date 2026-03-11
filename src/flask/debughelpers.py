@@ -14,12 +14,6 @@ if t.TYPE_CHECKING:
     from .wrappers import Request
 
 
-class UnexpectedUnicodeError(AssertionError, UnicodeError):
-    """Raised in places where we want some better error reporting for
-    unexpected unicode or binary data.
-    """
-
-
 class DebugFilesKeyError(KeyError, AssertionError):
     """Raised from request.files during debugging.  The idea is that it can
     provide a better error message than just a generic KeyError/BadRequest.
