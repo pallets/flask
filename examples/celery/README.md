@@ -8,6 +8,18 @@ submitting tasks and polling results, and how to use that API with JavaScript. S
 From this directory, create a virtualenv and install the application into it. Then run a
 Celery worker.
 
+This example configures Celery to use Redis as the broker and result backend, so make
+sure Redis is installed and running locally before starting the worker. Install Redis
+using your system package manager, then verify that it is available on ``localhost``.
+
+```shell
+# On Debian / Ubuntu:
+$ sudo apt install redis-server
+$ sudo service redis start
+$ redis-cli ping
+PONG
+```
+
 ```shell
 $ python3 -m venv .venv
 $ . ./.venv/bin/activate
