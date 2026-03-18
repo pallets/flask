@@ -59,6 +59,7 @@ tests = [
     "asgiref",
     "greenlet",
     "pytest",
+    "pytest-cov",
     "python-dotenv",
 ]
 typing = [
