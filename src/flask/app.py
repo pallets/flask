@@ -221,7 +221,7 @@ class Flask(App):
             "SESSION_COOKIE_HTTPONLY": True,
             "SESSION_COOKIE_SECURE": False,
             "SESSION_COOKIE_PARTITIONED": False,
-            "SESSION_COOKIE_SAMESITE": None,
+            "SESSION_COOKIE_SAMESITE": "Lax",
             "SESSION_REFRESH_EACH_REQUEST": True,
             "MAX_CONTENT_LENGTH": None,
             "MAX_FORM_MEMORY_SIZE": 500_000,
