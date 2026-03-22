@@ -2,6 +2,8 @@
 
 # Flask
 
+[![gitcgr](https://gitcgr.com/badge/pallets/flask.svg)](https://gitcgr.com/pallets/flask)
+
 Flask is a lightweight [WSGI] web application framework. It is designed
 to make getting started quick and easy, with the ability to scale up to
 complex applications. It began as a simple wrapper around [Werkzeug]
