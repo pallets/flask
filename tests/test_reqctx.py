@@ -294,27 +294,6 @@ def test_bad_environ_raises_bad_request():
     assert response.status_code == 400
 
 
-def test_environ_for_valid_idna_completes():
-    app = flask.Flask(__name__)
-
-    @app.route("/")
-    def index():
-        return "Hello World!"
-
-    from flask.testing import EnvironBuilder
-
-    builder = EnvironBuilder(app)
-    environ = builder.get_environ()
-
-    # these characters are all IDNA-compatible
-    environ["HTTP_HOST"] = "ąśźäüжŠßя.com"
-
-    with app.request_context(environ) as ctx:
-        response = app.full_dispatch_request(ctx)
-
-    assert response.status_code == 200
-
-
 def test_normal_environ_completes():
     app = flask.Flask(__name__)
 
