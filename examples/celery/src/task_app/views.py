@@ -11,10 +11,12 @@ bp = Blueprint("tasks", __name__, url_prefix="/tasks")
 def result(id: str) -> dict[str, object]:
     result = AsyncResult(id)
     ready = result.ready()
+    successful = result.successful() if ready else None
+    value = result.get() if successful else result.result
     return {
         "ready": ready,
-        "successful": result.successful() if ready else None,
-        "value": result.get() if ready else result.result,
+        "successful": successful,
+        "value": str(value) if isinstance(value, Exception) else value,
     }
 
 
