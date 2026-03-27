@@ -13,6 +13,12 @@ from werkzeug.datastructures import CallbackDict
 
 from .json.tag import TaggedJSONSerializer
 
+_missing_secret_key_err_msg = (
+    "The session is unavailable because no secret "
+    "key was set.  Set the secret_key on the "
+    "application to something unique and secret."
+)
+
 if t.TYPE_CHECKING:  # pragma: no cover
     import typing_extensions as te
 
@@ -87,11 +93,7 @@ class NullSession(SecureCookieSession):
     """
 
     def _fail(self, *args: t.Any, **kwargs: t.Any) -> t.NoReturn:
-        raise RuntimeError(
-            "The session is unavailable because no secret "
-            "key was set.  Set the secret_key on the "
-            "application to something unique and secret."
-        )
+        raise RuntimeError(_missing_secret_key_err_msg)
 
     __setitem__ = __delitem__ = clear = pop = popitem = update = setdefault = _fail
     del _fail
@@ -370,7 +372,12 @@ class SecureCookieSessionInterface(SessionInterface):
             return
 
         expires = self.get_expiration_time(app, session)
-        val = self.get_signing_serializer(app).dumps(dict(session))  # type: ignore[union-attr]
+        s = self.get_signing_serializer(app)
+
+        if s is None:
+            raise RuntimeError(_missing_secret_key_err_msg)
+
+        val = s.dumps(dict(session))
         response.set_cookie(
             name,
             val,
