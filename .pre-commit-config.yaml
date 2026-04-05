@@ -1,11 +1,11 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: b969e2851312ca2b24bbec879ba4954341d1bd12  # frozen: v0.15.5
+    rev: c60c980e561ed3e73101667fe8365c609d19a438  # frozen: v0.15.9
     hooks:
       - id: ruff-check
       - id: ruff-format
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: e38709b2694c2988ab0c618ee63ac156e155d5c4  # frozen: 0.10.9
+    rev: 0397b68f6f88c024f1d2b355a9818779f6336d16  # frozen: 0.11.3
     hooks:
       - id: uv-lock
   - repo: https://github.com/codespell-project/codespell
