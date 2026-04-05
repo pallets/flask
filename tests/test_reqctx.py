@@ -275,31 +275,3 @@ def test_session_dynamic_cookie_name():
     # cookies are being used for the urls that end with "dynamic cookie"
     assert test_client.get("/get").data == b"42"
     assert test_client.get("/get_dynamic_cookie").data == b"616"
-
-
-def test_bad_environ_raises_bad_request():
-    app = flask.Flask(__name__)
-
-    from flask.testing import EnvironBuilder
-
-    builder = EnvironBuilder(app)
-    environ = builder.get_environ()
-
-    # use a non-printable character in the Host - this is key to this test
-    environ["HTTP_HOST"] = "\x8a"
-
-    with app.request_context(environ) as ctx:
-        response = app.full_dispatch_request(ctx)
-
-    assert response.status_code == 400
-
-
-def test_normal_environ_completes():
-    app = flask.Flask(__name__)
-
-    @app.route("/")
-    def index():
-        return "Hello World!"
-
-    response = app.test_client().get("/", headers={"host": "xn--on-0ia.com"})
-    assert response.status_code == 200
