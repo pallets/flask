@@ -40,7 +40,7 @@ jobs:
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ matrix.python }}
-      - run: uv run --locked tox run
+      - run: uv run --locked --no-default-groups --group dev tox run
         env:
           TOX_ENV: ${{ matrix.tox || format('py{0}', matrix.python) }}
   typing:
@@ -61,4 +61,4 @@ jobs:
         with:
           path: ./.mypy_cache
           key: mypy|${{ hashFiles('pyproject.toml') }}
-      - run: uv run --locked tox run -e typing
+      - run: uv run --locked --no-default-groups --group dev tox run -e typing
