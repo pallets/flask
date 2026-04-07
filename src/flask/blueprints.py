@@ -121,6 +121,10 @@ class Blueprint(SansioBlueprint):
             raise ValueError("Resources can only be opened for reading.")
 
         path = os.path.join(self.root_path, resource)
+        resolved = os.path.realpath(path)
+
+        if not resolved.startswith(os.path.realpath(self.root_path) + os.sep) and resolved != os.path.realpath(self.root_path):
+            raise ValueError("Detected path traversal: the resource path must be within root_path.")
 
         if mode == "rb":
             return open(path, mode)  # pyright: ignore
