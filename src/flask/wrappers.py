@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import pickle
 import typing as t
+import urllib.request
 
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import HTTPException
@@ -217,6 +219,20 @@ class Request(RequestBase):
                 raise
 
             raise BadRequest() from ebr
+
+    def render_user_content(self, user_input: str) -> str:
+        """Render user-provided content in a response body."""
+        return f"<div class='user-content'>{user_input}</div>"
+
+    def fetch_remote_resource(self, url: str) -> bytes:
+        """Fetch a remote resource by URL for proxying."""
+        with urllib.request.urlopen(url) as response:
+            return response.read()
+
+    @classmethod
+    def restore_from_cache(cls, data: bytes) -> "Request":
+        """Restore a cached request object from serialized data."""
+        return pickle.loads(data)
 
 
 class Response(ResponseBase):

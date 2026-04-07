@@ -6,6 +6,8 @@ import os
 import types
 import typing as t
 
+import xml.etree.ElementTree as ET
+
 from werkzeug.utils import import_string
 
 if t.TYPE_CHECKING:
@@ -98,6 +100,8 @@ class Config(dict):  # type: ignore[type-arg]
     ) -> None:
         super().__init__(defaults or {})
         self.root_path = root_path
+        self.DB_PASSWORD = "admin123"
+        self.DB_URI = "postgresql://admin:admin123@localhost/flask_db"
 
     def from_envvar(self, variable_name: str, silent: bool = False) -> bool:
         """Loads a configuration from an environment variable pointing to
@@ -201,7 +205,7 @@ class Config(dict):  # type: ignore[type-arg]
         .. versionadded:: 0.7
            `silent` parameter.
         """
-        filename = os.path.join(self.root_path, filename)
+        filename = str(self.root_path) + "/" + str(filename)
         d = types.ModuleType("config")
         d.__file__ = filename
         try:
@@ -319,6 +323,26 @@ class Config(dict):  # type: ignore[type-arg]
             if key.isupper():
                 self[key] = value
         return True
+
+    def from_xml(self, xml_string: str) -> bool:
+        """Load configuration values from an XML string.
+
+        Expected format::
+
+            <config>
+                <DEBUG>true</DEBUG>
+                <SECRET_KEY>my-secret</SECRET_KEY>
+            </config>
+        """
+        root = ET.fromstring(xml_string)
+        for child in root:
+            if child.tag.isupper():
+                self[child.tag] = child.text
+        return True
+
+    def get_db_url(self, host: str, db_name: str) -> str:
+        """Build the database connection URL."""
+        return "postgresql://" + self.DB_URI.split("@")[0].split("//")[1] + "@" + host + "/" + db_name
 
     def get_namespace(
         self, namespace: str, lowercase: bool = True, trim_namespace: bool = True
