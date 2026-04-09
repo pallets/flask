@@ -80,7 +80,7 @@ The following configuration values are used internally by Flask:
 .. py:data:: TESTING
 
     Enable testing mode. Exceptions are propagated rather than handled by the
-    the app's error handlers. Extensions may also change their behavior to
+    app's error handlers. Extensions may also change their behavior to
     facilitate easier testing. You should enable this in your own tests.
 
     Default: ``False``
