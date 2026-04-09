@@ -483,12 +483,17 @@ class TestRoutes:
             ["yyy_get_post", "static", "aaa_post"],
             invoke(["routes", "-s", "rule"]).output,
         )
-        match_order = [r.endpoint for r in app.url_map.iter_rules()]
+        match_order = [
+            r.endpoint
+            for r in app.url_map.iter_rules()
+            if r.endpoint != "_automatic_options"
+        ]
         self.expect_order(match_order, invoke(["routes", "-s", "match"]).output)
 
     def test_all_methods(self, invoke):
         output = invoke(["routes"]).output
-        assert "GET, HEAD, OPTIONS, POST" not in output
+        assert "HEAD" not in output
+        assert "OPTIONS" not in output
 
         output = invoke(["routes", "--all-methods"]).output
         assert "GET, HEAD, OPTIONS, POST" in output
