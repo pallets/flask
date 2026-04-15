@@ -1,0 +1,37 @@
+name: AI Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  ai-review:
+    name: AI Code Review (Local LLM)
+    runs-on: [self-hosted, ai-review]
+    timeout-minutes: 30
+    concurrency:
+      group: ai-review-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run AI Code Review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OLLAMA_HOST: http://127.0.0.1:11434
+          OLLAMA_MODEL: qwen2.5-coder:32b-instruct-q4_K_M
+        run: |
+          cd /opt/ai-review
+          python3 main.py             --pr-number ${{ github.event.pull_request.number }}             --repo ${{ github.repository }}
+
+      - name: Cost report
+        if: always()
+        run: |
+          cd /opt/ai-review
+          python3 main.py --pr-number 0 --repo x/x --report 2>/dev/null || python3 -c "
+          import sys; sys.path.insert(0,"."); 
+          from cost_tracker import print_cost_report; 
+          print_cost_report()
+          "
