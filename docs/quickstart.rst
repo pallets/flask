@@ -40,7 +40,7 @@ your application :file:`flask.py` because this would conflict with Flask
 itself.
 
 To run the application, use the ``flask`` command or
-``python -m flask``. You need to tell the Flask where your application
+``python -m flask``. You need to tell Flask where your application
 is with the ``--app`` option.
 
 .. code-block:: text
@@ -100,7 +100,7 @@ error occurs during a request.
 .. warning::
 
     The debugger allows executing arbitrary Python code from the
-    browser. It is protected by a pin, but still represents a major
+    browser. It is protected by a PIN, but still represents a major
     security risk. Do not run the development server or debugger in a
     production environment.
 
