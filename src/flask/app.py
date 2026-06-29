@@ -1227,7 +1227,7 @@ class Flask(App):
                     headers=headers,  # type: ignore[arg-type]
                 )
                 status = headers = None
-            elif isinstance(rv, (dict, list)):
+            elif self.is_json_response(rv):
                 rv = self.json.response(rv)
             elif isinstance(rv, BaseResponse) or callable(rv):
                 # evaluate a WSGI callable, or coerce a different response
@@ -1267,6 +1267,16 @@ class Flask(App):
             rv.headers.update(headers)
 
         return rv
+
+    @staticmethod
+    def is_json_response(rv: object) -> bool:
+        """Return whether a view return value should be serialized as a
+        JSON response by :attr:`json`. Override in a subclass to support
+        additional types.
+
+        .. versionadded:: 3.2
+        """
+        return isinstance(rv, (dict, list))
 
     def preprocess_request(self) -> ft.ResponseReturnValue | None:
         """Called before the request is dispatched. Calls
