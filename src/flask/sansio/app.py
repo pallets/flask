@@ -535,6 +535,10 @@ class App(Scaffold):
         template name. If no template name is given, returns `True`.
 
         .. versionchanged:: 3.2
+            A trailing Jinja suffix such as ``.jinja`` or ``.j2`` is ignored,
+            so ``page.html.jinja`` is treated as ``page.html``.
+
+        .. versionchanged:: 3.2
             Use case-insensitive comparison instead of only lower case.
 
         .. versionchanged:: 2.2
@@ -544,7 +548,16 @@ class App(Scaffold):
         """
         if filename is None:
             return True
-        return filename.lower().endswith((".html", ".htm", ".xml", ".xhtml", ".svg"))
+
+        filename = filename.lower()
+
+        # A template may use a Jinja-specific suffix, such as
+        # "page.html.jinja". Strip it so the preceding extension decides
+        # autoescaping, otherwise an HTML template would go unescaped.
+        if filename.endswith((".jinja", ".jinja2", ".j2")):
+            filename = filename.rsplit(".", 1)[0]
+
+        return filename.endswith((".html", ".htm", ".xml", ".xhtml", ".svg"))
 
     @property
     def debug(self) -> bool:

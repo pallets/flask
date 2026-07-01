@@ -28,6 +28,9 @@ Unreleased
     it's disabled in config. Previously, only disabling worked. :issue:`5916`
 -   ``Flask.select_jinja_autoescape`` uses case-insensitive comparison instead
     of only lower case file extensions. :pr:`6012`
+-   ``Flask.select_jinja_autoescape`` ignores a trailing Jinja suffix such as
+    ``.jinja`` or ``.j2``, so autoescaping is enabled for a template named
+    ``page.html.jinja`` the same as ``page.html``.
 
 
 Version 3.1.3
