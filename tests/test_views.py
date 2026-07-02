@@ -1,5 +1,10 @@
 import pytest
-from werkzeug.http import parse_set_header
+from werkzeug.datastructures import HeaderSet
+
+if hasattr(HeaderSet, "from_header"):
+    parse_set_header = HeaderSet.from_header
+else:
+    from werkzeug.http import parse_set_header
 
 import flask.views
 from flask.testing import FlaskClient

@@ -7,6 +7,10 @@ from _pytest import monkeypatch
 from flask import Flask
 from flask.globals import app_ctx as _app_ctx
 
+_MONKEYPATCH_NOTSET = (
+    monkeypatch.NOTSET if hasattr(monkeypatch, "NOTSET") else monkeypatch.notset
+)
+
 
 @pytest.fixture(scope="session", autouse=True)
 def _standard_os_environ():
@@ -16,15 +20,15 @@ def _standard_os_environ():
     """
     mp = monkeypatch.MonkeyPatch()
     out = (
-        (os.environ, "FLASK_ENV_FILE", monkeypatch.notset),
-        (os.environ, "FLASK_APP", monkeypatch.notset),
-        (os.environ, "FLASK_DEBUG", monkeypatch.notset),
-        (os.environ, "FLASK_RUN_FROM_CLI", monkeypatch.notset),
-        (os.environ, "WERKZEUG_RUN_MAIN", monkeypatch.notset),
+        (os.environ, "FLASK_ENV_FILE", _MONKEYPATCH_NOTSET),
+        (os.environ, "FLASK_APP", _MONKEYPATCH_NOTSET),
+        (os.environ, "FLASK_DEBUG", _MONKEYPATCH_NOTSET),
+        (os.environ, "FLASK_RUN_FROM_CLI", _MONKEYPATCH_NOTSET),
+        (os.environ, "WERKZEUG_RUN_MAIN", _MONKEYPATCH_NOTSET),
     )
 
     for _, key, value in out:
-        if value is monkeypatch.notset:
+        if value is _MONKEYPATCH_NOTSET:
             mp.delenv(key, False)
         else:
             mp.setenv(key, value)

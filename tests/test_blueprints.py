@@ -1,6 +1,11 @@
 import pytest
 from jinja2 import TemplateNotFound
-from werkzeug.http import parse_cache_control_header
+from werkzeug.datastructures.cache_control import ResponseCacheControl
+
+if hasattr(ResponseCacheControl, "from_header"):
+    parse_cache_control_header = ResponseCacheControl.from_header
+else:
+    from werkzeug.http import parse_cache_control_header
 
 import flask
 

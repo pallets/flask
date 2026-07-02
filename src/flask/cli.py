@@ -777,7 +777,18 @@ def show_server_banner(debug: bool, app_import_path: str | None) -> None:
         click.echo(f" * Debug mode: {'on' if debug else 'off'}")
 
 
-class CertParamType(click.ParamType[t.Any]):
+if t.TYPE_CHECKING:
+
+    class _CertParamTypeBase(click.ParamType[t.Any]):
+        pass
+
+else:
+
+    class _CertParamTypeBase(click.ParamType):
+        pass
+
+
+class CertParamType(_CertParamTypeBase):
     """Click option type for the ``--cert`` option. Allows either an
     existing file, the string ``'adhoc'``, or an import for a
     :class:`~ssl.SSLContext` object.
