@@ -4,6 +4,11 @@ import sys
 import pytest
 from _pytest import monkeypatch
 
+try:
+    _notset = monkeypatch.notset
+except AttributeError:
+    from _pytest.compat import NOTSET as _notset
+
 from flask import Flask
 from flask.globals import app_ctx as _app_ctx
 
@@ -16,15 +21,15 @@ def _standard_os_environ():
     """
     mp = monkeypatch.MonkeyPatch()
     out = (
-        (os.environ, "FLASK_ENV_FILE", monkeypatch.notset),
-        (os.environ, "FLASK_APP", monkeypatch.notset),
-        (os.environ, "FLASK_DEBUG", monkeypatch.notset),
-        (os.environ, "FLASK_RUN_FROM_CLI", monkeypatch.notset),
-        (os.environ, "WERKZEUG_RUN_MAIN", monkeypatch.notset),
+        (os.environ, "FLASK_ENV_FILE", _notset),
+        (os.environ, "FLASK_APP", _notset),
+        (os.environ, "FLASK_DEBUG", _notset),
+        (os.environ, "FLASK_RUN_FROM_CLI", _notset),
+        (os.environ, "WERKZEUG_RUN_MAIN", _notset),
     )
 
     for _, key, value in out:
-        if value is monkeypatch.notset:
+        if value is _notset:
             mp.delenv(key, False)
         else:
             mp.setenv(key, value)
