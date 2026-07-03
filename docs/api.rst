@@ -347,7 +347,7 @@ Signals are provided by the `Blinker`_ library. See :doc:`signals` for an introd
 .. data:: flask.before_render_template
    :noindex:
 
-   This signal is sent before template rendering process. The
+   This signal is sent before the template rendering process. The
    signal is invoked with the instance of the template as `template`
    and the context as dictionary (named `context`).
 
@@ -459,7 +459,7 @@ Signals are provided by the `Blinker`_ library. See :doc:`signals` for an introd
 .. data:: appcontext_pushed
 
    This signal is sent when an application context is pushed. The sender
-   is the application. This is usually useful for unittests in order to
+   is the application. This is usually useful for unit tests in order to
    temporarily hook in information. For instance it can be used to
    set a resource early onto the `g` object.
 
@@ -496,7 +496,7 @@ Signals are provided by the `Blinker`_ library. See :doc:`signals` for an introd
 .. data:: message_flashed
 
    This signal is sent when the application is flashing a message. The
-   messages is sent as `message` keyword argument and the category as
+   message is sent as the `message` keyword argument and the category as
    `category`.
 
    Example subscriber::
@@ -548,7 +548,7 @@ The following converters are available:
 =========== ===============================================
 `string`    accepts any text without a slash (the default)
 `int`       accepts integers
-`float`     like `int` but for floating point values
+`float`     like `int` but for floating-point values
 `path`      like the default but also accepts slashes
 `any`       matches one of the items provided
 `uuid`      accepts UUID strings
@@ -621,7 +621,7 @@ instead of the `view_func` parameter.
                 specify the function later by storing it in the
                 :attr:`~flask.Flask.view_functions` dictionary with the
                 endpoint as key.
-`defaults`      A dictionary with defaults for this rule. See the
+`defaults`      A dictionary containing the defaults values for this rule. See the
                 example above for how defaults work.
 `subdomain`     specifies the rule for the subdomain in case subdomain
                 matching is in use. If not specified the default
