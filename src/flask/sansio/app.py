@@ -315,6 +315,9 @@ class App(Scaffold):
         #: to load a config from files.
         self.config = self.make_config(instance_relative_config)
 
+        #: Per-instance copy so subclass mutations don't bleed across instances.
+        self.jinja_options = dict(self.__class__.jinja_options)
+
         #: An instance of :attr:`aborter_class` created by
         #: :meth:`make_aborter`. This is called by :func:`flask.abort`
         #: to raise HTTP errors, and can be called directly as well.
