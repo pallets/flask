@@ -28,6 +28,9 @@ Unreleased
     it's disabled in config. Previously, only disabling worked. :issue:`5916`
 -   ``Flask.select_jinja_autoescape`` uses case-insensitive comparison instead
     of only lower case file extensions. :pr:`6012`
+-   ``register_blueprint`` rejects a ``name`` option that contains a dot,
+    matching the validation the ``Blueprint`` constructor already applies.
+    :pr:`6081`
 
 
 Version 3.1.3
