@@ -247,6 +247,12 @@ def test_dotted_name_not_allowed(app, client):
         flask.Blueprint("app.ui", __name__)
 
 
+def test_dotted_name_from_register_option_not_allowed(app, client):
+    bp = flask.Blueprint("bp", __name__)
+    with pytest.raises(ValueError):
+        app.register_blueprint(bp, name="app.ui")
+
+
 def test_empty_name_not_allowed(app, client):
     with pytest.raises(ValueError):
         flask.Blueprint("", __name__)

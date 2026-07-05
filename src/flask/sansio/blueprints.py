@@ -301,6 +301,10 @@ class Blueprint(Scaffold):
         """
         name_prefix = options.get("name_prefix", "")
         self_name = options.get("name", self.name)
+
+        if "." in self_name:
+            raise ValueError("'name' may not contain a dot '.' character.")
+
         name = f"{name_prefix}.{self_name}".lstrip(".")
 
         if name in app.blueprints:
