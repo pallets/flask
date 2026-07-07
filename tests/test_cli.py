@@ -11,7 +11,10 @@ from pathlib import Path
 
 import click
 import pytest
-from _pytest.monkeypatch import notset
+try:
+    from _pytest.compat import NOTSET as notset
+except ImportError:
+    from _pytest.monkeypatch import notset
 from click.testing import CliRunner
 
 from flask import Blueprint
