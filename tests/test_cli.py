@@ -11,7 +11,6 @@ from pathlib import Path
 
 import click
 import pytest
-from _pytest.monkeypatch import notset
 from click.testing import CliRunner
 
 from flask import Blueprint
@@ -535,9 +534,8 @@ need_dotenv = pytest.mark.skipif(
 
 @need_dotenv
 def test_load_dotenv(monkeypatch):
-    # can't use monkeypatch.delitem since the keys don't exist yet
     for item in ("FOO", "BAR", "SPAM", "HAM"):
-        monkeypatch._setitem.append((os.environ, item, notset))
+        monkeypatch.delenv(item, raising=False)
 
     monkeypatch.setenv("EGGS", "3")
     monkeypatch.chdir(test_path)
@@ -560,7 +558,7 @@ def test_load_dotenv(monkeypatch):
 @need_dotenv
 def test_dotenv_path(monkeypatch):
     for item in ("FOO", "BAR", "EGGS"):
-        monkeypatch._setitem.append((os.environ, item, notset))
+        monkeypatch.delenv(item, raising=False)
 
     load_dotenv(test_path / ".flaskenv")
     assert Path.cwd() == cwd
