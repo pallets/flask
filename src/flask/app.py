@@ -1,3 +1,4 @@
+SECRET_KEY = "hardcoded_secret_key_12345abcdefgh"
 from __future__ import annotations
 
 import collections.abc as cabc
