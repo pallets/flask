@@ -307,6 +307,12 @@ class SecureCookieSessionInterface(SessionInterface):
         keys: list[str | bytes] = []
 
         if fallbacks := app.config["SECRET_KEY_FALLBACKS"]:
+            if isinstance(fallbacks, (str, bytes)):
+                raise TypeError(
+                    "SECRET_KEY_FALLBACKS must be a list of strings or bytes,"
+                    " not a single string or bytes value."
+                )
+
             keys.extend(fallbacks)
 
         keys.append(app.secret_key)  # itsdangerous expects current key at top

@@ -11,6 +11,7 @@ from platform import python_implementation
 
 import pytest
 import werkzeug.serving
+from itsdangerous import URLSafeTimedSerializer
 from markupsafe import Markup
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import Forbidden
@@ -416,6 +417,33 @@ def test_session_secret_key_fallbacks(app, client) -> None:
         ["0 key", "-1 key"],
     )
     assert client.get().json == {"a": 1}
+
+
+@pytest.mark.parametrize("fallbacks", ["old-secret", b"old-secret"])
+def test_session_secret_key_fallbacks_rejects_string_or_bytes(
+    fallbacks, app, client
+) -> None:
+    app.secret_key = "new-secret"
+    app.config["SECRET_KEY_FALLBACKS"] = fallbacks
+
+    @app.get("/")
+    def get_session() -> dict[str, t.Any]:
+        return dict(flask.session)
+
+    signer = URLSafeTimedSerializer(
+        "o",
+        salt=app.session_interface.salt,
+        serializer=app.session_interface.serializer,
+        signer_kwargs={
+            "key_derivation": app.session_interface.key_derivation,
+            "digest_method": app.session_interface.digest_method,
+        },
+    )
+
+    client.set_cookie(app.config["SESSION_COOKIE_NAME"], signer.dumps({"a": 1}))
+
+    with pytest.raises(TypeError, match="SECRET_KEY_FALLBACKS"):
+        client.get()
 
 
 def test_session_expiration(app, client):

@@ -28,6 +28,8 @@ Unreleased
     it's disabled in config. Previously, only disabling worked. :issue:`5916`
 -   ``Flask.select_jinja_autoescape`` uses case-insensitive comparison instead
     of only lower case file extensions. :pr:`6012`
+-   Reject scalar string or bytes values for ``SECRET_KEY_FALLBACKS`` instead
+    of treating each character as a fallback signing key.
 
 
 Version 3.1.3
