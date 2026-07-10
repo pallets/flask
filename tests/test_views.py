@@ -39,6 +39,17 @@ def test_method_based_view(app):
     common_test(app)
 
 
+def test_query_method_view(app, client):
+    class Index(flask.views.MethodView):
+        def query(self):
+            return "QUERY"
+
+    app.add_url_rule("/", view_func=Index.as_view("index"))
+
+    assert client.open("/", method="QUERY").data == b"QUERY"
+    assert "QUERY" in app.url_map._rules_by_endpoint["index"][0].methods
+
+
 def test_view_patching(app):
     class Index(flask.views.MethodView):
         def get(self):

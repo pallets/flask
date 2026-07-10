@@ -52,16 +52,20 @@ def test_options_on_multiple_rules(app, client):
     assert sorted(rv.allow) == ["GET", "HEAD", "OPTIONS", "POST", "PUT"]
 
 
-@pytest.mark.parametrize("method", ["get", "post", "put", "delete", "patch"])
+@pytest.mark.parametrize("method", ["get", "post", "put", "delete", "patch", "query"])
 def test_method_route(app, client, method):
     method_route = getattr(app, method)
-    client_method = getattr(client, method)
 
     @method_route("/")
     def hello():
         return "Hello"
 
-    assert client_method("/").data == b"Hello"
+    if method == "query":
+        response = client.open("/", method="QUERY")
+    else:
+        response = getattr(client, method)("/")
+
+    assert response.data == b"Hello"
 
 
 def test_method_route_no_methods(app):

@@ -333,6 +333,14 @@ class Scaffold:
         return self._method_route("PATCH", rule, options)
 
     @setupmethod
+    def query(self, rule: str, **options: t.Any) -> t.Callable[[T_route], T_route]:
+        """Shortcut for :meth:`route` with ``methods=["QUERY"]``.
+
+        .. versionadded:: 3.2
+        """
+        return self._method_route("QUERY", rule, options)
+
+    @setupmethod
     def route(self, rule: str, **options: t.Any) -> t.Callable[[T_route], T_route]:
         """Decorate a view function to register it with the given URL
         rule and options. Calls :meth:`add_url_rule`, which has more

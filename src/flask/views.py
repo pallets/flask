@@ -9,7 +9,7 @@ from .globals import request
 F = t.TypeVar("F", bound=t.Callable[..., t.Any])
 
 http_method_funcs = frozenset(
-    ["get", "post", "head", "options", "delete", "put", "trace", "patch"]
+    ["get", "post", "head", "options", "delete", "put", "trace", "patch", "query"]
 )
 
 

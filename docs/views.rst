@@ -237,6 +237,10 @@ method maps to a method of the class with the same (lowercase) name.
 methods defined by the class. It even knows how to handle subclasses
 that override or define other methods.
 
+The standard HTTP ``QUERY`` method is also supported by defining a
+``query`` method. This is useful for safe, idempotent queries that need
+to send a request body.
+
 We can make a generic ``ItemAPI`` class that provides get (detail),
 patch (edit), and delete methods for a given model. A ``GroupAPI`` can
 provide get (list) and post (create) methods.
