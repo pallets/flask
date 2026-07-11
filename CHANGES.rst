@@ -3,6 +3,9 @@ Version 3.2.0
 
 Unreleased
 
+-   The test suite no longer uses private pytest API (``_pytest.monkeypatch``
+    ``notset`` and ``_setitem``), fixing compatibility with pytest 9.1.
+    :issue:`6071`
 -   Drop support for Python 3.9. :pr:`5730`
 -   Remove previously deprecated code: ``__version__``. :pr:`5648`
 -   ``RequestContext`` has merged with ``AppContext``. ``RequestContext`` is now

@@ -2,43 +2,51 @@ import os
 import sys
 
 import pytest
-from _pytest import monkeypatch
 
 from flask import Flask
 from flask.globals import app_ctx as _app_ctx
+
+_standard_env_keys = (
+    "FLASK_ENV_FILE",
+    "FLASK_APP",
+    "FLASK_DEBUG",
+    "FLASK_RUN_FROM_CLI",
+    "WERKZEUG_RUN_MAIN",
+)
+
+# Env vars used by dotenv tests that may be set by load_dotenv() directly
+# (bypassing monkeypatch), so they need explicit cleanup between tests.
+_dotenv_test_keys = (
+    "FOO",
+    "BAR",
+    "SPAM",
+    "HAM",
+    "EGGS",
+)
 
 
 @pytest.fixture(scope="session", autouse=True)
 def _standard_os_environ():
     """Set up ``os.environ`` at the start of the test session to have
-    standard values. Returns a list of operations that is used by
-    :func:`._reset_os_environ` after each test.
+    standard values.
     """
-    mp = monkeypatch.MonkeyPatch()
-    out = (
-        (os.environ, "FLASK_ENV_FILE", monkeypatch.notset),
-        (os.environ, "FLASK_APP", monkeypatch.notset),
-        (os.environ, "FLASK_DEBUG", monkeypatch.notset),
-        (os.environ, "FLASK_RUN_FROM_CLI", monkeypatch.notset),
-        (os.environ, "WERKZEUG_RUN_MAIN", monkeypatch.notset),
-    )
+    mp = pytest.MonkeyPatch()
+    for key in _standard_env_keys:
+        mp.delenv(key, raising=False)
 
-    for _, key, value in out:
-        if value is monkeypatch.notset:
-            mp.delenv(key, False)
-        else:
-            mp.setenv(key, value)
-
-    yield out
+    yield
     mp.undo()
 
 
 @pytest.fixture(autouse=True)
-def _reset_os_environ(monkeypatch, _standard_os_environ):
+def _reset_os_environ(monkeypatch):
     """Reset ``os.environ`` to the standard environ after each test,
     in case a test changed something without cleaning up.
     """
-    monkeypatch._setitem.extend(_standard_os_environ)
+    for key in _standard_env_keys:
+        monkeypatch.delenv(key, raising=False)
+    for key in _dotenv_test_keys:
+        monkeypatch.delenv(key, raising=False)
 
 
 @pytest.fixture
