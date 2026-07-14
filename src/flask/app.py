@@ -721,7 +721,13 @@ class Flask(App):
         sn_host = sn_port = None
 
         if server_name:
-            sn_host, _, sn_port = server_name.partition(":")
+            if server_name.startswith("["):
+                # IPv6: [host]:port
+                bracket_end = server_name.index("]")
+                sn_host = server_name[1:bracket_end]
+                _, _, sn_port = server_name[bracket_end + 1:].partition(":")
+            else:
+                sn_host, _, sn_port = server_name.partition(":")
 
         if not host:
             if sn_host:
