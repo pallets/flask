@@ -1968,3 +1968,29 @@ def test_app_freed_on_zero_refcount():
         assert weak() is None
     finally:
         gc.enable()
+
+
+def test_teardown_receives_wsgi_response_error(app, client):
+    """Teardown functions receive the exception when
+    response(environ, start_response) raises during WSGI response
+    delivery, not exc=None."""
+
+    @app.teardown_request
+    def teardown(exc):
+        app.config["_teardown_exc"] = exc
+
+    class FailingResponse(flask.Response):
+        def __call__(self, environ, start_response):
+            raise RuntimeError("response delivery failed")
+
+    @app.route("/")
+    def index():
+        return FailingResponse("ok")
+
+    try:
+        client.get("/")
+    except RuntimeError:
+        pass
+
+    assert app.config.get("_teardown_exc") is not None
+    assert isinstance(app.config["_teardown_exc"], RuntimeError)

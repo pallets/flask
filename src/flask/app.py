@@ -1601,7 +1601,11 @@ class Flask(App):
             except:
                 error = sys.exc_info()[1]
                 raise
-            return response(environ, start_response)
+            try:
+                return response(environ, start_response)
+            except BaseException as e:
+                error = e
+                raise
         finally:
             if "werkzeug.debug.preserve_context" in environ:
                 environ["werkzeug.debug.preserve_context"](ctx)
