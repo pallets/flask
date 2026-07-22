@@ -9,10 +9,9 @@ WSGI server or hosting platform, some of which will be described here.
 
 "Production" means "not development", which applies whether you're
 serving your application publicly to millions of users or privately /
-locally to a single user. **Do not use the development server when
-deploying to production. It is intended for use only during local
-development. It is not designed to be particularly secure, stable, or
-efficient.**
+locally to a single user. **This is a development server. Do not use
+it in a production deployment. It is not designed to be particularly
+secure, stable, or efficient.**
 
 Self-Hosted Options
 -------------------

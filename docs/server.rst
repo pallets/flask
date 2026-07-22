@@ -9,11 +9,10 @@ changed.
 
 .. warning::
 
-    Do not use the development server when deploying to production. It
-    is intended for use only during local development. It is not
-    designed to be particularly efficient, stable, or secure.
-
-    See :doc:`/deploying/index` for deployment options.
+    This is a development server. Do not use it in a production
+    deployment. It is not designed to be particularly secure,
+    stable, or efficient. See :doc:`/deploying/index` for
+    deployment options.
 
 Command Line
 ------------

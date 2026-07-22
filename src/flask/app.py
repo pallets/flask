@@ -639,9 +639,10 @@ class Flask(App):
     ) -> None:
         """Runs the application on a local development server.
 
-        Do not use ``run()`` in a production setting. It is not intended to
-        meet security and performance requirements for a production server.
-        Instead, see :doc:`/deploying/index` for WSGI server recommendations.
+        This is a development server. Do not use it in a production
+        deployment. It is not designed to be particularly secure,
+        stable, or efficient. See :doc:`/deploying/index` for WSGI
+        server recommendations.
 
         If the :attr:`debug` flag is set the server will automatically reload
         for code changes and show a debugger in case an exception happened.

@@ -943,10 +943,11 @@ def run_command(
     extra_files: list[str] | None,
     exclude_patterns: list[str] | None,
 ) -> None:
-    """Run a local development server.
+    """Run a development server.
 
-    This server is for development purposes only. It does not provide
-    the stability, security, or performance of production WSGI servers.
+    This is a development server. Do not use it in a production
+    deployment. It is not designed to be particularly secure,
+    stable, or efficient. Use a production WSGI server instead.
 
     The reloader and debugger are enabled by default with the '--debug'
     option.
