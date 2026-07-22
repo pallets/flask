@@ -239,10 +239,10 @@ def test_default_static_max_age(app):
             return 100
 
     blueprint = MyBlueprint(
-        "blueprint", 
-        __name__, 
+        "blueprint",
+        __name__,
         static_folder="static",
-        static_url_path="/blueprint-static"
+        static_url_path="/blueprint-static",
     )
     app.register_blueprint(blueprint)
 

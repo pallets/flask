@@ -1,10 +1,10 @@
 import gc
+import inspect
 import re
 import typing as t
 import uuid
 import warnings
 import weakref
-import inspect
 from contextlib import nullcontext
 from datetime import datetime
 from datetime import timezone
@@ -18,8 +18,8 @@ from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import NotFound
 from werkzeug.http import parse_date
 from werkzeug.routing import BuildError
-from werkzeug.routing import RequestRedirect
 from werkzeug.routing import Map
+from werkzeug.routing import RequestRedirect
 
 import flask
 from flask.globals import request_ctx
@@ -30,9 +30,8 @@ require_cpython_gc = pytest.mark.skipif(
     reason="Requires CPython GC behavior",
 )
 
-_has_new_subdomain_matching = (
-    "subdomain_matching" in inspect.signature(Map).parameters
-)
+_has_new_subdomain_matching = "subdomain_matching" in inspect.signature(Map).parameters
+
 
 def test_options_work(app, client):
     @app.route("/", methods=["GET", "POST"])
@@ -1525,7 +1524,6 @@ def test_request_locals():
         (False, True, "default", "abc", "default"),
     ],
 )
-
 def test_server_name_matching(
     subdomain_matching: bool,
     host_matching: bool,
@@ -1557,15 +1555,13 @@ def test_server_name_matching(
     with pytest.warns() if subdomain_matching else nullcontext():
         r = client.get(base_url="http://xyz.other.test")
 
-
     if expect_xyz == "<invalid>":
         assert r.text in {"<invalid>", "default"}
     else:
         assert r.text == expect_xyz
 
-@pytest.mark.filterwarnings(
-    "ignore:Couldn't determine current subdomain:UserWarning"
-)
+
+@pytest.mark.filterwarnings("ignore:Couldn't determine current subdomain:UserWarning")
 def test_server_name_subdomain():
     app = flask.Flask(__name__, subdomain_matching=True)
     client = app.test_client()
@@ -1829,9 +1825,8 @@ def test_subdomain_matching_with_ports():
     rv = client.get("/", "http://mitsuhiko.localhost.localdomain:3000/")
     assert rv.data == b"index for mitsuhiko"
 
-@pytest.mark.filterwarnings(
-    "ignore:Couldn't determine current subdomain:UserWarning"
-)
+
+@pytest.mark.filterwarnings("ignore:Couldn't determine current subdomain:UserWarning")
 @pytest.mark.parametrize("matching", [False, True])
 def test_subdomain_matching_other_name(matching):
     app = flask.Flask(__name__, subdomain_matching=matching)
