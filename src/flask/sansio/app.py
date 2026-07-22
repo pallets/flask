@@ -650,7 +650,6 @@ class App(Scaffold):
         rule_obj = self.url_rule_class(rule, methods=methods, **options)
         rule_obj.provide_automatic_options = provide_automatic_options  # type: ignore[attr-defined]
 
-        self.url_map.add(rule_obj)
         if view_func is not None:
             old_func = self.view_functions.get(endpoint)
             if old_func is not None and old_func != view_func:
@@ -659,6 +658,7 @@ class App(Scaffold):
                     f" endpoint function: {endpoint}"
                 )
             self.view_functions[endpoint] = view_func
+        self.url_map.add(rule_obj)
 
     @setupmethod
     def template_filter(

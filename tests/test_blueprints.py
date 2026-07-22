@@ -238,7 +238,12 @@ def test_default_static_max_age(app):
         def get_send_file_max_age(self, filename):
             return 100
 
-    blueprint = MyBlueprint("blueprint", __name__, static_folder="static")
+    blueprint = MyBlueprint(
+        "blueprint", 
+        __name__, 
+        static_folder="static",
+        static_url_path="/blueprint-static"
+    )
     app.register_blueprint(blueprint)
 
     # try/finally, in case other tests use this app for Blueprint tests.
