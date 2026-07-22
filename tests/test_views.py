@@ -1,5 +1,18 @@
 import pytest
-from werkzeug.http import parse_set_header
+from werkzeug.datastructures import HeaderSet
+
+# Fixed Deprecation of parse_set_header
+if hasattr(HeaderSet, "from_header"):
+
+    def parse_header_set(value: str) -> HeaderSet:
+        return HeaderSet.from_header(value)
+
+else:
+    from werkzeug.http import parse_set_header
+
+    def parse_header_set(value: str) -> HeaderSet:
+        return parse_set_header(value)
+
 
 import flask.views
 
@@ -10,7 +23,7 @@ def common_test(app):
     assert c.get("/").data == b"GET"
     assert c.post("/").data == b"POST"
     assert c.put("/").status_code == 405
-    meths = parse_set_header(c.open("/", method="OPTIONS").headers["Allow"])
+    meths = parse_header_set(c.open("/", method="OPTIONS").headers["Allow"])
     assert sorted(meths) == ["GET", "HEAD", "OPTIONS", "POST"]
 
 
@@ -73,7 +86,7 @@ def test_view_inheritance(app, client):
 
     app.add_url_rule("/", view_func=BetterIndex.as_view("index"))
 
-    meths = parse_set_header(client.open("/", method="OPTIONS").headers["Allow"])
+    meths = parse_header_set(client.open("/", method="OPTIONS").headers["Allow"])
     assert sorted(meths) == ["DELETE", "GET", "HEAD", "OPTIONS", "POST"]
 
 

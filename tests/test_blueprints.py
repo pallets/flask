@@ -1,6 +1,19 @@
 import pytest
 from jinja2 import TemplateNotFound
-from werkzeug.http import parse_cache_control_header
+from werkzeug.datastructures import ResponseCacheControl
+
+# Fixed Deprecation of parse_cache_control_header
+if hasattr(ResponseCacheControl, "from_header"):
+
+    def parse_cache_control(value: str) -> ResponseCacheControl:
+        return ResponseCacheControl.from_header(value)
+
+else:
+    from werkzeug.http import parse_cache_control_header as _parse_cache_control_header
+
+    def parse_cache_control(value: str) -> ResponseCacheControl:
+        return _parse_cache_control_header(value)
+
 
 import flask
 
@@ -199,7 +212,7 @@ def test_templates_and_static(test_apps):
             expected_max_age = 7200
         app.config["SEND_FILE_MAX_AGE_DEFAULT"] = expected_max_age
         rv = client.get("/admin/static/css/test.css")
-        cc = parse_cache_control_header(rv.headers["Cache-Control"])
+        cc = parse_cache_control(rv.headers["Cache-Control"])
         assert cc.max_age == expected_max_age
         rv.close()
     finally:
@@ -237,7 +250,7 @@ def test_default_static_max_age(app):
                 unexpected_max_age = 7200
             app.config["SEND_FILE_MAX_AGE_DEFAULT"] = unexpected_max_age
             rv = blueprint.send_static_file("index.html")
-            cc = parse_cache_control_header(rv.headers["Cache-Control"])
+            cc = parse_cache_control(rv.headers["Cache-Control"])
             assert cc.max_age == 100
             rv.close()
     finally:
