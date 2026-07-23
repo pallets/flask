@@ -40,7 +40,7 @@ your application :file:`flask.py` because this would conflict with Flask
 itself.
 
 To run the application, use the ``flask`` command or
-``python -m flask``. You need to tell the Flask where your application
+``python -m flask``. You need to tell Flask where your application
 is with the ``--app`` option.
 
 .. code-block:: text
