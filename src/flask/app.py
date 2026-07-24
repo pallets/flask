@@ -101,7 +101,6 @@ def add_ctx(f: F) -> F:
         elif not isinstance(args[0], AppContext):
             args = (app_ctx._get_current_object(), *args)
 
-        return f(self, *args, **kwargs)
 
     return update_wrapper(wrapper, f)  # type: ignore[return-value]
 
