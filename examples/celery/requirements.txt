@@ -29,6 +29,9 @@ click-repl==0.2.0
     # via celery
 flask==2.3.2
     # via flask-example-celery (pyproject.toml)
+flake8==7.1.1 
+pytest-cov==5.0.0 
+coverage==7.6.1
 itsdangerous==2.1.2
     # via flask
 jinja2==3.1.2
