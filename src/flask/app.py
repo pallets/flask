@@ -721,7 +721,9 @@ class Flask(App):
         sn_host = sn_port = None
 
         if server_name:
-            sn_host, _, sn_port = server_name.partition(":")
+            sn_host, _, sn_port = server_name.rpartition(":")
+            if not _:
+                sn_host, sn_port = sn_port, None
 
         if not host:
             if sn_host:
