@@ -344,3 +344,16 @@ def test_html_method():
 
     result = json.dumps(ObjectWithHTML())
     assert result == '"<p>test</p>"'
+
+
+def test_pathlib_and_enum_serialization():
+    import enum
+    import pathlib
+
+    class Status(enum.Enum):
+        PENDING = "pending"
+        ACTIVE = "active"
+
+    path = pathlib.Path("test.txt")
+    assert json.dumps(path) == '"test.txt"'
+    assert json.dumps(Status.ACTIVE) == '"active"'

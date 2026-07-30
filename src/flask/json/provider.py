@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import dataclasses
 import decimal
+import enum
 import json
+import pathlib
 import typing as t
 import uuid
 import weakref
@@ -109,8 +111,11 @@ def _default(o: t.Any) -> t.Any:
     if isinstance(o, date):
         return http_date(o)
 
-    if isinstance(o, (decimal.Decimal, uuid.UUID)):
+    if isinstance(o, (decimal.Decimal, uuid.UUID, pathlib.PurePath)):
         return str(o)
+
+    if isinstance(o, enum.Enum):
+        return o.value
 
     if dataclasses and dataclasses.is_dataclass(o):
         return dataclasses.asdict(o)  # type: ignore[arg-type]
