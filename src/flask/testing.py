@@ -109,8 +109,8 @@ def _get_werkzeug_version() -> str:
 class FlaskClient(Client):
     """Works like a regular Werkzeug test client, with additional behavior for
     Flask. Can defer the cleanup of the request context until the end of a
-    ``with`` block. For general information about how to use this class refer to
-    :class:`werkzeug.test.Client`.
+    ``with`` block. For general information about how to use this class refer
+    to :class:`werkzeug.test.Client`.
 
     .. versionchanged:: 0.12
        `app.test_client()` includes preset default environment, which can be
@@ -177,7 +177,7 @@ class FlaskClient(Client):
             app.session_interface.save_session(app, sess, resp)
 
         self._update_cookies_from_response(
-            ctx.request.host.partition(":")[0],
+            urlsplit(ctx.request.host_url).hostname or "localhost",
             ctx.request.path,
             resp.headers.getlist("Set-Cookie"),
         )
