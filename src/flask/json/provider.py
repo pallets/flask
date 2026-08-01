@@ -160,6 +160,15 @@ class DefaultJSONProvider(JSONProvider):
     or ``None`` in debug mode, it will use a non-compact representation.
     """
 
+    allow_nan = True
+    """Allow ``NaN``, ``Infinity``, and ``-Infinity`` to be serialized as
+    the bare literals ``NaN``, ``Infinity``, and ``-Infinity``. These are
+    accepted by Python's :mod:`json` but are not valid JSON per
+    :rfc:`8259`, so strict parsers such as a browser's ``JSON.parse``
+    will reject them. Set this to ``False`` to raise a ``ValueError``
+    instead when such a value is serialized.
+    """
+
     mimetype = "application/json"
     """The mimetype set in :meth:`response`."""
 
@@ -168,7 +177,8 @@ class DefaultJSONProvider(JSONProvider):
 
         Keyword arguments are passed to :func:`json.dumps`. Sets some
         parameter defaults from the :attr:`default`,
-        :attr:`ensure_ascii`, and :attr:`sort_keys` attributes.
+        :attr:`ensure_ascii`, :attr:`sort_keys`, and :attr:`allow_nan`
+        attributes.
 
         :param obj: The data to serialize.
         :param kwargs: Passed to :func:`json.dumps`.
@@ -176,6 +186,7 @@ class DefaultJSONProvider(JSONProvider):
         kwargs.setdefault("default", self.default)
         kwargs.setdefault("ensure_ascii", self.ensure_ascii)
         kwargs.setdefault("sort_keys", self.sort_keys)
+        kwargs.setdefault("allow_nan", self.allow_nan)
         return json.dumps(obj, **kwargs)
 
     def loads(self, s: str | bytes, **kwargs: t.Any) -> t.Any:

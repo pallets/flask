@@ -54,6 +54,16 @@ def test_json_as_unicode(test_value, expected, app, app_ctx):
     assert rv == expected
 
 
+def test_json_allow_nan(app, app_ctx):
+    assert app.json.allow_nan
+    rv = app.json.dumps(float("nan"))
+    assert rv == "NaN"
+
+    app.json.allow_nan = False
+    with pytest.raises(ValueError):
+        app.json.dumps(float("nan"))
+
+
 def test_json_dump_to_file(app, app_ctx):
     test_data = {"name": "Flask"}
     out = io.StringIO()
