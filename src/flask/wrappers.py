@@ -192,6 +192,9 @@ class Request(RequestBase):
         if name is None:
             return []
 
+        if "." not in name:
+            return [name]
+
         return _split_blueprint_path(name)
 
     def _load_form_data(self) -> None:
