@@ -343,7 +343,7 @@ The following configuration values are used internally by Flask:
     set to ``None``, no limit is enforced at the Flask application level.
 
     Each request defaults to this config. It can be set on a specific
-    :attr:`.Request.max_form_memory_parts` to apply the limit to that specific
+    :attr:`.Request.max_form_memory_size` to apply the limit to that specific
     view. This should be set appropriately based on an application's or view's
     specific needs.
 
