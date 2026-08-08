@@ -130,19 +130,27 @@ def stream_with_context(
                 " context is active, such as in a view function."
             )
 
-        with ctx:
-            yield None  # type: ignore[misc]
+        # Push the context only while advancing the wrapped iterator. Keeping
+        # it pushed across a yield means that generator finalization on a
+        # different thread cannot reset the context variable.
+        yield None  # type: ignore[misc]
 
-            try:
-                yield from gen
-            finally:
-                # Clean up in case the user wrapped a WSGI iterator.
-                if hasattr(gen, "close"):
+        try:
+            while True:
+                with ctx:
+                    try:
+                        item = next(gen)
+                    except StopIteration:
+                        return
+                yield item
+        finally:
+            # Clean up in case the user wrapped a WSGI iterator.
+            if hasattr(gen, "close"):
+                with ctx:
                     gen.close()
 
-    # Execute the generator to the sentinel value. This captures the current
-    # context and pushes it to preserve it. Further iteration will yield from
-    # the original iterator.
+    # Execute the generator to the sentinel value to capture the current
+    # context. Further iteration will advance the original iterator under it.
     wrapped_g = generator()
     next(wrapped_g)
     return wrapped_g

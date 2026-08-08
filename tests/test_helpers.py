@@ -1,5 +1,8 @@
+import gc
 import io
 import os
+import queue
+import threading
 
 import pytest
 import werkzeug.exceptions
@@ -252,6 +255,44 @@ class TestStreaming:
 
         rv = client.get("/?name=World")
         assert rv.data == b"Hello World!"
+
+    def test_streaming_with_context_cleanup_after_cross_thread_close(self, app):
+        teardowns = []
+        abandoned = queue.Queue()
+        continue_worker = threading.Event()
+
+        @app.teardown_appcontext
+        def record_teardown(_):
+            teardowns.append(threading.current_thread().name)
+
+        @app.route("/stream")
+        def stream():
+            def generate():
+                yield "chunk"
+
+            return flask.Response(flask.stream_with_context(generate()))
+
+        def worker():
+            client = app.test_client()
+            response = client.get("/stream", buffered=False)
+
+            body = iter(response.response)
+            next(body)
+            abandoned.put(body)
+            del body, response
+
+            continue_worker.wait()
+            client.get("/next")
+
+        thread = threading.Thread(target=worker, name="stream-worker")
+        thread.start()
+        body = abandoned.get()
+        del body
+        gc.collect()
+        continue_worker.set()
+        thread.join()
+
+        assert "stream-worker" in teardowns
 
     def test_streaming_with_context_and_custom_close(self, app, client):
         called = []
