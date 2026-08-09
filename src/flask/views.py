@@ -9,7 +9,17 @@ from .globals import request
 F = t.TypeVar("F", bound=t.Callable[..., t.Any])
 
 http_method_funcs = frozenset(
-    ["get", "post", "head", "options", "delete", "put", "trace", "patch"]
+    [
+        "get",
+        "post",
+        "head",
+        "options",
+        "delete",
+        "put",
+        "trace",
+        "patch",
+        "query",
+    ]
 )
 
 
@@ -141,6 +151,9 @@ class MethodView(View):
     handle ``GET`` requests.
 
     This can be useful for defining a REST API.
+
+    .. versionchanged:: 3.2
+        The ``query`` method is recognized for HTTP ``QUERY`` requests.
 
     :attr:`methods` is automatically set based on the methods defined on
     the class.

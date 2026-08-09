@@ -28,6 +28,8 @@ Unreleased
     it's disabled in config. Previously, only disabling worked. :issue:`5916`
 -   ``Flask.select_jinja_autoescape`` uses case-insensitive comparison instead
     of only lower case file extensions. :pr:`6012`
+-   Add ``query`` route shortcut and ``MethodView`` dispatch support for the
+    HTTP ``QUERY`` method. :issue:`6065`
 
 
 Version 3.1.3
