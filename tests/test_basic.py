@@ -1910,6 +1910,7 @@ def test_run_server_port(monkeypatch, app):
         ("localhost", 0, "localhost:8080", "localhost", 0),
         (None, None, "localhost:8080", "localhost", 8080),
         (None, None, "localhost:0", "localhost", 0),
+        (None, None, "[::1]:8080", "::1", 8080),
     ),
 )
 def test_run_from_config(

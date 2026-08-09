@@ -12,6 +12,7 @@ from inspect import iscoroutinefunction
 from itertools import chain
 from types import TracebackType
 from urllib.parse import quote as _url_quote
+from urllib.parse import urlsplit
 
 import click
 from werkzeug.datastructures import Headers
@@ -721,7 +722,9 @@ class Flask(App):
         sn_host = sn_port = None
 
         if server_name:
-            sn_host, _, sn_port = server_name.partition(":")
+            parsed_server_name = urlsplit(f"//{server_name}", allow_fragments=False)
+            sn_host = parsed_server_name.hostname
+            sn_port = parsed_server_name.port
 
         if not host:
             if sn_host:
@@ -731,8 +734,8 @@ class Flask(App):
 
         if port or port == 0:
             port = int(port)
-        elif sn_port:
-            port = int(sn_port)
+        elif sn_port is not None:
+            port = sn_port
         else:
             port = 5000
 

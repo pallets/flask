@@ -171,6 +171,22 @@ def test_session_transactions(app, client):
             assert sess["foo"] == [42]
 
 
+def test_session_transaction_ipv6(app):
+    app.config["SECRET_KEY"] = "test"
+
+    @app.get("/")
+    def index():
+        return str(flask.session.get("value"))
+
+    client = app.test_client()
+    base_url = "http://[::1]:8000/"
+
+    with client.session_transaction(base_url=base_url) as sess:
+        sess["value"] = 42
+
+    assert client.get("/", base_url=base_url).text == "42"
+
+
 def test_session_transactions_no_null_sessions():
     app = flask.Flask(__name__)
 
