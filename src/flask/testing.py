@@ -176,8 +176,18 @@ class FlaskClient(Client):
         with ctx:
             app.session_interface.save_session(app, sess, resp)
 
+        host = ctx.request.host
+        if "]:" in host:
+            host_name = host.rpartition("]:")[0].lstrip("[")
+        elif host.startswith("[") and host.endswith("]"):
+            host_name = host.strip("[]")
+        elif ":" in host:
+            host_name = host.rpartition(":")[0]
+        else:
+            host_name = host
+
         self._update_cookies_from_response(
-            ctx.request.host.partition(":")[0],
+            host_name,
             ctx.request.path,
             resp.headers.getlist("Set-Cookie"),
         )

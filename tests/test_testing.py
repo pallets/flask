@@ -27,6 +27,21 @@ def test_environ_defaults_from_config(app, client):
     assert rv.data == b"http://example.com:1234/foo/"
 
 
+def test_session_transaction_ipv6(app):
+    app.secret_key = "secret"
+    base_url = "http://[::1]:8000/"
+    client = app.test_client()
+
+    @app.get("/")
+    def index():
+        return str(flask.session.get("value"))
+
+    with client.session_transaction(base_url=base_url) as sess:
+        sess["value"] = 42
+
+    assert client.get("/", base_url=base_url).text == "42"
+
+
 def test_environ_defaults(app, client, app_ctx, req_ctx):
     @app.route("/")
     def index():
