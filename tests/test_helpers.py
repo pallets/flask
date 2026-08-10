@@ -278,7 +278,9 @@ class TestStreaming:
                 yield flask.request.args["name"]
                 yield "!"
 
-            return flask.Response(flask.stream_with_context(Wrapper(generate())))
+            return flask.Response(
+                flask.stream_with_context(Wrapper(generate()))
+            )
 
         rv = client.get("/?name=World")
         assert rv.data == b"Hello World!"
@@ -310,18 +312,20 @@ class TestStreaming:
             return flask.Response(gen())
 
         # response is closed without reading stream
-        client.get().close()
+        client.get("/").close()
 
         # response stream is read
-        with client.get() as rv:
+        with client.get("/") as rv:
             assert rv.text == "flask"
 
         # same as above, but with client context preservation
         with client:
-            client.get().close()
+            client.get("/").close()
 
-        with client, client.get() as rv:
+        with client, client.get("/") as rv:
             assert rv.text == "flask"
+
+
 
 
 class TestHelpers:
