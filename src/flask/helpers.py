@@ -130,7 +130,8 @@ def stream_with_context(
                 " context is active, such as in a view function."
             )
 
-        with ctx:
+        ctx.push()
+        try:
             yield None  # type: ignore[misc]
 
             try:
@@ -139,6 +140,18 @@ def stream_with_context(
                 # Clean up in case the user wrapped a WSGI iterator.
                 if hasattr(gen, "close"):
                     gen.close()
+        finally:
+            try:
+                ctx.pop()
+            except RuntimeError:
+                # The generator may be garbage collected on a different
+                # thread than the one that pushed the context, e.g. when
+                # a client disconnects mid-stream and the server abandons
+                # the body iterator. pop() fails because the context is
+                # not active on this thread. Reset the push state to
+                # avoid leaking the context on the original thread.
+                ctx._push_count -= 1
+                ctx._cv_token = None
 
     # Execute the generator to the sentinel value. This captures the current
     # context and pushes it to preserve it. Further iteration will yield from
