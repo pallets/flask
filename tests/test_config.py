@@ -45,6 +45,13 @@ def test_config_from_file_toml():
     common_object_test(app)
 
 
+def test_config_from_file_missing_silent():
+    app = flask.Flask(__name__)
+    assert not app.config.from_file("nonexistent.json", json.load, silent=True)
+    with pytest.raises(OSError):
+        app.config.from_file("nonexistent.json", json.load, silent=False)
+
+
 def test_from_prefixed_env(monkeypatch):
     monkeypatch.setenv("FLASK_STRING", "value")
     monkeypatch.setenv("FLASK_BOOL", "true")
