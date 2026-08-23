@@ -344,3 +344,11 @@ def test_html_method():
 
     result = json.dumps(ObjectWithHTML())
     assert result == '"<p>test</p>"'
+
+
+def test_pathlike_serialization():
+    import pathlib
+
+    p = pathlib.PurePosixPath("/etc/passwd")
+    assert json.dumps(p) == '"/etc/passwd"'
+

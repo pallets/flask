@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 import decimal
 import json
+import os
 import typing as t
 import uuid
 import weakref
@@ -109,7 +110,7 @@ def _default(o: t.Any) -> t.Any:
     if isinstance(o, date):
         return http_date(o)
 
-    if isinstance(o, (decimal.Decimal, uuid.UUID)):
+    if isinstance(o, (decimal.Decimal, uuid.UUID, os.PathLike)):
         return str(o)
 
     if dataclasses and dataclasses.is_dataclass(o):
@@ -129,6 +130,8 @@ class DefaultJSONProvider(JSONProvider):
         serialized to :rfc:`822` strings. This is the same as the HTTP
         date format.
     -   :class:`uuid.UUID` is serialized to a string.
+    -   :class:`os.PathLike` (including :class:`pathlib.Path`) is
+        serialized to a string.
     -   :class:`dataclasses.dataclass` is passed to
         :func:`dataclasses.asdict`.
     -   :class:`~markupsafe.Markup` (or any object with a ``__html__``
