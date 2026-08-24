@@ -115,6 +115,9 @@ def _default(o: t.Any) -> t.Any:
     if dataclasses and dataclasses.is_dataclass(o):
         return dataclasses.asdict(o)  # type: ignore[arg-type]
 
+    if hasattr(o, "__json__"):
+        return str(o.__json__())
+
     if hasattr(o, "__html__"):
         return str(o.__html__())
 
