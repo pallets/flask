@@ -193,6 +193,10 @@ def test_config_missing_file():
     )
     assert msg.endswith("missing.json'")
     assert not app.config.from_file("missing.json", load=json.load, silent=True)
+    # Not a directory parent path
+    assert not app.config.from_file(
+        "missing.json/not_exist.json", load=json.load, silent=True
+    )
 
 
 def test_custom_config_class():
