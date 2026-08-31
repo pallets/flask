@@ -344,3 +344,22 @@ def test_html_method():
 
     result = json.dumps(ObjectWithHTML())
     assert result == '"<p>test</p>"'
+
+
+def test_pathlike_serialization(app):
+    import pathlib
+
+    p = pathlib.PurePosixPath("/var/log/app.log")
+    assert app.json.dumps(p) == '"/var/log/app.log"'
+
+
+def test_dataclass_class_raises_typeerror(app):
+    import dataclasses
+
+    @dataclasses.dataclass
+    class DataClassType:
+        name: str
+
+    with pytest.raises(TypeError, match="is not JSON serializable"):
+        app.json.dumps(DataClassType)
+
