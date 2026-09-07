@@ -269,3 +269,23 @@ def test_init_once(app, client):
     app.add_url_rule("/", view_func=CountInit.as_view("index"))
     assert client.get("/").data == b"1"
     assert client.get("/").data == b"1"
+
+
+def test_non_callable_attribute_is_not_a_method(app, client):
+    """A data attribute named like an HTTP method is not a handler.
+
+    ``query`` is a common attribute name (for example a SQLAlchemy
+    ``Model.query`` shortcut). Only callables register a method.
+    """
+
+    class Item(flask.views.MethodView):
+        query = None
+
+        def get(self):
+            return "GET"
+
+    assert Item.methods == {"GET"}
+    app.add_url_rule("/", view_func=Item.as_view("index"))
+    assert client.get("/").data == b"GET"
+    assert client.open("/", method="QUERY").status_code == 405
+    assert client.open("/", method="OPTIONS").allow == {"GET", "HEAD", "OPTIONS"}

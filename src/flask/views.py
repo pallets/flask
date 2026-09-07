@@ -173,7 +173,7 @@ class MethodView(View):
                     methods.update(base.methods)  # type: ignore[attr-defined]
 
             for key in http_method_funcs:
-                if hasattr(cls, key):
+                if callable(getattr(cls, key, None)):
                     methods.add(key.upper())
 
             if methods:

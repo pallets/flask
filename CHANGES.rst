@@ -29,7 +29,11 @@ Unreleased
 -   ``Flask.select_jinja_autoescape`` uses case-insensitive comparison instead
     of only lower case file extensions. :pr:`6012`
 -   Fix parsing IPv6 with port in ``run`` and the test client. :pr:`6096`
--   Add ``app.query`` route decorator for the HTTP QUERY method.
+-   Add ``app.query`` route decorator for the HTTP QUERY method. ``MethodView``
+    subclasses with a ``query`` method handle it.
+-   ``MethodView`` only registers callable attributes as HTTP method handlers.
+    A non-callable attribute such as ``query = None`` is ignored instead of
+    causing a 500 error.
 
 
 Version 3.1.3
