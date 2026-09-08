@@ -1505,7 +1505,7 @@ class Flask(App):
         """Create an :class:`.AppContext` with request information representing
         the given WSGI environment. A context is automatically pushed when
         handling each request. When the context is pushed, :data:`.request`,
-        :data:`.session`, :data:`g:, and :data:`.current_app` become available.
+        :data:`.session`, :data:`.g`, and :data:`.current_app` become available.
 
         This method should not be used in your own code. Creating a valid WSGI
         environ is not trivial. Use :meth:`test_request_context` to correctly
@@ -1520,7 +1520,7 @@ class Flask(App):
     def test_request_context(self, *args: t.Any, **kwargs: t.Any) -> AppContext:
         """Create an :class:`.AppContext` with request information created from
         the given arguments. When the context is pushed, :data:`.request`,
-        :data:`.session`, :data:`g:, and :data:`.current_app` become available.
+        :data:`.session`, :data:`.g`, and :data:`.current_app` become available.
 
         This is useful during testing to run a function that uses request data
         without dispatching a full request. Use this as a ``with`` block to push
