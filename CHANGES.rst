@@ -3,12 +3,12 @@ Version 3.2.0
 
 Unreleased
 
--   Drop support for Python 3.9 and 3.10. :pr:`5730` :pr:`6166`
+-   Drop support for Python 3.9 and 3.10. :pr:`5730` :pr:`6168`
 -   Remove previously deprecated code: ``__version__``. :pr:`5648`
 -   ``RequestContext`` has merged with ``AppContext``. ``RequestContext`` is now
     a deprecated alias. If an app context is already pushed, it is not reused
-    when dispatching a request. This greatly simplifies the internal code for tracking
-    the active context. :issue:`5639`
+    when dispatching a request. This greatly simplifies the internal code for
+    tracking the active context. :issue:`5639`
 -   Many ``Flask`` methods involved in request dispatch now take the current
     ``AppContext`` as the first parameter, instead of using the proxy objects.
     If subclasses were overriding these methods, the old signature is detected,
