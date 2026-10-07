@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 
 import flask
@@ -246,20 +244,16 @@ def test_robust_teardown(app: flask.Flask, client: FlaskClient) -> None:
         flask.request_tearing_down.connected_to(request_signal, app),
         flask.appcontext_tearing_down.connected_to(app_signal, app),
     ):
-        if sys.version_info >= (3, 11):
-            with pytest.raises(ExceptionGroup, match="context teardown") as exc_info:  # noqa: F821
-                client.get()
+        with pytest.raises(ExceptionGroup, match="context teardown") as exc_info:  # noqa: F821
+            client.get()
 
-            assert len(exc_info.value.exceptions) == 2
-            eg1, eg2 = exc_info.value.exceptions
-            assert isinstance(eg1, ExceptionGroup)  # noqa: F821
-            assert "request teardown" in eg1.message
-            assert len(eg1.exceptions) == 2
-            assert isinstance(eg2, ExceptionGroup)  # noqa: F821
-            assert "app teardown" in eg2.message
-            assert len(eg2.exceptions) == 2
-        else:
-            with pytest.raises(ValueError, match="request_teardown"):
-                client.get()
+        assert len(exc_info.value.exceptions) == 2
+        eg1, eg2 = exc_info.value.exceptions
+        assert isinstance(eg1, ExceptionGroup)  # noqa: F821
+        assert "request teardown" in eg1.message
+        assert len(eg1.exceptions) == 2
+        assert isinstance(eg2, ExceptionGroup)  # noqa: F821
+        assert "app teardown" in eg2.message
+        assert len(eg2.exceptions) == 2
 
     assert count == 4

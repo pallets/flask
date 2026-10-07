@@ -676,7 +676,4 @@ class _CollectErrors:
     def raise_any(self, message: str) -> None:
         """Raise if any errors were collected."""
         if self.errors:
-            if sys.version_info >= (3, 11):
-                raise BaseExceptionGroup(message, self.errors)  # noqa: F821
-            else:
-                raise self.errors[0]
+            raise BaseExceptionGroup(message, self.errors)

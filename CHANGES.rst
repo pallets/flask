@@ -3,7 +3,7 @@ Version 3.2.0
 
 Unreleased
 
--   Drop support for Python 3.9. :pr:`5730`
+-   Drop support for Python 3.9 and 3.10. :pr:`5730` :pr:`6166`
 -   Remove previously deprecated code: ``__version__``. :pr:`5648`
 -   ``RequestContext`` has merged with ``AppContext``. ``RequestContext`` is now
     a deprecated alias. If an app context is already pushed, it is not reused

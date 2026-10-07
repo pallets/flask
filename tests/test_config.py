@@ -1,5 +1,6 @@
 import json
 import os
+import tomllib
 
 import pytest
 
@@ -36,7 +37,6 @@ def test_config_from_file_json():
 
 
 def test_config_from_file_toml():
-    tomllib = pytest.importorskip("tomllib", reason="tomllib added in 3.11")
     app = flask.Flask(__name__)
     current_dir = os.path.dirname(os.path.abspath(__file__))
     app.config.from_file(
