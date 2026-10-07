@@ -16,7 +16,6 @@ from urllib.parse import urlsplit
 
 import click
 from werkzeug.datastructures import Headers
-from werkzeug.datastructures import ImmutableDict
 from werkzeug.exceptions import BadRequestKeyError
 from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import InternalServerError
@@ -204,39 +203,37 @@ class Flask(App):
         automatically, such as for namespace packages.
     """
 
-    default_config = ImmutableDict(
-        {
-            "DEBUG": None,
-            "TESTING": False,
-            "PROPAGATE_EXCEPTIONS": None,
-            "SECRET_KEY": None,
-            "SECRET_KEY_FALLBACKS": None,
-            "PERMANENT_SESSION_LIFETIME": timedelta(days=31),
-            "USE_X_SENDFILE": False,
-            "TRUSTED_HOSTS": None,
-            "SERVER_NAME": None,
-            "APPLICATION_ROOT": "/",
-            "SESSION_COOKIE_NAME": "session",
-            "SESSION_COOKIE_DOMAIN": None,
-            "SESSION_COOKIE_PATH": None,
-            "SESSION_COOKIE_HTTPONLY": True,
-            "SESSION_COOKIE_SECURE": False,
-            "SESSION_COOKIE_PARTITIONED": False,
-            "SESSION_COOKIE_SAMESITE": None,
-            "SESSION_REFRESH_EACH_REQUEST": True,
-            "MAX_CONTENT_LENGTH": None,
-            "MAX_FORM_MEMORY_SIZE": 500_000,
-            "MAX_FORM_PARTS": 1_000,
-            "SEND_FILE_MAX_AGE_DEFAULT": None,
-            "TRAP_BAD_REQUEST_ERRORS": None,
-            "TRAP_HTTP_EXCEPTIONS": False,
-            "EXPLAIN_TEMPLATE_LOADING": False,
-            "PREFERRED_URL_SCHEME": "http",
-            "TEMPLATES_AUTO_RELOAD": None,
-            "MAX_COOKIE_SIZE": 4093,
-            "PROVIDE_AUTOMATIC_OPTIONS": True,
-        }
-    )
+    default_config: cabc.Mapping[str, t.Any] = {
+        "DEBUG": None,
+        "TESTING": False,
+        "PROPAGATE_EXCEPTIONS": None,
+        "SECRET_KEY": None,
+        "SECRET_KEY_FALLBACKS": None,
+        "PERMANENT_SESSION_LIFETIME": timedelta(days=31),
+        "USE_X_SENDFILE": False,
+        "TRUSTED_HOSTS": None,
+        "SERVER_NAME": None,
+        "APPLICATION_ROOT": "/",
+        "SESSION_COOKIE_NAME": "session",
+        "SESSION_COOKIE_DOMAIN": None,
+        "SESSION_COOKIE_PATH": None,
+        "SESSION_COOKIE_HTTPONLY": True,
+        "SESSION_COOKIE_SECURE": False,
+        "SESSION_COOKIE_PARTITIONED": False,
+        "SESSION_COOKIE_SAMESITE": None,
+        "SESSION_REFRESH_EACH_REQUEST": True,
+        "MAX_CONTENT_LENGTH": None,
+        "MAX_FORM_MEMORY_SIZE": 500_000,
+        "MAX_FORM_PARTS": 1_000,
+        "SEND_FILE_MAX_AGE_DEFAULT": None,
+        "TRAP_BAD_REQUEST_ERRORS": None,
+        "TRAP_HTTP_EXCEPTIONS": False,
+        "EXPLAIN_TEMPLATE_LOADING": False,
+        "PREFERRED_URL_SCHEME": "http",
+        "TEMPLATES_AUTO_RELOAD": None,
+        "MAX_COOKIE_SIZE": 4093,
+        "PROVIDE_AUTOMATIC_OPTIONS": True,
+    }
 
     #: The class that is used for request objects.  See :class:`~flask.Request`
     #: for more information.

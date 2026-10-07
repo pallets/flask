@@ -43,7 +43,7 @@ def test_environ_base_default(app, client):
     @app.route("/")
     def index():
         flask.g.remote_addr = flask.request.remote_addr
-        flask.g.user_agent = flask.request.user_agent.string
+        flask.g.user_agent = str(flask.request.user_agent)
         return ""
 
     with client:
@@ -58,7 +58,7 @@ def test_environ_base_modified(app, client):
     @app.route("/")
     def index():
         flask.g.remote_addr = flask.request.remote_addr
-        flask.g.user_agent = flask.request.user_agent.string
+        flask.g.user_agent = str(flask.request.user_agent)
         return ""
 
     client.environ_base["REMOTE_ADDR"] = "192.168.0.22"
