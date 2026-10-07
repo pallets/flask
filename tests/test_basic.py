@@ -53,6 +53,13 @@ def test_options_on_multiple_rules(app, client):
     assert sorted(rv.allow) == ["GET", "HEAD", "OPTIONS", "POST", "PUT"]
 
 
+def test_options_view_args(app: flask.Flask, client: FlaskClient) -> None:
+    """The automatic options view accepts any view args."""
+    app.add_url_rule("/<a>/<b>", endpoint="add")
+    rv = client.options("/1/2")
+    assert rv.allow == {"GET", "HEAD", "OPTIONS"}
+
+
 @pytest.mark.parametrize("method", ["get", "query", "post", "put", "delete", "patch"])
 def test_method_route(app, client, method):
     method_route = getattr(app, method)
