@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import collections.abc as cabc
 import logging
 import os
 import sys
@@ -273,7 +274,7 @@ class App(Scaffold):
     #: .. versionadded:: 1.0
     test_cli_runner_class: type[FlaskCliRunner] | None = None
 
-    default_config: dict[str, t.Any]
+    default_config: cabc.Mapping[str, t.Any]
     response_class: type[Response]
 
     def __init__(
