@@ -5,7 +5,7 @@ import hashlib
 import typing as t
 from collections.abc import MutableMapping
 from datetime import datetime
-from datetime import timezone
+from datetime import UTC
 
 from itsdangerous import BadSignature
 from itsdangerous import URLSafeTimedSerializer
@@ -227,7 +227,7 @@ class SessionInterface:
         lifetime configured on the application.
         """
         if session.permanent:
-            return datetime.now(timezone.utc) + app.permanent_session_lifetime
+            return datetime.now(UTC) + app.permanent_session_lifetime
         return None
 
     def should_set_cookie(self, app: Flask, session: SessionMixin) -> bool:
