@@ -267,6 +267,7 @@ class Flask(App):
             cls.process_response,
             cls.do_teardown_request,
             cls.do_teardown_appcontext,
+            cls.update_template_context,
         ):
             base_method = getattr(Flask, method.__name__)
 
@@ -596,12 +597,17 @@ class Flask(App):
         """Update the template context with some commonly used variables.
         This injects request, session, config and g into the template
         context as well as everything template context processors want
-        to inject.  Note that the as of Flask 0.6, the original values
-        in the context will not be overridden if a context processor
-        decides to return a value with the same key.
+        to inject.
 
-        :param context: the context as a dictionary that is updated in place
-                        to add extra variables.
+        :param ctx: The current app context.
+        :param context: The context dict that will be passed to the template.
+
+        .. versionchanged:: 3.2
+            Takes ``ctx: AppContext`` as the first parameter. The old signature
+            is deprecated and will not be supported in Flask 4.0.
+
+        .. versionchanged:: 0.6
+            Context keys passed to ``render_template`` are not overwritten.
         """
         names: t.Iterable[str | None] = (None,)
 
@@ -839,6 +845,10 @@ class Flask(App):
         registered error handlers and fall back to returning the
         exception as response.
 
+        .. versionchanged:: 3.2
+            Takes ``ctx: AppContext`` as the first parameter. The old signature
+            is deprecated and will not be supported in Flask 4.0.
+
         .. versionchanged:: 1.0.3
             ``RoutingException``, used internally for actions such as
              slash redirects during routing, is not passed to error
@@ -876,6 +886,10 @@ class Flask(App):
         :meth:`handle_http_exception` method. This function will either
         return a response value or reraise the exception with the same
         traceback.
+
+        .. versionchanged:: 3.2
+            Takes ``ctx: AppContext`` as the first parameter. The old signature
+            is deprecated and will not be supported in Flask 4.0.
 
         .. versionchanged:: 1.0
             Key errors raised from request data like ``form`` show the
@@ -915,6 +929,10 @@ class Flask(App):
         ``500``, it will be used. For consistency, the handler will
         always receive the ``InternalServerError``. The original
         unhandled exception is available as ``e.original_exception``.
+
+        .. versionchanged:: 3.2
+            Takes ``ctx: AppContext`` as the first parameter. The old signature
+            is deprecated and will not be supported in Flask 4.0.
 
         .. versionchanged:: 1.1.0
             Always passes the ``InternalServerError`` instance to the
@@ -962,6 +980,10 @@ class Flask(App):
         The default implementation logs the exception as error on the
         :attr:`logger`.
 
+        .. versionchanged:: 3.2
+            Takes ``ctx: AppContext`` as the first parameter. The old signature
+            is deprecated and will not be supported in Flask 4.0.
+
         .. versionadded:: 0.8
         """
         self.logger.error(
@@ -973,6 +995,10 @@ class Flask(App):
         return value of the view or error handler.  This does not have to
         be a response object.  In order to convert the return value to a
         proper response object, call :func:`make_response`.
+
+        .. versionchanged:: 3.2
+            Takes ``ctx: AppContext`` as the first parameter. The old signature
+            is deprecated and will not be supported in Flask 4.0.
 
         .. versionchanged:: 0.7
            This no longer does the exception handling, this code was
@@ -998,6 +1024,10 @@ class Flask(App):
         """Dispatches the request and on top of that performs request
         pre and postprocessing as well as HTTP exception catching and
         error handling.
+
+        .. versionchanged:: 3.2
+            Takes ``ctx: AppContext`` as the first parameter. The old signature
+            is deprecated and will not be supported in Flask 4.0.
 
         .. versionadded:: 0.7
         """
@@ -1039,7 +1069,11 @@ class Flask(App):
         with the `from_error_handler` flag.  If enabled, failures in
         response processing will be logged and otherwise ignored.
 
-        :internal:
+        .. versionchanged:: 3.2
+            Takes ``ctx: AppContext`` as the first parameter. The old signature
+            is deprecated and will not be supported in Flask 4.0.
+
+        :meta private:
         """
         response = self.make_response(rv)
         try:
@@ -1059,6 +1093,10 @@ class Flask(App):
         """This method is called to create the default ``OPTIONS`` response.
         This can be changed through subclassing to change the default
         behavior of ``OPTIONS`` responses.
+
+        .. versionchanged:: 3.2
+            Takes ``ctx: AppContext`` as the first parameter. The old signature
+            is deprecated and will not be supported in Flask 4.0.
 
         .. versionadded:: 0.7
         """
@@ -1377,6 +1415,10 @@ class Flask(App):
         If any :meth:`before_request` handler returns a non-None value, the
         value is handled as if it was the return value from the view, and
         further request handling is stopped.
+
+        .. versionchanged:: 3.2
+            Takes ``ctx: AppContext`` as the first parameter. The old signature
+            is deprecated and will not be supported in Flask 4.0.
         """
         req = ctx.request
         names = (None, *reversed(req.blueprints))
@@ -1401,13 +1443,17 @@ class Flask(App):
         before it's sent to the WSGI server.  By default this will
         call all the :meth:`after_request` decorated functions.
 
-        .. versionchanged:: 0.5
-           As of Flask 0.5 the functions registered for after request
-           execution are called in reverse order of registration.
+        :param ctx: The current app context.
+        :param response: The response.
+        :return: The passed in response, or a new ``Response`` object.
 
-        :param response: a :attr:`response_class` object.
-        :return: a new response object or the same, has to be an
-                 instance of :attr:`response_class`.
+        .. versionchanged:: 3.2
+            Takes ``ctx: AppContext`` as the first parameter. The old signature
+            is deprecated and will not be supported in Flask 4.0.
+
+        .. versionchanged:: 0.5
+            Functions are called in reverse order of registration.
+
         """
         for func in ctx._after_request_functions:
             response = self.ensure_sync(func)(response)
@@ -1433,11 +1479,16 @@ class Flask(App):
         :meth:`Blueprint.teardown_request` if a blueprint handled the request.
         Finally, the :data:`request_tearing_down` signal is sent.
 
+        :param ctx: The current app context.
         :param exc: An unhandled exception raised while dispatching the request.
             Passed to each teardown function.
 
         .. versionchanged:: 3.2
             All callbacks are called rather than stopping on the first error.
+
+        .. versionchanged:: 3.2
+            Takes ``ctx: AppContext`` as the first parameter. The old signature
+            is deprecated and will not be supported in Flask 4.0.
 
         .. versionchanged:: 0.9
             Added the ``exc`` argument.
@@ -1464,11 +1515,16 @@ class Flask(App):
         This calls all functions decorated with :meth:`teardown_appcontext`.
         Then the :data:`appcontext_tearing_down` signal is sent.
 
+        :param ctx: The current app context.
         :param exc: An unhandled exception raised while the context was active.
             Passed to each teardown function.
 
         .. versionchanged:: 3.2
             All callbacks are called rather than stopping on the first error.
+
+        .. versionchanged:: 3.2
+            Takes ``ctx: AppContext`` as the first parameter. The old signature
+            is deprecated and will not be supported in Flask 4.0.
 
         .. versionadded:: 0.9
         """
