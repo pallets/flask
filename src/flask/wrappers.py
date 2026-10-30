@@ -241,8 +241,6 @@ class Response(ResponseBase):
 
     json_module = json
 
-    autocorrect_location_header = False
-
     @property
     def max_cookie_size(self) -> int:  # type: ignore
         """Read-only view of the :data:`MAX_COOKIE_SIZE` config key.

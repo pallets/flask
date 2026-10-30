@@ -26,7 +26,6 @@ from werkzeug.routing import RoutingException
 from werkzeug.routing import Rule
 from werkzeug.serving import is_running_from_reloader
 from werkzeug.wrappers import Response as BaseResponse
-from werkzeug.wsgi import get_host
 
 from . import cli
 from . import typing as ft
@@ -529,7 +528,7 @@ class Flask(App):
                 request.trusted_hosts = trusted_hosts
 
             # Check trusted_hosts here until bind_to_environ does.
-            request.host = get_host(request.environ, request.trusted_hosts)  # pyright: ignore
+            request.host  # noqa:B018
             subdomain = None
             server_name = self.config["SERVER_NAME"]
 
@@ -543,9 +542,15 @@ class Flask(App):
                 # the empty string.
                 subdomain = self.url_map.default_subdomain or ""
 
-            return self.url_map.bind_to_environ(
-                request.environ, server_name=server_name, subdomain=subdomain
-            )
+            try:
+                return self.url_map.bind_to_request(  # type: ignore[attr-defined,no-any-return]
+                    request, server_name=server_name, subdomain=subdomain
+                )
+            except AttributeError:
+                # Werkzeug < 3.2
+                return self.url_map.bind_to_environ(
+                    request.environ, server_name=server_name, subdomain=subdomain
+                )
 
         # Need at least SERVER_NAME to match/build outside a request.
         if self.config["SERVER_NAME"] is not None:
@@ -1317,7 +1322,7 @@ class Flask(App):
                 # waiting to do it manually, so that the class can handle any
                 # special logic
                 rv = self.response_class(
-                    rv,  # pyright: ignore
+                    rv,
                     status=status,
                     headers=headers,  # type: ignore[arg-type]
                 )

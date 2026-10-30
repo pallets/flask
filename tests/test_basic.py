@@ -14,6 +14,7 @@ import pytest
 import werkzeug.serving
 from markupsafe import Markup
 from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequestKeyError
 from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import NotFound
 from werkzeug.http import parse_date
@@ -1072,11 +1073,10 @@ def test_trap_bad_request_key_error(app, client, debug, trap, expect_key, expect
         assert rv.status_code == 400
         assert b"missing_key" not in rv.data
     else:
-        with pytest.raises(KeyError) as exc_info:
+        with pytest.raises(BadRequestKeyError) as exc_info:
             client.get("/key")
 
-        assert exc_info.errisinstance(BadRequest)
-        assert "missing_key" in exc_info.value.get_description()
+        assert "missing_key" in exc_info.value.get_response().get_data(as_text=True)
 
     if expect_abort:
         rv = client.get("/abort")
