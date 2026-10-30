@@ -280,7 +280,7 @@ username and we can't find it, we raise a "404 Not Found".
     # a successful request would be like /profile?username=jack
     @app.route("/profile")
     def user_profile():
-        username = request.arg.get("username")
+        username = request.args.get("username")
         # if a username isn't supplied in the request, return a 400 bad request
         if username is None:
             abort(400)
@@ -494,7 +494,7 @@ This is a simple example:
     # a correct request might be /api/user?user_id=420
     @app.route("/api/user")
     def user_api(user_id):
-        user_id = request.arg.get("user_id")
+        user_id = request.args.get("user_id")
         if not user_id:
             raise InvalidAPIUsage("No user id provided!")
 
